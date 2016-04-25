@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">WhereAmI</string>
     <string name="location_request">Where Am I?</string>
+    <string name="location.not_available">Location not available</string>
 </resources>

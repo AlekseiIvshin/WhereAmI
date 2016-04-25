@@ -14,7 +14,25 @@
         android:paddingRight="@dimen/default.spacing.horizontal"
         android:paddingTop="@dimen/default.spacing.vertical">
         <TextView
-            android:id="@+id/location_label"
+            android:id="@+id/label_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/default.spacing.vertical"
+            android:paddingLeft="@dimen/default.spacing.horizontal"
+            android:paddingRight="@dimen/default.spacing.horizontal"
+            android:paddingTop="@dimen/default.spacing.vertical"
+            tools:text="Earth Hell" />
+        <TextView
+            android:id="@+id/label_latitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/default.spacing.vertical"
+            android:paddingLeft="@dimen/default.spacing.horizontal"
+            android:paddingRight="@dimen/default.spacing.horizontal"
+            android:paddingTop="@dimen/default.spacing.vertical"
+            tools:text="Earth Hell" />
+        <TextView
+            android:id="@+id/label_longitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/default.spacing.vertical"
