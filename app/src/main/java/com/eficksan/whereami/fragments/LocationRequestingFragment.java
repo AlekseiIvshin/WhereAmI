@@ -1,11 +1,17 @@
 package com.eficksan.whereami.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.ResultReceiver;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +25,8 @@ import android.widget.Toast;
 
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
+import com.eficksan.whereami.geo.Constants;
+import com.eficksan.whereami.geo.FetchAddressIntentService;
 
 import javax.inject.Inject;
 
@@ -53,6 +61,34 @@ public class LocationRequestingFragment extends Fragment implements LocationList
     LocationManager locationManager;
 
     private String provider;
+    private Location lastLocation;
+
+    @SuppressLint("ParcelCreator")
+    private class AddressResultReceiver extends ResultReceiver {
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            switch (resultCode) {
+                case Constants.SUCCESS_RESULT:
+                    mLocationLabel.setText(resultData.getString(Constants.RESULT_DATA_KEY));
+                    break;
+                case Constants.FAILURE_RESULT:
+                    Toast.makeText(getActivity(), resultData.getString(Constants.RESULT_DATA_KEY), Toast.LENGTH_SHORT);
+                    break;
+            }
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+    }
+
+    private AddressResultReceiver mResultReceiver = new AddressResultReceiver(new Handler(Looper.getMainLooper()));
 
     public static LocationRequestingFragment newInstance() {
         return new LocationRequestingFragment();
@@ -146,12 +182,15 @@ public class LocationRequestingFragment extends Fragment implements LocationList
 
     @OnClick(R.id.request_location)
     public void handleRequestLocation() {
-
+        if (lastLocation != null) {
+            FetchAddressIntentService.requestLocationAddresses(getActivity(), mResultReceiver, lastLocation);
+        }
     }
 
     @Override
     public void onLocationChanged(Location location) {
         Log.v(TAG, String.format("Location changed: %1$.4f x %2$.4f", location.getLatitude(), location.getLongitude()));
+        lastLocation = location;
         mCoordinates.setText(getString(R.string.label_coordinates, location.getLatitude(), location.getLongitude()));
     }
 
@@ -171,4 +210,5 @@ public class LocationRequestingFragment extends Fragment implements LocationList
         Toast.makeText(getActivity(), "Disabled provider " + provider,
                 Toast.LENGTH_SHORT).show();
     }
+
 }

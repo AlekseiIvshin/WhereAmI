@@ -3,4 +3,8 @@
     <string name="location_request">Where Am I?</string>
     <string name="location.not_available">Location not available</string>
     <string name="label_coordinates">%1$.4f x %2$.4f</string>
+    <string name="service_not_available">Service not available</string>
+    <string name="wrong_lat_lon_used">Wrong latitude and longitude  used</string>
+    <string name="address_not_found">Address not found</string>
+    <string name="address_found">Address found</string>
 </resources>
