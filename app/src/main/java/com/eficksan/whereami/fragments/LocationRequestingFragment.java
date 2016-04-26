@@ -7,6 +7,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -37,16 +38,16 @@ import static android.support.v4.content.ContextCompat.checkSelfPermission;
 @SuppressWarnings("ResourceType")
 public class LocationRequestingFragment extends Fragment implements LocationListener {
 
-    public static final int LOCATION_PERMISION_REQUEST = 42;
+    public static final int LOCATION_PERMISSION_REQUEST = 42;
+    public static final int LOCATION_REQUEST_MIN_TIMEOUT = 60000;
+    public static final int LOCATION_REQUEST_MIN_DISTANCE = 10;
 
     public static final String TAG = LocationRequestingFragment.class.getSimpleName();
 
     @Bind(R.id.label_location)
     TextView mLocationLabel;
-    @Bind(R.id.label_latitude)
-    TextView mLatitudeLabel;
-    @Bind(R.id.label_longitude)
-    TextView mLongitudeLabel;
+    @Bind(R.id.label_coordinates)
+    TextView mCoordinates;
 
     @Inject
     LocationManager locationManager;
@@ -77,8 +78,8 @@ public class LocationRequestingFragment extends Fragment implements LocationList
                 //TODO: show explanation
                 Log.v(TAG, "Should show explanations");
             } else {
-                Log.v(TAG, "Request permissions with request key = " + LOCATION_PERMISION_REQUEST);
-                requestPermissions(new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION}, LOCATION_PERMISION_REQUEST);
+                Log.v(TAG, "Request permissions with request key = " + LOCATION_PERMISSION_REQUEST);
+                requestPermissions(new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST);
             }
         }
     }
@@ -97,8 +98,7 @@ public class LocationRequestingFragment extends Fragment implements LocationList
                 Log.v(TAG, "Provider " + provider + " has been selected.");
                 onLocationChanged(location);
             } else {
-                mLatitudeLabel.setText(R.string.location_not_available);
-                mLongitudeLabel.setText(R.string.location_not_available);
+                mCoordinates.setText(R.string.location_not_available);
             }
         }
         return rootView;
@@ -109,8 +109,9 @@ public class LocationRequestingFragment extends Fragment implements LocationList
     public void onResume() {
         super.onResume();
         if (provider != null && checkPermissions()) {
-            Log.v(TAG, String.format("Request location updates provider = %s, time interval = %d, distance = %d", provider, 400, 1));
-            locationManager.requestLocationUpdates(provider, 1000, 1, this);
+            Log.v(TAG, String.format("Request location updates provider = %s, time interval = %d, distance = %d",
+                    provider, LOCATION_REQUEST_MIN_TIMEOUT, LOCATION_REQUEST_MIN_DISTANCE));
+            locationManager.requestLocationUpdates(provider, LOCATION_REQUEST_MIN_TIMEOUT, LOCATION_REQUEST_MIN_DISTANCE, this);
         } else {
             Log.v(TAG, String.format("OnResume: Permissions were not granted: %s, %s ", ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION));
         }
@@ -131,8 +132,8 @@ public class LocationRequestingFragment extends Fragment implements LocationList
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (LOCATION_PERMISION_REQUEST == requestCode) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (LOCATION_PERMISSION_REQUEST == requestCode) {
             for (int grantResult : grantResults) {
                 if (PERMISSION_GRANTED == grantResult) {
                     Toast.makeText(getActivity(), "Permissions granted!",
@@ -150,11 +151,8 @@ public class LocationRequestingFragment extends Fragment implements LocationList
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.v(TAG, "Location changed");
-        int lat = (int) (location.getLatitude());
-        int lng = (int) (location.getLongitude());
-        mLatitudeLabel.setText(String.valueOf(lat));
-        mLongitudeLabel.setText(String.valueOf(lng));
+        Log.v(TAG, String.format("Location changed: %1$.4f x %2$.4f", location.getLatitude(), location.getLongitude()));
+        mCoordinates.setText(getString(R.string.label_coordinates, location.getLatitude(), location.getLongitude()));
     }
 
     @Override

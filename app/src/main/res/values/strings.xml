@@ -2,4 +2,5 @@
     <string name="app_name">WhereAmI</string>
     <string name="location_request">Where Am I?</string>
     <string name="location.not_available">Location not available</string>
+    <string name="label_coordinates">%1$.4f x %2$.4f</string>
 </resources>
