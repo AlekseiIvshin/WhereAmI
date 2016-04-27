@@ -7,4 +7,9 @@
     <string name="wrong_lat_lon_used">Wrong latitude and longitude  used</string>
     <string name="address_not_found">Address not found</string>
     <string name="address_found">Address found</string>
+    <string name="api_connection_failed">Google API connection failed</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="oops">Oops!</string>
 </resources>
