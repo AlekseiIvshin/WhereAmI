@@ -12,4 +12,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="oops">Oops!</string>
+    <string name="settings_change_unavailable">Unfortunately, location settings are not satisfied and we cannot fix it</string>
+    <string name="settings_satisfied">Yeah! We have satisfied settings!</string>
+    <string name="settings_not_satisfied">Hmm! Settings are not satisfied...</string>
 </resources>

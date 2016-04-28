@@ -1,7 +1,10 @@
 package com.eficksan.whereami.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -23,9 +26,15 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.geo.Constants;
 import com.eficksan.whereami.geo.FetchAddressIntentService;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.lang.ref.WeakReference;
 
@@ -40,9 +49,10 @@ import butterknife.OnClick;
  * on 24.04.2016.
  */
 @SuppressWarnings("ResourceType")
-public class LocationRequestingFragment extends Fragment implements LocationListener {
+public class LocationRequestingFragment extends Fragment implements LocationListener, ResultCallback<LocationSettingsResult> {
 
-   WeakReference<GoogleApiClient> mGoogleApiClient;
+    private static final int REQUEST_CHECK_SETTINGS = 42;
+    WeakReference<GoogleApiClient> mGoogleApiClient;
 
     public static final int LOCATION_REQUEST_INTERVAL = 10000;
     public static final int LOCATION_REQUEST_FASTEST_INTERVAL = 5000;
@@ -65,6 +75,7 @@ public class LocationRequestingFragment extends Fragment implements LocationList
     private String mLastLocationAddresses;
     private LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates = false;
+
 
     @SuppressLint("ParcelCreator")
     private class AddressResultReceiver extends ResultReceiver {
@@ -134,7 +145,7 @@ public class LocationRequestingFragment extends Fragment implements LocationList
     public void onResume() {
         super.onResume();
         if (mRequestingLocationUpdates) {
-           startLocationRequest();
+            startLocationRequest();
         }
     }
 
@@ -178,19 +189,48 @@ public class LocationRequestingFragment extends Fragment implements LocationList
         updateUI();
     }
 
+    @Override
+    public void onResult(LocationSettingsResult result) {
+        final Status status = result.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                Log.v(TAG, "Location settings are satisfied");
+                Log.v(TAG, "Location requested: " + mLocationRequest.toString());
+                LocationServices.FusedLocationApi
+                        .requestLocationUpdates(mGoogleApiClient.get(), mLocationRequest, this);
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.v(TAG, "Location settings are required");
+                // Location settings are not satisfied, but this can be fixed
+                // by showing the user a dialog.
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    status.startResolutionForResult(
+                            getActivity(),
+                            REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    // Ignore the error.
+                }
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.v(TAG, "Location settings are required, but cannot be changed");
+                // Location settings are not satisfied. However, we have no way
+                // to fix the settings so we won't show the dialog.
+                Toast.makeText(getActivity(), R.string.settings_change_unavailable, Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
     /**
      * Starts requesting API for obtain current location.
      */
     private void startLocationRequest() {
-        Log.v(TAG, String.format(
-                "Start location request: is API client not null %b, is API client connected %b",
-                mGoogleApiClient.get() !=null,
-                mGoogleApiClient.get().isConnected()));
-        if (mGoogleApiClient.get() != null && mGoogleApiClient.get().isConnected()) {
-            Log.v(TAG, "Location requested: " + mLocationRequest.toString());
-            LocationServices.FusedLocationApi
-                    .requestLocationUpdates(mGoogleApiClient.get(), mLocationRequest, this);
-        }
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+        PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient.get(), builder.build());
+        locationSettingsResultPendingResult.setResultCallback(this);
     }
 
     /**
@@ -204,7 +244,7 @@ public class LocationRequestingFragment extends Fragment implements LocationList
         }
     }
 
-    private void updateUI(){
+    private void updateUI() {
         if (mLastLocation != null) {
             mLocationCoordinates.setText(getString(R.string.label_coordinates, mLastLocation.getLatitude(), mLastLocation.getLongitude()));
         } else {
@@ -231,4 +271,20 @@ public class LocationRequestingFragment extends Fragment implements LocationList
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (REQUEST_CHECK_SETTINGS == requestCode) {
+            Log.v(TAG, "On request check settings: resultCode = " + resultCode);
+            switch (resultCode) {
+                case Activity.RESULT_OK:
+                    Toast.makeText(getActivity(), R.string.settings_satisfied, Toast.LENGTH_SHORT).show();
+                    break;
+                case Activity.RESULT_CANCELED:
+                    Toast.makeText(getActivity(), R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();
+                    getFragmentManager().popBackStack();
+                    break;
+            }
+        }
+    }
 }
