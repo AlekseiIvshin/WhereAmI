@@ -13,17 +13,23 @@
         android:paddingLeft="@dimen/default.spacing.horizontal"
         android:paddingRight="@dimen/default.spacing.horizontal"
         android:paddingTop="@dimen/default.spacing.vertical">
+
+
+            <TextView
+                android:id="@+id/label_coordinates"
+                style="@style/AppTextAppearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/default.spacing.vertical"
+                android:paddingLeft="@dimen/default.spacing.horizontal"
+                android:paddingRight="@dimen/default.spacing.horizontal"
+                android:paddingTop="@dimen/default.spacing.vertical"
+                tools:text="Earth Hell" />
+
+
         <TextView
             android:id="@+id/label_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/default.spacing.vertical"
-            android:paddingLeft="@dimen/default.spacing.horizontal"
-            android:paddingRight="@dimen/default.spacing.horizontal"
-            android:paddingTop="@dimen/default.spacing.vertical"
-            tools:text="Earth Hell" />
-        <TextView
-            android:id="@+id/label_coordinates"
+            style="@style/AppTextAppearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/default.spacing.vertical"
@@ -39,8 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/default.spacing.horizontal"
+        android:elevation="@dimen/fab.elevation"
         android:src="@drawable/map_marker"
         app:borderWidth="0dp"
-        android:elevation="@dimen/fab.elevation"
         app:fabSize="normal" />
 </android.support.design.widget.CoordinatorLayout>

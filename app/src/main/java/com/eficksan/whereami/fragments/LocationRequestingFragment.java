@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,9 @@ import com.eficksan.whereami.MainActivity;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.geo.Constants;
 import com.eficksan.whereami.geo.FetchAddressIntentService;
+import com.eficksan.whereami.googleapi.ApiConnectionObservable;
+import com.eficksan.whereami.googleapi.ApiConnectionObserver;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -49,24 +53,29 @@ import butterknife.OnClick;
  * on 24.04.2016.
  */
 @SuppressWarnings("ResourceType")
-public class LocationRequestingFragment extends Fragment implements LocationListener, ResultCallback<LocationSettingsResult> {
+public class LocationRequestingFragment extends Fragment
+        implements LocationListener, ResultCallback<LocationSettingsResult>, ApiConnectionObserver {
+
+    public static final String TAG = LocationRequestingFragment.class.getSimpleName();
 
     private static final int REQUEST_CHECK_SETTINGS = 42;
-    WeakReference<GoogleApiClient> mGoogleApiClient;
 
     public static final int LOCATION_REQUEST_INTERVAL = 10000;
     public static final int LOCATION_REQUEST_FASTEST_INTERVAL = 5000;
-
-    public static final String TAG = LocationRequestingFragment.class.getSimpleName();
 
     private static final String KEY_REQUESTING_LOCATION_UPDATES = "REQUESTING_LOCATION_UPDATES";
     private static final String KEY_LAST_LOCATION = "KEY_LAST_LOCATION";
     private static final String KEY_LAST_LOCATION_ADDRESSES = "KEY_LAST_LOCATION_ADDRESSES";
 
+    private WeakReference<GoogleApiClient> mGoogleApiClient;
+    private WeakReference<ApiConnectionObservable> mApiConnectionObservable;
+
     @Bind(R.id.label_location)
     TextView mLocationAddresses;
     @Bind(R.id.label_coordinates)
     TextView mLocationCoordinates;
+    @Bind(R.id.request_location)
+    FloatingActionButton mRequestLocation;
 
     @Inject
     LocationManager locationManager;
@@ -112,7 +121,12 @@ public class LocationRequestingFragment extends Fragment implements LocationList
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mGoogleApiClient = new WeakReference<>(((MainActivity) context).getGoogleApiClient());
+        mApiConnectionObservable = new WeakReference<ApiConnectionObservable>((MainActivity) context);
+        mApiConnectionObservable.get().registerConnectionObserver(this);
+        GoogleApiClient googleApiClient = ((MainActivity) context).getGoogleApiClient();
+        if (googleApiClient != null) {
+            mGoogleApiClient = new WeakReference<>(googleApiClient);
+        }
     }
 
     @Override
@@ -120,10 +134,8 @@ public class LocationRequestingFragment extends Fragment implements LocationList
         super.onCreate(savedInstanceState);
         ((App) getActivity().getApplication()).getObjectGraph().inject(this);
         restoreLocationFromBundle(savedInstanceState);
-        if (mGoogleApiClient.get() != null && mGoogleApiClient.get().isConnected()) {
-            createLocationRequest();
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient.get());
-        }
+        createLocationRequest();
+        requestLastLocation();
     }
 
     @Nullable
@@ -167,7 +179,13 @@ public class LocationRequestingFragment extends Fragment implements LocationList
 
     @Override
     public void onDetach() {
-        mGoogleApiClient.clear();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.clear();
+        }
+        if (mApiConnectionObservable != null) {
+            mApiConnectionObservable.get().unregisterConnectionObserver(this);
+            mApiConnectionObservable.clear();
+        }
         super.onDetach();
     }
 
@@ -177,9 +195,11 @@ public class LocationRequestingFragment extends Fragment implements LocationList
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
             startLocationRequest();
+        } else {
+            mRequestingLocationUpdates = false;
+            stopLocationRequest();
         }
     }
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -222,15 +242,23 @@ public class LocationRequestingFragment extends Fragment implements LocationList
         }
     }
 
+    private void requestLastLocation() {
+        if (mGoogleApiClient != null && mGoogleApiClient.get() != null && mGoogleApiClient.get().isConnected()) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient.get());
+        }
+    }
+
     /**
      * Starts requesting API for obtain current location.
      */
     private void startLocationRequest() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest);
-        PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient.get(), builder.build());
-        locationSettingsResultPendingResult.setResultCallback(this);
+        if (mGoogleApiClient != null && mGoogleApiClient.get() != null && mGoogleApiClient.get().isConnected()) {
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                    .addLocationRequest(mLocationRequest);
+            PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
+                    LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient.get(), builder.build());
+            locationSettingsResultPendingResult.setResultCallback(this);
+        }
     }
 
     /**
@@ -238,9 +266,10 @@ public class LocationRequestingFragment extends Fragment implements LocationList
      */
     private void stopLocationRequest() {
         Log.v(TAG, "Stop location request");
-        if (mGoogleApiClient.get() != null && mRequestingLocationUpdates) {
+        if (mGoogleApiClient.get() != null) {
             Log.v(TAG, "Location request stopped");
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient.get(), this);
+            updateUI();
         }
     }
 
@@ -250,8 +279,13 @@ public class LocationRequestingFragment extends Fragment implements LocationList
         } else {
             mLocationCoordinates.setText(R.string.location_not_available);
         }
-
         mLocationAddresses.setText(mLastLocationAddresses);
+
+        if (mRequestingLocationUpdates) {
+            mRequestLocation.setImageResource(R.drawable.map_marker_off);
+        } else {
+            mRequestLocation.setImageResource(R.drawable.map_marker);
+        }
     }
 
     private void createLocationRequest() {
@@ -286,5 +320,24 @@ public class LocationRequestingFragment extends Fragment implements LocationList
                     break;
             }
         }
+    }
+
+
+    @Override
+    public void onConnected(GoogleApiClient googleApiClient, Bundle bundle) {
+        mGoogleApiClient = new WeakReference<>(googleApiClient);
+        requestLastLocation();
+        if (mRequestingLocationUpdates) {
+            startLocationRequest();
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        mGoogleApiClient.clear();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
     }
 }

@@ -15,15 +15,15 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by Aleksei Ivshin
  * on 27.04.2016.
  */
-public abstract class GoogleApiConnectActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public abstract class GoogleApiConnectActivity extends AppCompatActivity
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ApiConnectionObservable {
 
     private static final String TAG = GoogleApiConnectActivity.class.getSimpleName();
 
@@ -38,9 +38,11 @@ public abstract class GoogleApiConnectActivity extends AppCompatActivity impleme
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
     public final Api[] mConnectedApi;
+    private List<ApiConnectionObserver> mApiConnectionObservers;
 
     public GoogleApiConnectActivity(Api[] connectedApi) {
         this.mConnectedApi = connectedApi;
+        mApiConnectionObservers = new LinkedList<>();
         Log.v(TAG, "APIs: " + connectedApi.toString());
     }
 
@@ -81,15 +83,23 @@ public abstract class GoogleApiConnectActivity extends AppCompatActivity impleme
     @Override
     public void onConnected(Bundle bundle) {
         Log.v(TAG, "GoogleApiClient connected");
+        for(ApiConnectionObserver observer: mApiConnectionObservers) {
+            observer.onConnected(mGoogleApiClient, bundle);
+        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        for(ApiConnectionObserver observer: mApiConnectionObservers) {
+            observer.onConnectionSuspended(i);
+        }
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
+        for(ApiConnectionObserver observer: mApiConnectionObservers) {
+            observer.onConnectionFailed(result);
+        }
         Log.v(TAG, "Connection failed");
         if (mResolvingError) {
             // Already attempting to resolve an error.
@@ -158,5 +168,20 @@ public abstract class GoogleApiConnectActivity extends AppCompatActivity impleme
                 }
             }
         }
+    }
+
+    @Override
+    public void registerConnectionObserver(ApiConnectionObserver connectionObserver) {
+        mApiConnectionObservers.add(connectionObserver);
+    }
+
+    @Override
+    public void unregisterConnectionObserver(ApiConnectionObserver connectionObserver) {
+        mApiConnectionObservers.remove(connectionObserver);
+    }
+
+    @Override
+    public void unregisterAllConnectionObservers() {
+        mApiConnectionObservers.clear();
     }
 }

@@ -15,4 +15,5 @@
     <string name="settings_change_unavailable">Unfortunately, location settings are not satisfied and we cannot fix it</string>
     <string name="settings_satisfied">Yeah! We have satisfied settings!</string>
     <string name="settings_not_satisfied">Hmm! Settings are not satisfied...</string>
+    <string name="auto_request">Auto request</string>
 </resources>

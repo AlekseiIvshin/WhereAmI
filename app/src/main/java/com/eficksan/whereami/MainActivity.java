@@ -28,10 +28,6 @@ public class MainActivity extends GoogleApiConnectActivity {
         setSupportActionBar(toolbar);
 
         isRestored = savedInstanceState != null;
-
-        if (!mGoogleApiClient.isConnecting()) {
-            showSplash();
-        }
     }
 
     public GoogleApiClient getGoogleApiClient() {
