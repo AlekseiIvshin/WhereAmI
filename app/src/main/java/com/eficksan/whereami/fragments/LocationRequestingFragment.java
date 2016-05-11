@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -149,6 +150,7 @@ public class LocationRequestingFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
+        getPersistedLocation();
         updateUI();
     }
 
@@ -175,6 +177,12 @@ public class LocationRequestingFragment extends Fragment
         outState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         outState.putParcelable(KEY_LAST_LOCATION, mLastLocation);
         outState.putString(KEY_LAST_LOCATION_ADDRESSES, mLastLocationAddresses);
+    }
+
+    @Override
+    public void onStop() {
+        persistLocation();
+        super.onStop();
     }
 
     @Override
@@ -239,6 +247,21 @@ public class LocationRequestingFragment extends Fragment
                 // to fix the settings so we won't show the dialog.
                 Toast.makeText(getActivity(), R.string.settings_change_unavailable, Toast.LENGTH_SHORT).show();
                 break;
+        }
+    }
+
+    private void getPersistedLocation() {
+        if (mLastLocationAddresses == null || mLastLocationAddresses.isEmpty()) {
+            SharedPreferences preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+            mLastLocationAddresses = preferences.getString(KEY_LAST_LOCATION_ADDRESSES, "");
+        }
+    }
+
+    private void persistLocation() {
+        if (mLastLocationAddresses != null && !mLastLocationAddresses.isEmpty()) {
+            getActivity().getPreferences(Context.MODE_PRIVATE)
+                    .edit().putString(KEY_LAST_LOCATION_ADDRESSES, mLastLocationAddresses)
+                    .apply();
         }
     }
 
