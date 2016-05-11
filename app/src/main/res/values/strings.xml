@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name">WhereAmI</string>
     <string name="location_request">Where Am I?</string>
+    <string name="location.not_available">Location not available</string>
+    <string name="label_coordinates">%1$.4f x %2$.4f</string>
+    <string name="service_not_available">Service not available</string>
+    <string name="wrong_lat_lon_used">Wrong latitude and longitude  used</string>
+    <string name="address_not_found">Address not found</string>
+    <string name="address_found">Address found</string>
+    <string name="api_connection_failed">Google API connection failed</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="oops">Oops!</string>
+    <string name="settings_change_unavailable">Unfortunately, location settings are not satisfied and we cannot fix it</string>
+    <string name="settings_satisfied">Yeah! We have satisfied settings!</string>
+    <string name="settings_not_satisfied">Hmm! Settings are not satisfied...</string>
+    <string name="auto_request">Auto request</string>
 </resources>
