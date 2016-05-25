@@ -16,4 +16,5 @@
     <string name="settings_satisfied">Yeah! We have satisfied settings!</string>
     <string name="settings_not_satisfied">Hmm! Settings are not satisfied...</string>
     <string name="auto_request">Auto request</string>
+    <string name="geofence_transition_invalid_type">Geofence transition invalid type: %d</string>
 </resources>

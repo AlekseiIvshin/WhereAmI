@@ -23,6 +23,9 @@
 
         <service
             android:name=".geo.FetchAddressIntentService"
+            android:exported="false" />
+        <service
+            android:name=".geofence.GeofenceTransitionsIntentService"
             android:exported="false"></service>
     </application>
 
