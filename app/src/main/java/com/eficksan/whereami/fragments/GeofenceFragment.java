@@ -2,7 +2,6 @@ package com.eficksan.whereami.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.eficksan.whereami.MainActivity;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.geo.Constants;
 import com.eficksan.whereami.geofence.GeofenceTransitionsIntentService;
-import com.eficksan.whereami.googleapi.ApiConnectionObservable;
-import com.eficksan.whereami.googleapi.ApiConnectionObserver;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -32,7 +27,6 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,8 +37,8 @@ import butterknife.ButterKnife;
  * on 24.04.2016.
  */
 @SuppressWarnings("ResourceType")
-public class GeofenceFragment extends Fragment
-        implements ApiConnectionObserver, ResultCallback<Status> {
+public class GeofenceFragment extends BaseApiConnectedFragment
+        implements ResultCallback<Status> {
 
     public static final String TAG = GeofenceFragment.class.getSimpleName();
 
@@ -52,9 +46,6 @@ public class GeofenceFragment extends Fragment
     private static final float GEOFENCE_DEFAULT_RADIUS = 100f;
     private static final long GEOFENCE_DEFAULT_EXPIRATION = 60;
     private static final String GEOFENCE_CURRENT_LOCATION_ID = TAG + "/GEOFENCE_CURRENT_LOCATION_ID";
-
-    private WeakReference<GoogleApiClient> mGoogleApiClient;
-    private WeakReference<ApiConnectionObservable> mApiConnectionObservable;
 
     private boolean mGeofencing = false;
     private List<Geofence> mGeofencesList;
@@ -108,22 +99,10 @@ public class GeofenceFragment extends Fragment
         return fragment;
     }
 
-    //TODO: move to base fragment
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mApiConnectionObservable = new WeakReference<ApiConnectionObservable>((MainActivity) context);
-        mApiConnectionObservable.get().registerConnectionObserver(this);
-        GoogleApiClient googleApiClient = ((MainActivity) context).getGoogleApiClient();
-        if (googleApiClient != null) {
-            mGoogleApiClient = new WeakReference<>(googleApiClient);
-        }
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_location_requesting, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_geofence, container, false);
         ButterKnife.bind(this, rootView);
         return rootView;
     }
@@ -138,32 +117,18 @@ public class GeofenceFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        if (mGeofencing && mGoogleApiClient.get() != null) {
-            addGeofences(mGoogleApiClient.get());
+        if (mGeofencing && isGoogleApiConnected()) {
+            addGeofences(getGoogleApiClient());
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mGeofencing) {
-            removeGeofences(mGoogleApiClient.get());
+        if (mGeofencing && isGoogleApiConnected()) {
+            removeGeofences(getGoogleApiClient());
         }
     }
-
-    //TODO: move to base fragment
-    @Override
-    public void onDetach() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.clear();
-        }
-        if (mApiConnectionObservable != null) {
-            mApiConnectionObservable.get().unregisterConnectionObserver(this);
-            mApiConnectionObservable.clear();
-        }
-        super.onDetach();
-    }
-
 
     private void updateUI() {
         //TODO: update UI
@@ -217,16 +182,14 @@ public class GeofenceFragment extends Fragment
     }
 
     @Override
-    public void onConnected(GoogleApiClient googleApiClient, Bundle bundle) {
-        mGoogleApiClient = new WeakReference<>(googleApiClient);
+    public void onConnected(Bundle bundle) {
         mGeofencing = true;
-        addGeofences(googleApiClient);
+        addGeofences(getGoogleApiClient());
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         mGeofencing = false;
-        mGoogleApiClient.clear();
     }
 
     @Override

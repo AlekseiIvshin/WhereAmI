@@ -14,7 +14,6 @@ import android.os.Looper;
 import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,11 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eficksan.whereami.App;
-import com.eficksan.whereami.MainActivity;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.geo.Constants;
 import com.eficksan.whereami.geo.FetchAddressIntentService;
-import com.eficksan.whereami.googleapi.ApiConnectionObservable;
 import com.eficksan.whereami.googleapi.ApiConnectionObserver;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -41,8 +38,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
-import java.lang.ref.WeakReference;
-
 import javax.inject.Inject;
 
 import butterknife.Bind;
@@ -54,8 +49,8 @@ import butterknife.OnClick;
  * on 24.04.2016.
  */
 @SuppressWarnings("ResourceType")
-public class LocationRequestingFragment extends Fragment
-        implements LocationListener, ResultCallback<LocationSettingsResult>, ApiConnectionObserver {
+public class LocationRequestingFragment extends BaseApiConnectedFragment
+        implements LocationListener, ResultCallback<LocationSettingsResult> {
 
     public static final String TAG = LocationRequestingFragment.class.getSimpleName();
 
@@ -67,9 +62,6 @@ public class LocationRequestingFragment extends Fragment
     private static final String KEY_REQUESTING_LOCATION_UPDATES = "REQUESTING_LOCATION_UPDATES";
     private static final String KEY_LAST_LOCATION = "KEY_LAST_LOCATION";
     private static final String KEY_LAST_LOCATION_ADDRESSES = "KEY_LAST_LOCATION_ADDRESSES";
-
-    private WeakReference<GoogleApiClient> mGoogleApiClient;
-    private WeakReference<ApiConnectionObservable> mApiConnectionObservable;
 
     @Bind(R.id.label_location)
     TextView mLocationAddresses;
@@ -117,17 +109,6 @@ public class LocationRequestingFragment extends Fragment
 
     public static LocationRequestingFragment newInstance() {
         return new LocationRequestingFragment();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mApiConnectionObservable = new WeakReference<ApiConnectionObservable>((MainActivity) context);
-        mApiConnectionObservable.get().registerConnectionObserver(this);
-        GoogleApiClient googleApiClient = ((MainActivity) context).getGoogleApiClient();
-        if (googleApiClient != null) {
-            mGoogleApiClient = new WeakReference<>(googleApiClient);
-        }
     }
 
     @Override
@@ -185,18 +166,6 @@ public class LocationRequestingFragment extends Fragment
         super.onStop();
     }
 
-    @Override
-    public void onDetach() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.clear();
-        }
-        if (mApiConnectionObservable != null) {
-            mApiConnectionObservable.get().unregisterConnectionObserver(this);
-            mApiConnectionObservable.clear();
-        }
-        super.onDetach();
-    }
-
     @OnClick(R.id.request_location)
     public void handleRequestLocation() {
         Log.v(TAG, "Handle location request");
@@ -225,7 +194,7 @@ public class LocationRequestingFragment extends Fragment
                 Log.v(TAG, "Location settings are satisfied");
                 Log.v(TAG, "Location requested: " + mLocationRequest.toString());
                 LocationServices.FusedLocationApi
-                        .requestLocationUpdates(mGoogleApiClient.get(), mLocationRequest, this);
+                        .requestLocationUpdates(getGoogleApiClient(), mLocationRequest, this);
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 Log.v(TAG, "Location settings are required");
@@ -266,8 +235,8 @@ public class LocationRequestingFragment extends Fragment
     }
 
     private void requestLastLocation() {
-        if (mGoogleApiClient != null && mGoogleApiClient.get() != null && mGoogleApiClient.get().isConnected()) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient.get());
+        if (isGoogleApiConnected()) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(getGoogleApiClient());
         }
     }
 
@@ -275,11 +244,11 @@ public class LocationRequestingFragment extends Fragment
      * Starts requesting API for obtain current location.
      */
     private void startLocationRequest() {
-        if (mGoogleApiClient != null && mGoogleApiClient.get() != null && mGoogleApiClient.get().isConnected()) {
+        if (isGoogleApiConnected()) {
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                     .addLocationRequest(mLocationRequest);
             PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
-                    LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient.get(), builder.build());
+                    LocationServices.SettingsApi.checkLocationSettings(getGoogleApiClient(), builder.build());
             locationSettingsResultPendingResult.setResultCallback(this);
         }
     }
@@ -289,9 +258,9 @@ public class LocationRequestingFragment extends Fragment
      */
     private void stopLocationRequest() {
         Log.v(TAG, "Stop location request");
-        if (mGoogleApiClient.get() != null) {
+        if (isGoogleApiConnected()) {
             Log.v(TAG, "Location request stopped");
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient.get(), this);
+            LocationServices.FusedLocationApi.removeLocationUpdates(getGoogleApiClient(), this);
             updateUI();
         }
     }
@@ -347,8 +316,7 @@ public class LocationRequestingFragment extends Fragment
 
 
     @Override
-    public void onConnected(GoogleApiClient googleApiClient, Bundle bundle) {
-        mGoogleApiClient = new WeakReference<>(googleApiClient);
+    public void onConnected(Bundle bundle) {
         requestLastLocation();
         if (mRequestingLocationUpdates) {
             startLocationRequest();
@@ -357,7 +325,6 @@ public class LocationRequestingFragment extends Fragment
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        mGoogleApiClient.clear();
     }
 
     @Override
