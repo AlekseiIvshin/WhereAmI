@@ -32,6 +32,8 @@
         <service
             android:name=".geo.FetchAddressIntentService"
             android:exported="false" />
+        <service
+            android:name=".geofence.GeofenceTransitionsIntentService"
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

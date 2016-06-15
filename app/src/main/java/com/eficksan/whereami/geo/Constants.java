@@ -14,4 +14,9 @@ public final class Constants {
             ".RESULT_DATA_KEY";
     public static final String EXTRA_LOCATION_DATA = PACKAGE_NAME +
             ".EXTRA_LOCATION_DATA";
+
+    public static final String EXTRA_GEOFENCSE_TRANSITION = "EXTRA_GEOFENCSE_TRANSITION";
+    public static final String EXTRA_GEOFENCES_REQUEST_ID = "EXTRA_GEOFENCES_REQUEST_ID";
+
+    public static final int GEOFENCE_TRANSITION_INVALID_TYPE = -42;
 }
