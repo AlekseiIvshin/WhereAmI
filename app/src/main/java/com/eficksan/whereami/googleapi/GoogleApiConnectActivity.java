@@ -119,6 +119,10 @@ public abstract class GoogleApiConnectActivity extends AppCompatActivity
         }
     }
 
+    public GoogleApiClient getGoogleApiClient() {
+        return mGoogleApiClient;
+    }
+
     // The rest of this code is all about building the error dialog
 
     /* Creates a dialog for an error message */

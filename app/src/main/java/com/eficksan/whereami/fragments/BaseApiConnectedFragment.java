@@ -19,7 +19,7 @@ import java.lang.ref.WeakReference;
 @SuppressWarnings("ResourceType")
 public abstract class BaseApiConnectedFragment extends Fragment {
 
-    private WeakReference<GoogleApiClient> mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
     private WeakReference<ApiConnectionObservable> mApiConnectionObservable;
     private ApiConnectionObserver mApiConnectionObserver;
 
@@ -29,14 +29,16 @@ public abstract class BaseApiConnectedFragment extends Fragment {
         mApiConnectionObserver = new ApiConnectionObserver() {
             @Override
             public void onConnected(GoogleApiClient googleApiClient, Bundle bundle) {
-                mGoogleApiClient = new WeakReference<>(googleApiClient);
+                mGoogleApiClient = googleApiClient;
                 BaseApiConnectedFragment.this.onConnected(bundle);
             }
+
             @Override
             public void onConnectionFailed(ConnectionResult connectionResult) {
-                mGoogleApiClient.clear();
+                mGoogleApiClient = null;
                 BaseApiConnectedFragment.this.onConnectionFailed(connectionResult);
             }
+
             @Override
             public void onConnectionSuspended(int i) {
             }
@@ -45,15 +47,13 @@ public abstract class BaseApiConnectedFragment extends Fragment {
         mApiConnectionObservable.get().registerConnectionObserver(mApiConnectionObserver);
         GoogleApiClient googleApiClient = ((MainActivity) context).getGoogleApiClient();
         if (googleApiClient != null) {
-            mGoogleApiClient = new WeakReference<>(googleApiClient);
+            mGoogleApiClient = googleApiClient;
         }
     }
 
     @Override
     public void onDetach() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.clear();
-        }
+        mGoogleApiClient = null;
         if (mApiConnectionObservable != null) {
             mApiConnectionObservable.get().unregisterConnectionObserver(mApiConnectionObserver);
             mApiConnectionObservable.clear();
@@ -62,11 +62,11 @@ public abstract class BaseApiConnectedFragment extends Fragment {
     }
 
     public GoogleApiClient getGoogleApiClient() {
-        return  mGoogleApiClient.get();
+        return mGoogleApiClient;
     }
 
     public boolean isGoogleApiConnected() {
-        return  (mGoogleApiClient != null && mGoogleApiClient.get() != null && mGoogleApiClient.get().isConnected());
+        return (mGoogleApiClient != null && mGoogleApiClient != null && mGoogleApiClient.isConnected());
     }
 
     public abstract void onConnected(Bundle bundle);

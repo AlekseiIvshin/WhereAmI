@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eficksan.whereami">
 
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -33,13 +34,14 @@
             android:name=".geo.FetchAddressIntentService"
             android:exported="false" />
         <service
-            android:name=".geofence.GeofenceTransitionsIntentService"
+            android:name=".geofence.GeofenceTransitionsIntentService"/>
+
+        <activity android:name=".maps.MapActivity"
+            android:icon="@drawable/google_maps"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBJJBLsZN5WmpczlcV0IyElmPnwV7y6QQA" />
-
-        <activity android:name=".maps.MapActivity"></activity>
+            android:value="AIzaSyCiYR7g89Xfq7o8mys2ND_BM8zAb17vYe4" />
     </application>
 
 </manifest>

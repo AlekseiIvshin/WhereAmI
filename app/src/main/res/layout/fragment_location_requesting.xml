@@ -15,6 +15,11 @@
         android:paddingTop="@dimen/default.spacing.vertical">
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/label_coordinates"
                 style="@style/AppTextAppearance"
@@ -26,6 +31,17 @@
                 android:paddingTop="@dimen/default.spacing.vertical"
                 tools:text="Earth Hell" />
 
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/button_maps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/google_maps" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/label_location"

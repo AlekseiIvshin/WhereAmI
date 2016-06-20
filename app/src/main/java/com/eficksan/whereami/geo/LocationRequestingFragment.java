@@ -1,19 +1,24 @@
-package com.eficksan.whereami.fragments;
+package com.eficksan.whereami.geo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eficksan.whereami.App;
+import com.eficksan.whereami.MainActivity;
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.geo.Constants;
-import com.eficksan.whereami.geo.FetchAddressIntentService;
-import com.eficksan.whereami.googleapi.ApiConnectionObserver;
+import com.eficksan.whereami.fragments.BaseApiConnectedFragment;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -37,6 +40,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+
+import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
@@ -62,6 +67,7 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     private static final String KEY_REQUESTING_LOCATION_UPDATES = "REQUESTING_LOCATION_UPDATES";
     private static final String KEY_LAST_LOCATION = "KEY_LAST_LOCATION";
     private static final String KEY_LAST_LOCATION_ADDRESSES = "KEY_LAST_LOCATION_ADDRESSES";
+    private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 100;
 
     @Bind(R.id.label_location)
     TextView mLocationAddresses;
@@ -78,6 +84,7 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     private LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates = false;
 
+    private WeakReference<MainActivity> mMainActivity;
 
     @SuppressLint("ParcelCreator")
     private class AddressResultReceiver extends ResultReceiver {
@@ -109,6 +116,12 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
 
     public static LocationRequestingFragment newInstance() {
         return new LocationRequestingFragment();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mMainActivity = new WeakReference<>((MainActivity) context);
     }
 
     @Override
@@ -166,15 +179,31 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
         super.onStop();
     }
 
+    @Override
+    public void onDetach() {
+        if (mMainActivity.get() != null) {
+            mMainActivity.clear();
+        }
+        super.onDetach();
+    }
+
     @OnClick(R.id.request_location)
     public void handleRequestLocation() {
-        Log.v(TAG, "Handle location request");
-        if (!mRequestingLocationUpdates) {
-            mRequestingLocationUpdates = true;
-            startLocationRequest();
+        int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        if (PackageManager.PERMISSION_GRANTED == permissionCheck) {
+            Log.v(TAG, "Handle location request");
+            if (!mRequestingLocationUpdates) {
+                mRequestingLocationUpdates = true;
+                startLocationRequest();
+            } else {
+                mRequestingLocationUpdates = false;
+                stopLocationRequest();
+            }
         } else {
-            mRequestingLocationUpdates = false;
-            stopLocationRequest();
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
         }
     }
 
@@ -216,6 +245,13 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
                 // to fix the settings so we won't show the dialog.
                 Toast.makeText(getActivity(), R.string.settings_change_unavailable, Toast.LENGTH_SHORT).show();
                 break;
+        }
+    }
+
+    @OnClick(R.id.button_maps)
+    public void handleShowMapClick() {
+        if (mMainActivity.get() != null) {
+            mMainActivity.get().showMap(new Bundle());
         }
     }
 
@@ -314,6 +350,20 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getActivity(), R.string.permission_granted_try_again, Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Toast.makeText(getActivity(), R.string.permission_was_not_granted, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
 
     @Override
     public void onConnected(Bundle bundle) {

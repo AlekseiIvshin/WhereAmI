@@ -2,7 +2,7 @@ package com.eficksan.whereami.ioc;
 
 import android.content.Context;
 
-import com.eficksan.whereami.fragments.LocationRequestingFragment;
+import com.eficksan.whereami.geo.LocationRequestingFragment;
 import com.eficksan.whereami.ioc.modules.ServicesModule;
 
 import javax.inject.Singleton;

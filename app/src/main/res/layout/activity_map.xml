@@ -10,8 +10,18 @@
     tools:context="com.eficksan.whereami.maps.MapActivity">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        android:name="com.google.android.gms.maps.MapFragment"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        map:cameraTilt="30"
+        map:cameraZoom="13"
+        map:mapType="normal"
+        map:uiCompass="false"
+        map:uiRotateGestures="true"
+        map:uiScrollGestures="false"
+        map:uiTiltGestures="true"
+        map:uiZoomControls="false"
+        map:uiZoomGestures="true" />
 </LinearLayout>
