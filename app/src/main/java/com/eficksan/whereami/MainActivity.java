@@ -9,10 +9,9 @@ import android.support.v7.widget.Toolbar;
 import com.eficksan.whereami.fragments.SplashFragment;
 import com.eficksan.whereami.geo.LocationRequestingFragment;
 import com.eficksan.whereami.googleapi.GoogleApiConnectActivity;
-import com.eficksan.whereami.maps.MapActivity;
+import com.eficksan.whereami.maps.MapsActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends GoogleApiConnectActivity {
@@ -69,7 +68,7 @@ public class MainActivity extends GoogleApiConnectActivity {
     }
 
     public void showMap(Bundle args) {
-        Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
         intent.putExtras(args);
         startActivity(intent);
     }
