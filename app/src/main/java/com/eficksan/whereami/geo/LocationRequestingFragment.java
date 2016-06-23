@@ -27,9 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eficksan.whereami.App;
-import com.eficksan.whereami.MainActivity;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.fragments.BaseApiConnectedFragment;
+import com.eficksan.whereami.routing.Router;
+import com.eficksan.whereami.routing.Routing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -84,7 +85,8 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     private LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates = false;
 
-    private WeakReference<MainActivity> mMainActivity;
+    private WeakReference<Router> mRouter;
+    private boolean mIsFragmentAttached;
 
     @SuppressLint("ParcelCreator")
     private class AddressResultReceiver extends ResultReceiver {
@@ -121,7 +123,12 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mMainActivity = new WeakReference<>((MainActivity) context);
+        mIsFragmentAttached = true;
+        if (context instanceof Router) {
+            mRouter = new WeakReference<>((Router) context);
+        } else {
+            throw new RuntimeException("Wrong type of conext. Expected " + Router.class.getName());
+        }
     }
 
     @Override
@@ -181,9 +188,10 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
 
     @Override
     public void onDetach() {
-        if (mMainActivity.get() != null) {
-            mMainActivity.clear();
+        if (mRouter.get() != null) {
+            mRouter.clear();
         }
+        mIsFragmentAttached = false;
         super.onDetach();
     }
 
@@ -250,8 +258,16 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
 
     @OnClick(R.id.button_maps)
     public void handleShowMapClick() {
-        if (mMainActivity.get() != null) {
-            mMainActivity.get().showMap(new Bundle());
+        if (mLastLocation == null) {
+            Toast.makeText(getActivity(), R.string.location_not_available, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mRouter.get() != null) {
+            Bundle args = new Bundle();
+            args.putParcelable(Constants.EXTRA_LOCATION_DATA, mLastLocation);
+            mRouter.get().showScreen(Routing.MAP_SCREEN, args);
+        } else {
+            Toast.makeText(getActivity(), R.string.api_connection_lost, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -302,17 +318,19 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     }
 
     private void updateUI() {
-        if (mLastLocation != null) {
-            mLocationCoordinates.setText(getString(R.string.label_coordinates, mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-        } else {
-            mLocationCoordinates.setText(R.string.location_not_available);
-        }
-        mLocationAddresses.setText(mLastLocationAddresses);
+        if (mIsFragmentAttached) {
+            if (mLastLocation != null) {
+                mLocationCoordinates.setText(getString(R.string.label_coordinates, mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+            } else {
+                mLocationCoordinates.setText(R.string.location_not_available);
+            }
+            mLocationAddresses.setText(mLastLocationAddresses);
 
-        if (mRequestingLocationUpdates) {
-            mRequestLocation.setImageResource(R.drawable.map_marker_off);
-        } else {
-            mRequestLocation.setImageResource(R.drawable.map_marker);
+            if (mRequestingLocationUpdates) {
+                mRequestLocation.setImageResource(R.drawable.map_marker_off);
+            } else {
+                mRequestLocation.setImageResource(R.drawable.map_marker);
+            }
         }
     }
 

@@ -1,20 +1,24 @@
 package com.eficksan.whereami;
 
-import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 
 import com.eficksan.whereami.fragments.SplashFragment;
+import com.eficksan.whereami.geo.Constants;
 import com.eficksan.whereami.geo.LocationRequestingFragment;
+import com.eficksan.whereami.geofence.GeofenceFragment;
 import com.eficksan.whereami.googleapi.GoogleApiConnectActivity;
-import com.eficksan.whereami.maps.MapsActivity;
+import com.eficksan.whereami.maps.MapsFragment;
+import com.eficksan.whereami.routing.Router;
+import com.eficksan.whereami.routing.Routing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.location.LocationServices;
 
-public class MainActivity extends GoogleApiConnectActivity {
+public class MainActivity extends GoogleApiConnectActivity implements Router {
 
     private boolean isRestored = false;
 
@@ -67,10 +71,27 @@ public class MainActivity extends GoogleApiConnectActivity {
         replaceFragment(SplashFragment.newInstance(), SplashFragment.TAG, false);
     }
 
-    public void showMap(Bundle args) {
-        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-        intent.putExtras(args);
-        startActivity(intent);
-    }
+    @Override
+    public void showScreen(int screenId, Bundle args) {
+        switch (screenId) {
+            case Routing.MAP_SCREEN: {
+                Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
+                replaceFragment(MapsFragment.newInstance(location), MapsFragment.TAG, false);
+                break;
+            }
+            case Routing.GEOFENCES_SCREEN: {
+                Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
+                replaceFragment(GeofenceFragment.newInstance(location), GeofenceFragment.TAG, false);
+                break;
+            }
+            case Routing.SPLASH_SCREEN:
+                showSplash();
+                break;
+            case Routing.LOCATION_SCREEN:
+            default:
+                replaceFragment(LocationRequestingFragment.newInstance(), LocationRequestingFragment.TAG, false);
+                break;
 
+        }
+    }
 }
