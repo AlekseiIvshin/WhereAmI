@@ -22,4 +22,7 @@
     <string name="title_activity_maps">Map</string>
     <string name="api_connection_lost">Google API connection lost</string>
     <string name="last_knows_location">Last known location</string>
+    <string name="toggle_location_requesting">Request current location</string>
+    <string name="error.location_required">Sorry, location required for messaging</string>
+    <string name="hint_message">Enter message</string>
 </resources>

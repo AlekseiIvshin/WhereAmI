@@ -5,43 +5,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:paddingBottom="@dimen/default.spacing.vertical"
         android:paddingLeft="@dimen/default.spacing.horizontal"
         android:paddingRight="@dimen/default.spacing.horizontal"
         android:paddingTop="@dimen/default.spacing.vertical">
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/label_location_requesting"
+            android:layout_width="wrap_content"
+            style="@style/AppTextAppearance"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="@string/toggle_location_requesting"/>
 
-            <TextView
-                android:id="@+id/label_coordinates"
-                style="@style/AppTextAppearance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/default.spacing.vertical"
-                android:paddingLeft="@dimen/default.spacing.horizontal"
-                android:paddingRight="@dimen/default.spacing.horizontal"
-                android:paddingTop="@dimen/default.spacing.vertical"
-                tools:text="Earth Hell" />
+        <Switch
+            android:id="@+id/switch_request_location"
+            android:layout_width="wrap_content"
+            android:layout_alignLeft="@id/label_location_requesting"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
 
-            <ImageButton
-                android:id="@+id/button_maps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/google_maps" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/label_coordinates"
+            style="@style/AppTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/default.spacing.vertical"
+            android:paddingLeft="@dimen/default.spacing.horizontal"
+            android:paddingRight="@dimen/default.spacing.horizontal"
+            android:paddingTop="@dimen/default.spacing.vertical"
+            android:layout_below="@id/label_location_requesting"
+            tools:text="50 x 50" />
+
 
         <TextView
             android:id="@+id/label_location"
@@ -52,17 +50,28 @@
             android:paddingLeft="@dimen/default.spacing.horizontal"
             android:paddingRight="@dimen/default.spacing.horizontal"
             android:paddingTop="@dimen/default.spacing.vertical"
+            android:layout_below="@id/label_coordinates"
             tools:text="Earth Hell" />
-    </LinearLayout>
+
+
+        <ImageButton
+            android:id="@+id/button_maps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignRight="@id/label_coordinates"
+            android:layout_alignTop="@id/label_coordinates"
+            android:src="@drawable/google_maps" />
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/request_location"
+        android:id="@+id/create_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/default.spacing.horizontal"
         android:elevation="@dimen/fab.elevation"
-        android:src="@drawable/map_marker"
+        android:src="@drawable/message_text"
         app:borderWidth="0dp"
         app:fabSize="normal" />
 </android.support.design.widget.CoordinatorLayout>

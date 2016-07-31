@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,8 +75,8 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     TextView mLocationAddresses;
     @Bind(R.id.label_coordinates)
     TextView mLocationCoordinates;
-    @Bind(R.id.request_location)
-    FloatingActionButton mRequestLocation;
+    @Bind(R.id.switch_request_location)
+    Switch mSwitchRequestLocation;
 
     @Inject
     LocationManager locationManager;
@@ -145,6 +146,7 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_location_requesting, container, false);
         ButterKnife.bind(this, rootView);
+        mSwitchRequestLocation.setChecked(mRequestingLocationUpdates);
         return rootView;
     }
 
@@ -195,24 +197,39 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
         super.onDetach();
     }
 
-    @OnClick(R.id.request_location)
+    @OnClick(R.id.switch_request_location)
     public void handleRequestLocation() {
-        int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        if (PackageManager.PERMISSION_GRANTED == permissionCheck) {
-            Log.v(TAG, "Handle location request");
-            if (!mRequestingLocationUpdates) {
-                mRequestingLocationUpdates = true;
-                startLocationRequest();
+        if (mSwitchRequestLocation.isChecked()) {
+            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+            if (PackageManager.PERMISSION_GRANTED == permissionCheck) {
+                Log.v(TAG, "Handle location request");
+                if (!mRequestingLocationUpdates) {
+                    mRequestingLocationUpdates = true;
+                    startLocationRequest();
+                } else {
+                    mRequestingLocationUpdates = false;
+                    stopLocationRequest();
+                }
             } else {
-                mRequestingLocationUpdates = false;
-                stopLocationRequest();
+                mSwitchRequestLocation.setChecked(false);
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
             }
         } else {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+            mRequestingLocationUpdates = false;
+            stopLocationRequest();
         }
+    }
+    @OnClick(R.id.create_message)
+    public void handleCreateMessage() {
+       if (mLastLocation == null) {
+           Toast.makeText(getActivity(), R.string.error_location_required, Toast.LENGTH_SHORT).show();
+       } else {
+           //TODO: create message and sent to server
+           Log.v(TAG, "Message creation request");
+       }
     }
 
     @Override
@@ -325,12 +342,6 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
                 mLocationCoordinates.setText(R.string.location_not_available);
             }
             mLocationAddresses.setText(mLastLocationAddresses);
-
-            if (mRequestingLocationUpdates) {
-                mRequestLocation.setImageResource(R.drawable.map_marker_off);
-            } else {
-                mRequestLocation.setImageResource(R.drawable.map_marker);
-            }
         }
     }
 
