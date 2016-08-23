@@ -9,7 +9,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.eficksan.whereami.MainActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.Api;
@@ -156,7 +155,7 @@ public abstract class GoogleApiConnectActivity extends AppCompatActivity
 
         @Override
         public void onDismiss(DialogInterface dialog) {
-            ((MainActivity) getActivity()).onDialogDismissed();
+//            ((MainActivity) getActivity()).onDialogDismissed();
         }
     }
 

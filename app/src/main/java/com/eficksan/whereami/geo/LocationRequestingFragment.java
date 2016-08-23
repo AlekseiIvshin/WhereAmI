@@ -16,7 +16,6 @@ import android.os.Looper;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -27,11 +26,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.fragments.BaseApiConnectedFragment;
 import com.eficksan.whereami.routing.Router;
-import com.eficksan.whereami.routing.Routing;
+import com.eficksan.whereami.routing.Screens;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -78,7 +76,6 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     @Bind(R.id.switch_request_location)
     Switch mSwitchRequestLocation;
 
-    @Inject
     LocationManager locationManager;
 
     private Location mLastLocation;
@@ -135,7 +132,6 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((App) getActivity().getApplication()).getObjectGraph().inject(this);
         restoreLocationFromBundle(savedInstanceState);
         createLocationRequest();
         requestLastLocation();
@@ -282,7 +278,7 @@ public class LocationRequestingFragment extends BaseApiConnectedFragment
         if (mRouter.get() != null) {
             Bundle args = new Bundle();
             args.putParcelable(Constants.EXTRA_LOCATION_DATA, mLastLocation);
-            mRouter.get().showScreen(Routing.MAP_SCREEN, args);
+            mRouter.get().showScreen(Screens.MAP_SCREEN, args);
         } else {
             Toast.makeText(getActivity(), R.string.api_connection_lost, Toast.LENGTH_SHORT).show();
         }

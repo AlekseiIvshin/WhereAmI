@@ -2,13 +2,11 @@ package com.eficksan.whereami.messaging;
 
 import android.content.Context;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.os.ResultReceiver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +15,7 @@ import android.widget.EditText;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.geo.Constants;
 import com.eficksan.whereami.routing.Router;
-import com.eficksan.whereami.routing.Routing;
-
-import java.lang.ref.WeakReference;
+import com.eficksan.whereami.routing.Screens;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -99,21 +95,21 @@ public class MessageFragment extends Fragment {
             WAIMessagingService.createMessage(getActivity(), new LocationMessage(mMessageLocation, message));
         }
     }
-
-    @OnTextChanged(R.id.input_message)
-    public void handleMessageTextChanged(EditText messageView) {
-        if (messageView.getText().length() > 0 ) {
-            mCreateMessage.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-        } else {
-            mCreateMessage.setBackgroundColor(getResources().getColor(R.color.colorAccent_inactive));
-        }
-    }
+//
+//    @OnTextChanged(R.id.input_message)
+//    public void handleMessageTextChanged(EditText messageView) {
+//        if (messageView.getText().length() > 0 ) {
+//            mCreateMessage.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+//        } else {
+//            mCreateMessage.setBackgroundColor(getResources().getColor(R.color.colorAccent_inactive));
+//        }
+//    }
 
     private void handleMessageCreated() {
         if (mRouter != null) {
             Bundle args = new Bundle();
             args.putParcelable(Constants.EXTRA_LOCATION_DATA, mMessageLocation);
-            mRouter.showScreen(Routing.MAP_SCREEN, args);
+            mRouter.showScreen(Screens.MAP_SCREEN, args);
         }
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import com.eficksan.whereami.MainActivity;
 import com.eficksan.whereami.googleapi.ApiConnectionObservable;
 import com.eficksan.whereami.googleapi.ApiConnectionObserver;
 import com.google.android.gms.common.ConnectionResult;
@@ -43,12 +42,12 @@ public abstract class BaseApiConnectedFragment extends Fragment {
             public void onConnectionSuspended(int i) {
             }
         };
-        mApiConnectionObservable = new WeakReference<ApiConnectionObservable>((MainActivity) context);
-        mApiConnectionObservable.get().registerConnectionObserver(mApiConnectionObserver);
-        GoogleApiClient googleApiClient = ((MainActivity) context).getGoogleApiClient();
-        if (googleApiClient != null) {
-            mGoogleApiClient = googleApiClient;
-        }
+//        mApiConnectionObservable = new WeakReference<ApiConnectionObservable>((MainActivity) context);
+//        mApiConnectionObservable.get().registerConnectionObserver(mApiConnectionObserver);
+//        GoogleApiClient googleApiClient = ((MainActivity) context).getGoogleApiClient();
+//        if (googleApiClient != null) {
+//            mGoogleApiClient = googleApiClient;
+//        }
     }
 
     @Override

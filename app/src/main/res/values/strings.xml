@@ -25,4 +25,6 @@
     <string name="toggle_location_requesting">Request current location</string>
     <string name="error.location_required">Sorry, location required for messaging</string>
     <string name="hint_message">Enter message</string>
+    <string name="notification.title">Where Am I?!</string>
+    <string name="notification.text">Location is tracked. You are tracked...</string>
 </resources>

@@ -12,7 +12,6 @@
         android:required="true" />
 
     <application
-        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -25,7 +24,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".presentation.MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,7 +40,21 @@
         <service android:name=".geofence.GeofenceTransitionsIntentService" />
         <service
             android:name=".messaging.WAIMessagingService"
-            android:exported="false"></service>
+            android:exported="false" />
+        <service
+            android:name=".data.location.WhereAmILocationService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name=".data.location.BootCompletedReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -8,5 +8,8 @@ import android.os.Bundle;
  */
 public interface Router {
 
-    void showScreen(int screenId, Bundle args);
+    void showScreen(int key, Bundle args);
+
+    void closeScreen(int key);
+
 }
