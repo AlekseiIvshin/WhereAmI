@@ -7,10 +7,15 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -33,10 +38,61 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class WhereAmILocationService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, LocationDataSource {
     private static final String TAG = WhereAmILocationService.class.getSimpleName();
+    private static final String KEY_LOCATION = "KEY_ADDRESSES";
+    public static final String KEY_ADDRESSES = "KEY_ADDRESSES";
+
+    private HandlerThread mComputingThread = new HandlerThread("LocationComputingThread");
+    private Handler mUiHandler;
+    private Handler mComputingHandler;
+
+    private Handler.Callback callback = new Handler.Callback() {
+
+        @Override
+        public boolean handleMessage(Message message) {
+            if (message.what == 0) {
+                Location location = message.getData().getParcelable(KEY_LOCATION);
+                if (location== null) {
+                    return true;
+                }
+                List<Address> addressList = null;
+                try {
+                    addressList = mGeocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                } catch (IOException e) {
+                    //TODO: notify about error
+//            errorMessage = getString(R.string.service_not_available);
+                    Log.e(TAG, e.getMessage(), e);
+                } catch (IllegalArgumentException e) {
+                    //TODO: notify about error
+//            errorMessage = getString(R.string.wrong_lat_lon_used);
+                    Log.e(TAG, e.getMessage() + ". Location: " + location, e);
+                }
+                if (addressList != null && !addressList.isEmpty()) {
+                    ArrayList<String> addressFragments = new ArrayList<>();
+                    Address address = addressList.get(0);
+                    for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+                        addressFragments.add(address.getAddressLine(i));
+                    }
+                    mAddresses = addressFragments;
+                    Message nextMessage = new Message();
+                    message.what = 1;
+                    Bundle data = new Bundle();
+                    data.putStringArrayList(KEY_ADDRESSES, addressFragments);
+                    message.setData(data);
+                    mUiHandler.sendMessage(nextMessage);
+                }
+            } else {
+                mAddresses = message.getData().getStringArrayList(KEY_ADDRESSES);
+            }
+            return true;
+        }
+    };
 
     private static final int NOTIFICATION_ID = 42;
 
@@ -49,9 +105,10 @@ public class WhereAmILocationService extends Service implements LocationListener
     private static final String ACTION_STOP_TRACK_LOCATION = "ACTION_STOP_TRACK_LOCATION";
 
     private GoogleApiClient mGoogleApiClient;
+    private Geocoder mGeocoder;
     private boolean mIsApiClientConnected = false;
     private Location mLastLocation;
-    private List<String> mAddresses;
+    private ArrayList<String> mAddresses;
     private LocationRequest mLocationRequest;
     private final LocalBinder binder = new LocalBinder();
 
@@ -121,11 +178,16 @@ public class WhereAmILocationService extends Service implements LocationListener
     @Override
     public void onCreate() {
         super.onCreate();
+        mGeocoder = new Geocoder(this, Locale.getDefault());
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)
                 .addOnConnectionFailedListener(this).build();
         mGoogleApiClient.connect();
+
+        mUiHandler = new Handler(callback);
+        mComputingThread.start();
+        mComputingHandler = new Handler(mComputingThread.getLooper(), callback);
     }
 
     @Override
@@ -137,6 +199,8 @@ public class WhereAmILocationService extends Service implements LocationListener
 
     @Override
     public void onDestroy() {
+        mComputingHandler.removeCallbacksAndMessages(null);
+        mUiHandler.removeCallbacksAndMessages(null);
         mGoogleApiClient.disconnect();
         mGoogleApiClient = null;
         super.onDestroy();
@@ -154,6 +218,8 @@ public class WhereAmILocationService extends Service implements LocationListener
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+
+        updateAddresses();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);
@@ -212,14 +278,15 @@ public class WhereAmILocationService extends Service implements LocationListener
     public void onLocationChanged(Location location) {
         Log.v(TAG, String.format("Location changed: %1$.4f x %2$.4f", location.getLatitude(), location.getLongitude()));
         mLastLocation = location;
+        updateAddresses();
 
-        //TODO: Get address in this service
+
         //TODO: Use best practices for best location
     }
 
     private void handleCommand(Intent intent) {
         final String action = intent.getAction();
-        if (action!= null) {
+        if (action != null) {
             switch (action) {
                 case ACTION_START_FOREGROUND:
                     startForegroundWAI();
@@ -290,6 +357,17 @@ public class WhereAmILocationService extends Service implements LocationListener
     public class LocalBinder extends Binder {
         public LocationDataSource getDataSource() {
             return WhereAmILocationService.this;
+        }
+    }
+
+    public void updateAddresses() {
+        if (mLastLocation != null) {
+            Message message = new Message();
+            message.what = 0;
+            Bundle data = new Bundle();
+            data.putParcelable(KEY_LOCATION, mLastLocation);
+            message.setData(data);
+            mComputingHandler.sendMessage(message);
         }
     }
 }
