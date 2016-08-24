@@ -4,8 +4,7 @@ import android.view.View;
 
 import com.eficksan.whereami.data.location.WaiEvent;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
-import com.eficksan.whereami.domain.location.LocationServiceInteractor;
-import com.eficksan.whereami.presentation.location.WaiView;
+import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.routing.Router;
 
 import rx.Subscriber;
@@ -19,15 +18,15 @@ public class WaiPresenter {
     private Router mRouter;
     private WaiView mView;
     private ListenLocationInteractor listenLocationInteractor;
-    private LocationServiceInteractor locationServiceInteractor;
+    private ForegroundServiceInteractor foregroundServiceInteractor;
 
-    public void onStart(Router router, WaiView view, ListenLocationInteractor listenLocationInteractor, LocationServiceInteractor locationServiceInteractor) {
+    public void onStart(Router router, WaiView view, ListenLocationInteractor listenLocationInteractor, ForegroundServiceInteractor foregroundServiceInteractor) {
         mRouter = router;
         mView = view;
         this.listenLocationInteractor = listenLocationInteractor;
-        this.locationServiceInteractor = locationServiceInteractor;
+        this.foregroundServiceInteractor = foregroundServiceInteractor;
 
-        locationServiceInteractor.stopForeground();
+        foregroundServiceInteractor.stopForeground();
 
         handleSwitchLocationListening(mView.viewHolder.switchRequestLocation.isChecked());
 
@@ -35,7 +34,7 @@ public class WaiPresenter {
     }
 
     public void onStop() {
-        locationServiceInteractor.startForeground();
+        foregroundServiceInteractor.startForeground();
         listenLocationInteractor.unsubscribe();
     }
 

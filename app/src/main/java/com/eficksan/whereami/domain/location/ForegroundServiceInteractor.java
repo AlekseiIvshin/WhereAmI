@@ -12,10 +12,10 @@ import java.lang.ref.WeakReference;
  * Created by Aleksei Ivshin
  * on 23.08.2016.
  */
-public class LocationServiceInteractor {
+public class ForegroundServiceInteractor {
     private final WeakReference<Activity> refActivityContext;
 
-    public LocationServiceInteractor(Activity activity) {
+    public ForegroundServiceInteractor(Activity activity) {
         this.refActivityContext = new WeakReference<>(activity);
     }
 
@@ -25,7 +25,7 @@ public class LocationServiceInteractor {
     public void startForeground(){
         Activity activity = refActivityContext.get();
         if(activity != null) {
-            WhereAmILocationService.startForeground(activity);
+            activity.startService(WhereAmILocationService.startForeground(activity));
         }
     }
 
@@ -35,7 +35,7 @@ public class LocationServiceInteractor {
     public void stopForeground() {
         Activity activity = refActivityContext.get();
         if(activity != null) {
-            WhereAmILocationService.stopForeground(activity);
+            activity.startService(WhereAmILocationService.stopForeground(activity));
         }
     }
 }
