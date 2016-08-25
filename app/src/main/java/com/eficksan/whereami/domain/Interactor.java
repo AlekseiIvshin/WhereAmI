@@ -9,7 +9,7 @@ import rx.Subscription;
  * Created by Aleksei Ivshin
  * on 22.08.2016.
  */
-public abstract class Interactor<ResultType, ParameterType> {
+public abstract class Interactor<ParameterType, ResultType> {
 
     private Subscription subscription;
     protected final Scheduler jobScheduler;

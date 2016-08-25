@@ -2,7 +2,6 @@ package com.eficksan.whereami.presentation.location;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,7 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
-import com.eficksan.whereami.routing.Router;
+import com.eficksan.whereami.presentation.routing.Router;
 
 /**
  * Fragment shows current user location.

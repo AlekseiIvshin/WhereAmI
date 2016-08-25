@@ -1,4 +1,4 @@
-package com.eficksan.whereami.messaging;
+package com.eficksan.whereami.domain.messaging;
 
 import android.location.Location;
 import android.os.Parcel;

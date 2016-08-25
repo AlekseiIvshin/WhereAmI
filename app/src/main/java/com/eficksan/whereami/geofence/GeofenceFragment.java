@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.fragments.BaseApiConnectedFragment;
-import com.eficksan.whereami.geo.Constants;
+import com.eficksan.whereami.domain.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;

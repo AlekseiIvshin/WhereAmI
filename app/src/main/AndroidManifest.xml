@@ -34,12 +34,9 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".geo.FetchAddressIntentService"
-            android:exported="false" />
         <service android:name=".geofence.GeofenceTransitionsIntentService" />
         <service
-            android:name=".messaging.WAIMessagingService"
+            android:name=".data.messaging.MessagingService"
             android:exported="false" />
         <service
             android:name=".data.location.WhereAmILocationService"

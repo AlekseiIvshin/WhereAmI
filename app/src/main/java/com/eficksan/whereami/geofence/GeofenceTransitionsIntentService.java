@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.geo.Constants;
+import com.eficksan.whereami.domain.Constants;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 

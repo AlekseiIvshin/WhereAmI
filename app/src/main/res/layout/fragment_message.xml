@@ -13,7 +13,7 @@
         android:paddingLeft="@dimen/default.spacing.horizontal"
         android:paddingRight="@dimen/default.spacing.horizontal"
         android:paddingTop="@dimen/default.spacing.vertical"
-        tools:context="com.eficksan.whereami.messaging.MessageFragment">
+        tools:context=".presentation.messaging.MessageFragment">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_message"

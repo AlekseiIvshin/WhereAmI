@@ -1,4 +1,4 @@
-package com.eficksan.whereami.routing;
+package com.eficksan.whereami.presentation.routing;
 
 import android.os.Bundle;
 

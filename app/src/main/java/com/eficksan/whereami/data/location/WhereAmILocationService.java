@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class WhereAmILocationService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, LocationDataSource {
+public class WhereAmILocationService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, LocationRepository {
     private static final String TAG = WhereAmILocationService.class.getSimpleName();
     private static final String KEY_LOCATION = "KEY_ADDRESSES";
     public static final String KEY_ADDRESSES = "KEY_ADDRESSES";
@@ -355,7 +355,7 @@ public class WhereAmILocationService extends Service implements LocationListener
     }
 
     public class LocalBinder extends Binder {
-        public LocationDataSource getDataSource() {
+        public LocationRepository getDataSource() {
             return WhereAmILocationService.this;
         }
     }

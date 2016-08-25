@@ -61,4 +61,12 @@ public class WaiView {
     public void onAddressChanged(List<String> address) {
         viewHolder.locationAddresses.setText(TextUtils.join(System.getProperty("line.separator"),address));
     }
+
+    public void disableMessageCreating() {
+        viewHolder.createMessage.setEnabled(false);
+    }
+
+    public void enableMessageCreating() {
+        viewHolder.createMessage.setEnabled(true);
+    }
 }

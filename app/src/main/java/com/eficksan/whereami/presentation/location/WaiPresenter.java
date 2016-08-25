@@ -1,13 +1,19 @@
 package com.eficksan.whereami.presentation.location;
 
+import android.location.Location;
+import android.os.Bundle;
 import android.view.View;
 
 import com.eficksan.whereami.data.location.WaiEvent;
-import com.eficksan.whereami.domain.location.ListenLocationInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
-import com.eficksan.whereami.routing.Router;
+import com.eficksan.whereami.domain.location.ListenLocationInteractor;
+import com.eficksan.whereami.domain.Constants;
+import com.eficksan.whereami.presentation.routing.Router;
+import com.eficksan.whereami.presentation.routing.Screens;
+import com.jakewharton.rxbinding.view.RxView;
 
 import rx.Subscriber;
+import rx.functions.Action1;
 
 /**
  * Created by Aleksei Ivshin
@@ -19,6 +25,8 @@ public class WaiPresenter {
     private WaiView mView;
     private ListenLocationInteractor listenLocationInteractor;
     private ForegroundServiceInteractor foregroundServiceInteractor;
+
+    private Location lastLocation = null;
 
     public void onStart(Router router, WaiView view, ListenLocationInteractor listenLocationInteractor, ForegroundServiceInteractor foregroundServiceInteractor) {
         mRouter = router;
@@ -48,6 +56,20 @@ public class WaiPresenter {
                 handleSwitchLocationListening(mView.viewHolder.switchRequestLocation.isChecked());
             }
         });
+
+        RxView.clicks(mView.viewHolder.createMessage)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        if (lastLocation != null) {
+                            Bundle args = new Bundle();
+                            args.putParcelable(Constants.EXTRA_LOCATION_DATA, lastLocation);
+                            mRouter.showScreen(Screens.MESSAGING_SCREEN, args);
+                        } else {
+                            //TODO: show error
+                        }
+                    }
+                });
     }
 
     /**
@@ -70,12 +92,20 @@ public class WaiPresenter {
 
                 @Override
                 public void onNext(WaiEvent waiEvent) {
+                    lastLocation = waiEvent.location;
                     mView.onLocationChanged(waiEvent.location);
                     mView.onAddressChanged(waiEvent.addresses);
+                    if (waiEvent.location == null) {
+                        mView.disableMessageCreating();
+                    } else {
+                        mView.enableMessageCreating();
+                    }
                 }
             });
         } else {
+            lastLocation = null;
             listenLocationInteractor.unsubscribe();
+            mView.disableMessageCreating();
         }
     }
 }

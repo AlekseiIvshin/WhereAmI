@@ -27,4 +27,9 @@
     <string name="hint_message">Enter message</string>
     <string name="notification.title">Where Am I?!</string>
     <string name="notification.text">Location is tracked. You are tracked...</string>
+    <string name="error.message_deliver">Message sending was failed</string>
+    <string name="error.unknown">Oops! Something went wrong...</string>
+    <string name="success.message_was_delivered">Yeah! Message was delivered!</string>
+    <string name="error.message_empty">Message should be not empty</string>
+    <string name="error.message_too_long">Message too long</string>
 </resources>

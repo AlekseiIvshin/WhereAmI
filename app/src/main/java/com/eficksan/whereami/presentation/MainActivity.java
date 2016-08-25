@@ -1,6 +1,5 @@
 package com.eficksan.whereami.presentation;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -18,15 +17,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.fragments.SplashFragment;
-import com.eficksan.whereami.geo.Constants;
+import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.geofence.GeofenceFragment;
-import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.maps.MapsFragment;
-import com.eficksan.whereami.routing.Router;
-import com.eficksan.whereami.routing.Screens;
+import com.eficksan.whereami.presentation.location.WhereAmIFragment;
+import com.eficksan.whereami.presentation.messaging.MessageFragment;
+import com.eficksan.whereami.presentation.routing.Router;
+import com.eficksan.whereami.presentation.routing.Screens;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationSettingsResult;
 
 /**
  * Main application activity.
@@ -54,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     /**
      * Creates pending intent for show location screen.
+     *
      * @param context some kind of context
      * @return pending intent
      */
@@ -66,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     /**
      * Creates pending intent for requesting permissions.
+     *
      * @param context some kind of context
      * @return pending intent
      */
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements Router {
                 // Show the dialog by calling startResolutionForResult(),
                 // and check the result in onActivityResult().
                 status.startResolutionForResult(
-                       this,
+                        this,
                         REQUEST_CHECK_SETTINGS);
             } catch (IntentSender.SendIntentException e) {
                 // Ignore the error.
@@ -139,10 +139,6 @@ public class MainActivity extends AppCompatActivity implements Router {
         transaction.commit();
     }
 
-    private void showSplash() {
-        replaceFragment(SplashFragment.newInstance(), SplashFragment.TAG, false);
-    }
-
     @Override
     public void showScreen(int key, Bundle args) {
         switch (key) {
@@ -156,9 +152,11 @@ public class MainActivity extends AppCompatActivity implements Router {
                 replaceFragment(GeofenceFragment.newInstance(location), GeofenceFragment.TAG, false);
                 break;
             }
-            case Screens.SPLASH_SCREEN:
-                showSplash();
+            case Screens.MESSAGING_SCREEN: {
+                Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
+                replaceFragment(MessageFragment.newInstance(location), MessageFragment.TAG, true);
                 break;
+            }
             case Screens.SCREEN_WHERE_AM_I:
             default:
                 replaceFragment(WhereAmIFragment.newInstance(), WhereAmIFragment.TAG, false);

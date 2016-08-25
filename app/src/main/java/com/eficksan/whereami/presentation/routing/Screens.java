@@ -1,4 +1,4 @@
-package com.eficksan.whereami.routing;
+package com.eficksan.whereami.presentation.routing;
 
 /**
  * Created by Aleksei Ivshin
@@ -9,4 +9,5 @@ public interface Screens {
     int MAP_SCREEN = 2;
     int GEOFENCES_SCREEN = 3;
     int SPLASH_SCREEN = 4;
+    int MESSAGING_SCREEN = 5;
 }
