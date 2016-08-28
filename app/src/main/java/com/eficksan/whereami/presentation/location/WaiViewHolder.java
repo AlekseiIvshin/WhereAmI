@@ -24,6 +24,8 @@ public class WaiViewHolder {
     public Switch switchRequestLocation;
     @Bind(R.id.create_message)
     public FloatingActionButton createMessage;
+    @Bind(R.id.location_history_last)
+    public TextView locationHistoryLast;
 
     public void takeView(View view) {
         ButterKnife.bind(this, view);

@@ -33,4 +33,5 @@
     <string name="error.message_empty">Message should be not empty</string>
     <string name="error.message_too_long">Message too long</string>
     <string name="location_request.in_progress">Requesting...</string>
+    <string name="location_history.label">Last saved location:</string>
 </resources>

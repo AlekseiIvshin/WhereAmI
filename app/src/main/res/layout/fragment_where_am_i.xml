@@ -40,7 +40,6 @@
             android:paddingTop="@dimen/default.spacing.vertical"
             tools:text="50 x 50" />
 
-
         <TextView
             android:id="@+id/label_location"
             style="@style/AppTextAppearance"
@@ -61,8 +60,28 @@
             android:layout_alignParentRight="true"
             android:layout_alignRight="@id/label_coordinates"
             android:layout_alignTop="@id/label_coordinates"
-            android:visibility="gone"
-            android:src="@drawable/google_maps" />
+            android:src="@drawable/google_maps"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/label_location_history"
+            style="@style/AppTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/label_location"
+            android:text="@string/location_history.label" />
+
+        <TextView
+            android:id="@+id/location_history_last"
+            style="@style/AppTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/label_location_history"
+            android:paddingBottom="@dimen/default.spacing.vertical"
+            android:paddingLeft="@dimen/default.spacing.horizontal"
+            android:paddingRight="@dimen/default.spacing.horizontal"
+            android:paddingTop="@dimen/default.spacing.vertical"
+            tools:text="50 x 50" />
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -74,7 +93,7 @@
         android:background="@drawable/message_fab"
         android:elevation="@dimen/fab.elevation"
         android:src="@drawable/message_text"
-        app:borderWidth="0dp"
         android:visibility="gone"
+        app:borderWidth="0dp"
         app:fabSize="normal" />
 </android.support.design.widget.CoordinatorLayout>

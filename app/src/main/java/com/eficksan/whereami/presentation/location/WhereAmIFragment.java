@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
+import com.eficksan.whereami.domain.location.LocationHistoryInteractor;
 import com.eficksan.whereami.presentation.routing.Router;
 
 /**
@@ -43,7 +44,7 @@ public class WhereAmIFragment extends Fragment {
 
         WaiView waiView = new WaiView(viewHolder, getActivity().getApplicationContext());
         waiPresenter = new WaiPresenter();
-        waiPresenter.onStart((Router) getActivity(), waiView, new ListenLocationInteractor(getActivity()), new ForegroundServiceInteractor(getActivity()));
+        waiPresenter.onStart((Router) getActivity(), waiView, new ListenLocationInteractor(getActivity()), new ForegroundServiceInteractor(getActivity()), new LocationHistoryInteractor(getActivity()));
     }
 
     @Override

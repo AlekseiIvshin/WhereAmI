@@ -2,7 +2,6 @@ package com.eficksan.whereami.presentation.location;
 
 import android.content.Context;
 import android.location.Location;
-import android.support.design.widget.CoordinatorLayout;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -74,5 +73,13 @@ public class WaiView {
 
     public void enableMessageCreating() {
         viewHolder.createMessage.setVisibility(View.VISIBLE);
+    }
+
+    public void onLocationHistoryLoaded(Location location) {
+        if (location != null) {
+            viewHolder.locationHistoryLast.setText(context.getString(R.string.label_coordinates, location.getLatitude(), location.getLongitude()));
+        } else {
+            viewHolder.locationHistoryLast.setText(R.string.location_not_available);
+        }
     }
 }

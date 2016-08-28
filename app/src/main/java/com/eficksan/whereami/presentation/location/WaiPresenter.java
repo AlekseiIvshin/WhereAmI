@@ -8,6 +8,7 @@ import com.eficksan.whereami.data.location.WaiEvent;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
 import com.eficksan.whereami.domain.Constants;
+import com.eficksan.whereami.domain.location.LocationHistoryInteractor;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
@@ -25,14 +26,21 @@ public class WaiPresenter {
     private WaiView mView;
     private ListenLocationInteractor listenLocationInteractor;
     private ForegroundServiceInteractor foregroundServiceInteractor;
+    private LocationHistoryInteractor locationHistoryInteractor;
 
     private Location lastLocation = null;
 
-    public void onStart(Router router, WaiView view, ListenLocationInteractor listenLocationInteractor, ForegroundServiceInteractor foregroundServiceInteractor) {
+    public void onStart(Router router, WaiView view,
+                        ListenLocationInteractor listenLocationInteractor,
+                        ForegroundServiceInteractor foregroundServiceInteractor,
+                        LocationHistoryInteractor locationHistoryInteractor) {
         mRouter = router;
         mView = view;
         this.listenLocationInteractor = listenLocationInteractor;
         this.foregroundServiceInteractor = foregroundServiceInteractor;
+        this.locationHistoryInteractor = locationHistoryInteractor;
+
+        this.locationHistoryInteractor.onStart();
 
         foregroundServiceInteractor.stopForeground();
 
@@ -44,6 +52,7 @@ public class WaiPresenter {
     public void onStop() {
         foregroundServiceInteractor.startForeground();
         listenLocationInteractor.unsubscribe();
+        this.locationHistoryInteractor.onStop();
     }
 
     /**
@@ -70,6 +79,13 @@ public class WaiPresenter {
                         }
                     }
                 });
+
+        this.locationHistoryInteractor.getLastLocation().subscribe(new Action1<Location>() {
+            @Override
+            public void call(Location location) {
+                mView.onLocationHistoryLoaded(location);
+            }
+        }).unsubscribe();
     }
 
     /**
@@ -102,6 +118,7 @@ public class WaiPresenter {
                     } else {
                         mView.enableMessageCreating();
                     }
+                    locationHistoryInteractor.addLocation(waiEvent.location);
                 }
             });
         } else {
