@@ -61,6 +61,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignRight="@id/label_coordinates"
             android:layout_alignTop="@id/label_coordinates"
+            android:visibility="gone"
             android:src="@drawable/google_maps" />
     </RelativeLayout>
 
@@ -70,8 +71,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/default.spacing.horizontal"
+        android:background="@drawable/message_fab"
         android:elevation="@dimen/fab.elevation"
         android:src="@drawable/message_text"
         app:borderWidth="0dp"
+        android:visibility="gone"
         app:fabSize="normal" />
 </android.support.design.widget.CoordinatorLayout>

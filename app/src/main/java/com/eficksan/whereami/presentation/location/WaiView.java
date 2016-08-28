@@ -2,7 +2,9 @@ package com.eficksan.whereami.presentation.location;
 
 import android.content.Context;
 import android.location.Location;
+import android.support.design.widget.CoordinatorLayout;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.eficksan.whereami.R;
 
@@ -31,7 +33,9 @@ public class WaiView {
      */
     public void onGeoDataTurnOn() {
         viewHolder.switchRequestLocation.setChecked(true);
-        viewHolder.createMessage.setEnabled(true);
+        viewHolder.locationCoordinates.setText(R.string.location_request_in_progress);
+        viewHolder.locationAddresses.setText("");
+        enableMessageCreating();
     }
 
     /**
@@ -39,7 +43,9 @@ public class WaiView {
      */
     public void onGeoDataTurnOff() {
         viewHolder.switchRequestLocation.setChecked(false);
-        viewHolder.createMessage.setEnabled(false);
+        viewHolder.locationCoordinates.setText("");
+        viewHolder.locationAddresses.setText("");
+        disableMessageCreating();
     }
 
     /**
@@ -63,10 +69,10 @@ public class WaiView {
     }
 
     public void disableMessageCreating() {
-        viewHolder.createMessage.setEnabled(false);
+        viewHolder.createMessage.setVisibility(View.GONE);
     }
 
     public void enableMessageCreating() {
-        viewHolder.createMessage.setEnabled(true);
+        viewHolder.createMessage.setVisibility(View.VISIBLE);
     }
 }

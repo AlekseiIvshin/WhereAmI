@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     public static PendingIntent showLocationScreen(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_SHOW_SCREEN);
-        intent.putExtra(EXTRA_SCREEN_KEY, Screens.SCREEN_WHERE_AM_I);
+        intent.putExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
         return PendingIntent.getActivities(context, ACTION_SHOW_LOCATION_SCREEN_CODE, new Intent[]{intent}, 0);
     }
 
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         setSupportActionBar(toolbar);
 
         if (savedInstanceState == null) {
-            int screenKey = getIntent().getIntExtra(EXTRA_SCREEN_KEY, Screens.SCREEN_WHERE_AM_I);
+            int screenKey = getIntent().getIntExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
             showScreen(screenKey, getIntent().getExtras());
         }
     }
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         super.onNewIntent(intent);
         String action = intent.getAction();
         if (ACTION_SHOW_SCREEN.equals(action)) {
-            int screenKey = intent.getIntExtra(EXTRA_SCREEN_KEY, Screens.SCREEN_WHERE_AM_I);
+            int screenKey = intent.getIntExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
             showScreen(screenKey, intent.getExtras());
         }
         if (ACTION_REQUEST_PERMISSIONS.equals(action)) {
@@ -139,9 +139,20 @@ public class MainActivity extends AppCompatActivity implements Router {
         transaction.commit();
     }
 
+    public void addFragment(Fragment fragment, String tag, boolean addToBackStack) {
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction();
+
+        transaction.add(R.id.fragment_container, fragment, tag);
+        if (addToBackStack) {
+            transaction.addToBackStack(tag);
+        }
+        transaction.commit();
+    }
+
     @Override
-    public void showScreen(int key, Bundle args) {
-        switch (key) {
+    public void showScreen(int nextScreenKey, Bundle args) {
+        switch (nextScreenKey) {
             case Screens.MAP_SCREEN: {
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
                 replaceFragment(MapsFragment.newInstance(location), MapsFragment.TAG, false);
@@ -154,10 +165,10 @@ public class MainActivity extends AppCompatActivity implements Router {
             }
             case Screens.MESSAGING_SCREEN: {
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
-                replaceFragment(MessageFragment.newInstance(location), MessageFragment.TAG, true);
+                addFragment(MessageFragment.newInstance(location), MessageFragment.TAG, true);
                 break;
             }
-            case Screens.SCREEN_WHERE_AM_I:
+            case Screens.LOCATION_SCREEN:
             default:
                 replaceFragment(WhereAmIFragment.newInstance(), WhereAmIFragment.TAG, false);
                 break;
@@ -168,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     @Override
     public void closeScreen(int key) {
         switch (key) {
-            case Screens.SCREEN_WHERE_AM_I:
+            case Screens.LOCATION_SCREEN:
                 getFragmentManager().popBackStack();
                 break;
         }

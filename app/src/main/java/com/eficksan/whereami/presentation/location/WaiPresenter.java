@@ -78,7 +78,9 @@ public class WaiPresenter {
      * @param isNeedToListenLocation
      */
     private void handleSwitchLocationListening(boolean isNeedToListenLocation) {
+        mView.disableMessageCreating();
         if (isNeedToListenLocation) {
+            mView.onGeoDataTurnOn();
             listenLocationInteractor.execute(30000l, new Subscriber<WaiEvent>() {
                 @Override
                 public void onCompleted() {
@@ -103,9 +105,9 @@ public class WaiPresenter {
                 }
             });
         } else {
+            mView.onGeoDataTurnOff();
             lastLocation = null;
             listenLocationInteractor.unsubscribe();
-            mView.disableMessageCreating();
         }
     }
 }
