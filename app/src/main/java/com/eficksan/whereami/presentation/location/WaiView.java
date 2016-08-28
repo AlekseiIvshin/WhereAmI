@@ -9,6 +9,8 @@ import com.eficksan.whereami.R;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * View part of location request flow.
  *
@@ -20,11 +22,12 @@ import java.util.List;
 public class WaiView {
 
     public final WaiViewHolder viewHolder;
-    private final Context context;
 
-    public WaiView(WaiViewHolder viewHolder, Context context) {
+    @Inject
+    Context context;
+
+    public WaiView(WaiViewHolder viewHolder) {
         this.viewHolder = viewHolder;
-        this.context = context;
     }
 
     /**
@@ -34,7 +37,6 @@ public class WaiView {
         viewHolder.switchRequestLocation.setChecked(true);
         viewHolder.locationCoordinates.setText(R.string.location_request_in_progress);
         viewHolder.locationAddresses.setText("");
-        enableMessageCreating();
     }
 
     /**

@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.geofence.GeofenceFragment;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ((App)getApplication()).plusActivityComponent(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -126,6 +128,12 @@ public class MainActivity extends AppCompatActivity implements Router {
                 // Ignore the error.
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        ((App)getApplication()).removeActivityComponent();
+        super.onDestroy();
     }
 
     public void replaceFragment(Fragment fragment, String tag, boolean addToBackStack) {

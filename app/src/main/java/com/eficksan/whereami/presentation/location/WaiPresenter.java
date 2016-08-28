@@ -5,15 +5,18 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.eficksan.whereami.data.location.WaiEvent;
+import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
-import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.LocationHistoryInteractor;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
 
+import javax.inject.Inject;
+
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action1;
 
 /**
@@ -22,25 +25,23 @@ import rx.functions.Action1;
  */
 public class WaiPresenter {
 
-    private Router mRouter;
     private WaiView mView;
-    private ListenLocationInteractor listenLocationInteractor;
-    private ForegroundServiceInteractor foregroundServiceInteractor;
-    private LocationHistoryInteractor locationHistoryInteractor;
+
+    @Inject
+    Router mRouter;
+    @Inject
+    ListenLocationInteractor listenLocationInteractor;
+    @Inject
+    ForegroundServiceInteractor foregroundServiceInteractor;
+    @Inject
+    LocationHistoryInteractor mLocationHistoryInteractor;
 
     private Location lastLocation = null;
+    private Subscription mCreateMessageListener;
+    private Subscription mLocationHistoryListener;
 
-    public void onStart(Router router, WaiView view,
-                        ListenLocationInteractor listenLocationInteractor,
-                        ForegroundServiceInteractor foregroundServiceInteractor,
-                        LocationHistoryInteractor locationHistoryInteractor) {
-        mRouter = router;
-        mView = view;
-        this.listenLocationInteractor = listenLocationInteractor;
-        this.foregroundServiceInteractor = foregroundServiceInteractor;
-        this.locationHistoryInteractor = locationHistoryInteractor;
-
-        this.locationHistoryInteractor.onStart();
+    public void onStart() {
+        this.mLocationHistoryInteractor.onStart();
 
         foregroundServiceInteractor.stopForeground();
 
@@ -50,13 +51,14 @@ public class WaiPresenter {
     }
 
     public void onStop() {
+        removeListeners();
         foregroundServiceInteractor.startForeground();
         listenLocationInteractor.unsubscribe();
-        this.locationHistoryInteractor.onStop();
+        this.mLocationHistoryInteractor.onStop();
     }
 
     /**
-     * Sets listeners on view events.
+     * Sets listeners on view events and other events.
      */
     private void setListeners() {
         mView.viewHolder.switchRequestLocation.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +68,7 @@ public class WaiPresenter {
             }
         });
 
-        RxView.clicks(mView.viewHolder.createMessage)
+        mCreateMessageListener = RxView.clicks(mView.viewHolder.createMessage)
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
@@ -80,12 +82,23 @@ public class WaiPresenter {
                     }
                 });
 
-        this.locationHistoryInteractor.getLastLocation().subscribe(new Action1<Location>() {
+        mLocationHistoryListener = mLocationHistoryInteractor.getLastLocation().subscribe(new Action1<Location>() {
             @Override
             public void call(Location location) {
                 mView.onLocationHistoryLoaded(location);
             }
-        }).unsubscribe();
+        });
+    }
+
+    /**
+     * Remove listeners.
+     */
+    private void removeListeners() {
+        mView.viewHolder.switchRequestLocation.setOnClickListener(null);
+        mCreateMessageListener.unsubscribe();
+        mCreateMessageListener = null;
+        mLocationHistoryListener.unsubscribe();
+        mLocationHistoryListener = null;
     }
 
     /**
@@ -118,7 +131,7 @@ public class WaiPresenter {
                     } else {
                         mView.enableMessageCreating();
                     }
-                    locationHistoryInteractor.addLocation(waiEvent.location);
+                    mLocationHistoryInteractor.addLocation(waiEvent.location);
                 }
             });
         } else {
@@ -126,5 +139,9 @@ public class WaiPresenter {
             lastLocation = null;
             listenLocationInteractor.unsubscribe();
         }
+    }
+
+    public void setView(WaiView view) {
+        this.mView = view;
     }
 }
