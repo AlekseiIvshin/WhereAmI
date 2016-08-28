@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements Router {
     private static final String ACTION_REQUEST_SETTINGS = MainActivity.class.getPackage().getName() + "/ACTION_REQUEST_SETTINGS";
 
     private static final String EXTRA_REQUESTED_PERMISSIONS = "EXTRA_REQUESTED_PERMISSIONS";
-    private static final String EXTRA_REQUEST_PERMISSION_PENDING_INTENT = "EXTRA_REQUEST_PERMISSION_PENDING_INTENT";
     private static final String EXTRA_SCREEN_KEY = "EXTRA_SCREEN_KEY";
     private static final String EXTRA_PENDING_INTENT = "EXTRA_PENDING_INTENT";
     private static final String EXTRA_SETTINGS_STATUS = "EXTRA_SETTINGS_STATUS";
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_PERMISSIONS);
         intent.putExtra(EXTRA_REQUESTED_PERMISSIONS, permissions);
-        intent.putExtra(EXTRA_REQUEST_PERMISSION_PENDING_INTENT, pendingIntent);
+        intent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
         return PendingIntent.getActivities(context, ACTION_REQUEST_PERMISSION_CODE, new Intent[]{intent}, 0);
     }
 
@@ -105,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent);
         String action = intent.getAction();
         if (ACTION_SHOW_SCREEN.equals(action)) {
             int screenKey = intent.getIntExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements Router {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, R.string.permission_granted_try_again, Toast.LENGTH_SHORT).show();
-                    PendingIntent pendingIntent = getIntent().getParcelableExtra(EXTRA_REQUEST_PERMISSION_PENDING_INTENT);
+                    PendingIntent pendingIntent = getIntent().getParcelableExtra(EXTRA_PENDING_INTENT);
                     if (pendingIntent != null) {
                         try {
                             pendingIntent.send();

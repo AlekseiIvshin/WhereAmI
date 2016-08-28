@@ -106,7 +106,7 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
         Log.v(TAG, "startLocationRequest");
         Activity activity = mRefActivityContext.get();
         if (activity != null) {
-            activity.bindService(WhereAmILocationService.startService(activity), mLocationServiceConnection, Context.BIND_AUTO_CREATE);
+            activity.bindService(WhereAmILocationService.startTrackLocation(activity), mLocationServiceConnection, Context.BIND_AUTO_CREATE);
         }
     }
 

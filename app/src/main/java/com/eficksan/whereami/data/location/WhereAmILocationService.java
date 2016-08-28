@@ -45,8 +45,10 @@ import java.util.Locale;
 
 public class WhereAmILocationService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, LocationRepository {
     private static final String TAG = WhereAmILocationService.class.getSimpleName();
-    private static final String KEY_LOCATION = "KEY_ADDRESSES";
+
+    public static final String KEY_LOCATION = "KEY_LOCATION";
     public static final String KEY_ADDRESSES = "KEY_ADDRESSES";
+
 
     private HandlerThread mComputingThread = new HandlerThread("LocationComputingThread");
     private Handler mUiHandler;
@@ -103,6 +105,7 @@ public class WhereAmILocationService extends Service implements LocationListener
     private static final String ACTION_STOP_FOREGROUND = "ACTION_STOP_FOREGROUND";
     private static final String ACTION_START_TRACK_LOCATION = "ACTION_START_TRACK_LOCATION";
     private static final String ACTION_STOP_TRACK_LOCATION = "ACTION_STOP_TRACK_LOCATION";
+    private static final String ACTION_LAST_LOCATION = "ACTION_LAST_LOCATION";
 
     private GoogleApiClient mGoogleApiClient;
     private Geocoder mGeocoder;
@@ -144,6 +147,30 @@ public class WhereAmILocationService extends Service implements LocationListener
      */
     public static Intent startService(Context context) {
         return new Intent(context, WhereAmILocationService.class);
+    }
+
+    /**
+     * Creates intent for commanding service to start request location.
+     *
+     * @param context some kind of context
+     * @return intent
+     */
+    public static Intent startTrackLocation(Context context) {
+        Intent intent = new Intent(context, WhereAmILocationService.class);
+        intent.setAction(ACTION_START_TRACK_LOCATION);
+        return intent;
+    }
+
+    /**
+     * Creates intent for commanding service to start request location.
+     *
+     * @param context some kind of context
+     * @return intent
+     */
+    public static Intent getLastLocation(Context context) {
+        Intent intent = new Intent(context, WhereAmILocationService.class);
+        intent.setAction(ACTION_LAST_LOCATION);
+        return intent;
     }
 
     /**
@@ -212,20 +239,7 @@ public class WhereAmILocationService extends Service implements LocationListener
         mIsApiClientConnected = true;
 
         mLocationRequest = createLocationRequest();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions();
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-
-        updateAddresses();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest);
-        PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
-        locationSettingsResultPendingResult.setResultCallback(this);
+        getLastLocationRequest();
     }
 
     @Override
@@ -249,7 +263,7 @@ public class WhereAmILocationService extends Service implements LocationListener
                 Log.v(TAG, "Location settings are satisfied");
                 Log.v(TAG, "Location requested: " + mLocationRequest.toString());
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions();
+                    requestPermissions(startTrackLocation(this));
                     return;
                 }
                 LocationServices.FusedLocationApi
@@ -273,7 +287,6 @@ public class WhereAmILocationService extends Service implements LocationListener
                 break;
         }
     }
-
     @Override
     public void onLocationChanged(Location location) {
         Log.v(TAG, String.format("Location changed: %1$.4f x %2$.4f", location.getLatitude(), location.getLongitude()));
@@ -297,6 +310,12 @@ public class WhereAmILocationService extends Service implements LocationListener
                 case ACTION_STOP_TRACK_LOCATION:
                     stopLocationRequest();
                     break;
+                case ACTION_START_TRACK_LOCATION:
+                    startLocationRequest();
+                    break;
+                case ACTION_LAST_LOCATION:
+                    getLastLocationRequest();
+                    break;
             }
         }
     }
@@ -304,9 +323,9 @@ public class WhereAmILocationService extends Service implements LocationListener
     /**
      * Requests permissions.
      */
-    private void requestPermissions() {
+    private void requestPermissions(Intent intent) {
         try {
-            PendingIntent pendingIntent = PendingIntent.getService(this, 0, startService(this), 0);
+            PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
             MainActivity.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, pendingIntent).send();
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -344,6 +363,23 @@ public class WhereAmILocationService extends Service implements LocationListener
         }
     }
 
+    private void startLocationRequest() {
+        checkSettings();
+    }
+
+    private void getLastLocationRequest() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(getLastLocation(this));
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        updateAddresses();
+
+        checkSettings();
+    }
+
     @Override
     public Location getLocation() {
         return mLastLocation;
@@ -369,5 +405,13 @@ public class WhereAmILocationService extends Service implements LocationListener
             message.setData(data);
             mComputingHandler.sendMessage(message);
         }
+    }
+
+    private void checkSettings() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+        PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
+        locationSettingsResultPendingResult.setResultCallback(this);
     }
 }
