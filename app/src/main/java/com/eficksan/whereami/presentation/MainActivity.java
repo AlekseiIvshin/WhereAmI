@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     @Override
     public void closeScreen(int key) {
         switch (key) {
-            case Screens.LOCATION_SCREEN:
+            case Screens.MESSAGING_SCREEN:
                 getFragmentManager().popBackStack();
                 break;
         }

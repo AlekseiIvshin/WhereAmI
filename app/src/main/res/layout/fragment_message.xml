@@ -39,7 +39,7 @@
         android:layout_margin="@dimen/default.spacing.horizontal"
         android:elevation="@dimen/fab.elevation"
         android:src="@drawable/send"
-        app:backgroundTint="@color/colorAccent.inactive"
+        app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
         app:fabSize="normal" />
 </android.support.design.widget.CoordinatorLayout>

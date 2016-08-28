@@ -53,7 +53,7 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
             mIsServiceConnected = true;
             final LocationRepository locationDataSource = ((WhereAmILocationService.LocalBinder) iBinder).getDataSource();
             Log.v(TAG, "Location service was bound");
-            mDataSourceSubscription = Observable.interval(secondsDelay, TimeUnit.SECONDS)
+            mDataSourceSubscription = Observable.interval(0L, secondsDelay, TimeUnit.SECONDS)
                     .subscribe(new Action1<Object>() {
                         @Override
                         public void call(Object o) {

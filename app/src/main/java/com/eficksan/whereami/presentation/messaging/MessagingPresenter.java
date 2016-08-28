@@ -76,7 +76,7 @@ public class MessagingPresenter {
                             @Override
                             public void onCompleted() {
                                 messagingView.showSuccess(R.string.success_message_was_delivered);
-                                router.showScreen(Screens.LOCATION_SCREEN, Bundle.EMPTY);
+                                router.closeScreen(Screens.MESSAGING_SCREEN);
                             }
 
                             @Override

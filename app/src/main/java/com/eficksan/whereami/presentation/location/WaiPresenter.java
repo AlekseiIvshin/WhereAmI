@@ -110,7 +110,7 @@ public class WaiPresenter {
         mView.disableMessageCreating();
         if (isNeedToListenLocation) {
             mView.onGeoDataTurnOn();
-            listenLocationInteractor.execute(30000l, new Subscriber<WaiEvent>() {
+            listenLocationInteractor.execute(30000L, new Subscriber<WaiEvent>() {
                 @Override
                 public void onCompleted() {
 
