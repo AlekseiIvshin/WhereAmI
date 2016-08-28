@@ -45,7 +45,7 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
     private Subscription mDataSourceSubscription;
     private boolean mIsServiceConnected = false;
 
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
+    private ServiceConnection mLocationServiceConnection = new ServiceConnection() {
         public long secondsDelay = DEFAULT_SECONDS_DELAY;
 
         @Override
@@ -58,10 +58,12 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
                         @Override
                         public void call(Object o) {
                             Location location = locationDataSource.getLocation();
-                            List<String> addresses = locationDataSource.getAddresses();
-                            Log.v(TAG, String.format("Location obtain: %s", location.toString()));
-                            Log.v(TAG, String.format("Address obtain: %s", addresses.toString()));
-                            mLocationChannel.onNext(new WaiEvent(location, addresses));
+                            if (location != null) {
+                                List<String> addresses = locationDataSource.getAddresses();
+                                Log.v(TAG, String.format("Location obtain: %s", location.toString()));
+                                Log.v(TAG, String.format("Address obtain: %s", addresses.toString()));
+                                mLocationChannel.onNext(new WaiEvent(location, addresses));
+                            }
                         }
                     });
         }
@@ -104,7 +106,7 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
         Log.v(TAG, "startLocationRequest");
         Activity activity = mRefActivityContext.get();
         if (activity != null) {
-            activity.bindService(WhereAmILocationService.startService(activity), mServiceConnection, Context.BIND_AUTO_CREATE);
+            activity.bindService(WhereAmILocationService.startService(activity), mLocationServiceConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -118,7 +120,7 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
         }
         Activity activity = mRefActivityContext.get();
         if (activity != null && mIsServiceConnected) {
-            activity.unbindService(mServiceConnection);
+            activity.unbindService(mLocationServiceConnection);
             mIsServiceConnected = false;
         }
     }

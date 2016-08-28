@@ -23,7 +23,6 @@ public abstract class Interactor<ParameterType, ResultType> {
     protected abstract Observable<ResultType> buildObservable(ParameterType parameter);
 
     public void execute(ParameterType parameter, Subscriber<ResultType> subscriber) {
-        unsubscribe();
         subscription = buildObservable(parameter)
                 .subscribeOn(jobScheduler)
                 .observeOn(uiScheduler)

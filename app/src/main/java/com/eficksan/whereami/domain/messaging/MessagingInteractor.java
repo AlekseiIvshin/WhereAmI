@@ -1,9 +1,18 @@
 package com.eficksan.whereami.domain.messaging;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.os.ResultReceiver;
+import android.util.Log;
 
+import com.eficksan.placingmessages.IPlacingMessages;
+import com.eficksan.placingmessages.PlaceMessage;
 import com.eficksan.whereami.data.messaging.MessagingService;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.Interactor;
@@ -11,6 +20,7 @@ import com.eficksan.whereami.domain.Interactor;
 import java.lang.ref.WeakReference;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -21,9 +31,25 @@ import rx.subjects.PublishSubject;
  */
 public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
 
+    private static final String TAG = MessagingInteractor.class.getSimpleName();
     private PublishSubject<Integer> mMessageResultChannel;
     private final WeakReference<Activity> mRefActivityContext;
     private ResultReceiver mResultReceiver;
+    private IPlacingMessages mPlacingMessages;
+    private boolean mIsServiceConnected = false;
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            mPlacingMessages = IPlacingMessages.Stub.asInterface(iBinder);
+            mIsServiceConnected = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mIsServiceConnected = false;
+            mPlacingMessages= null;
+        }
+    };
 
     public MessagingInteractor(Activity activityContext) {
         super(Schedulers.computation(), AndroidSchedulers.mainThread());
@@ -39,6 +65,18 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
                 }
             }
         };
+        bindRemoteService();
+    }
+
+    @Override
+    public void execute(LocationMessage parameter, Subscriber<Integer> subscriber) {
+        super.execute(parameter, subscriber);
+    }
+
+    @Override
+    public void unsubscribe() {
+        unbindRemoteService();
+        super.unsubscribe();
     }
 
     @Override
@@ -47,6 +85,31 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
         if (activity != null) {
             MessagingService.createMessage(activity, parameter, mResultReceiver);
         }
+        if (mIsServiceConnected) {
+            try {
+                PlaceMessage placeMessage = mPlacingMessages.addMessage(parameter.latitude, parameter.longitude, parameter.message, "temp_user_name");
+                Log.v(TAG, String.format("Message saved: id=%s", placeMessage.id));
+            } catch (RemoteException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
         return mMessageResultChannel;
+    }
+
+    private void bindRemoteService() {
+        Activity activity = mRefActivityContext.get();
+        if (activity!=null) {
+            Intent remoteServiceIntent = new Intent("com.eficksan.messaging.BIND_PLACING_MESSAGE");
+            remoteServiceIntent.setPackage("com.eficksan.messaging");
+//            remoteServiceIntent.setComponent(new ComponentName("com.eficksan.messaging", "com.eficksan.messaging.data.StubMessagingService"));
+            activity.bindService(remoteServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    private void unbindRemoteService() {
+        Activity activity = mRefActivityContext.get();
+        if (activity!=null && mIsServiceConnected) {
+            activity.unbindService(mServiceConnection);
+        }
     }
 }

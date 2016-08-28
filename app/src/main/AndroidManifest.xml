@@ -41,7 +41,7 @@
         <service
             android:name=".data.location.WhereAmILocationService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <receiver
             android:name=".data.location.BootCompletedReceiver"
