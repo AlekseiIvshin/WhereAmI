@@ -3,7 +3,7 @@ package com.eficksan.whereami.presentation.messaging;
 import android.content.Context;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
+import javax.inject.Inject;
 
 /**
  * Created by Aleksei Ivshin
@@ -11,19 +11,16 @@ import java.lang.ref.WeakReference;
  */
 public class MessagingView {
 
-    public final WeakReference<Context> refContext;
+    @Inject
+    Context context;
     public final MessagingViewHolder viewHolder;
 
-    public MessagingView(Context refContext, MessagingViewHolder viewHolder) {
-        this.refContext = new WeakReference<>(refContext);
+    public MessagingView(MessagingViewHolder viewHolder) {
         this.viewHolder = viewHolder;
     }
 
     public void showMessageError(int errorMessageRes) {
-        Context context = refContext.get();
-        if (context != null) {
-            viewHolder.messageInputLayout.setError(context.getString(errorMessageRes));
-        }
+        viewHolder.messageInputLayout.setError(context.getString(errorMessageRes));
     }
 
     public void changeEnableSendMessage(boolean isEnabled) {
@@ -39,10 +36,7 @@ public class MessagingView {
     }
 
     private void showMessage(int messageResId) {
-        Context context = refContext.get();
-        if (context != null) {
-            Toast.makeText(context,messageResId, Toast.LENGTH_SHORT).show();
-        }
+        Toast.makeText(context, messageResId, Toast.LENGTH_SHORT).show();
     }
 
     public void hideMessageError() {

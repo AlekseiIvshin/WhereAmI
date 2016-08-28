@@ -4,14 +4,16 @@ import android.location.Location;
 import android.os.Bundle;
 
 import com.eficksan.whereami.R;
+import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.messaging.LocationMessage;
 import com.eficksan.whereami.domain.messaging.MessageDeliverException;
 import com.eficksan.whereami.domain.messaging.MessagingInteractor;
-import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
+
+import javax.inject.Inject;
 
 import rx.Subscriber;
 import rx.functions.Action1;
@@ -22,17 +24,15 @@ import rx.functions.Action1;
  */
 public class MessagingPresenter {
 
-    private Router router;
+    @Inject
+    Router router;
+    @Inject
+    MessagingInteractor messagingInteractor;
+
     private MessagingView messagingView;
-    private MessagingInteractor messagingInteractor;
-
-
     private Location currentLocation;
 
-    public void onStart(Router router, MessagingView view, MessagingInteractor messagingInteractor, Location currentLocation) {
-        this.router = router;
-        this.messagingView = view;
-        this.messagingInteractor = messagingInteractor;
+    public void onStart(Location currentLocation) {
         this.currentLocation = currentLocation;
         setListeners();
     }
@@ -95,5 +95,9 @@ public class MessagingPresenter {
                         });
                     }
                 });
+    }
+
+    public void setView(MessagingView view) {
+        this.messagingView = view;
     }
 }
