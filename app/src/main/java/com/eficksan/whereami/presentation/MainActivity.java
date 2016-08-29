@@ -19,8 +19,6 @@ import android.widget.Toast;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
-import com.eficksan.whereami.geofence.GeofenceFragment;
-import com.eficksan.whereami.maps.MapsFragment;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.presentation.messaging.MessageFragment;
 import com.eficksan.whereami.presentation.routing.Router;
@@ -161,16 +159,6 @@ public class MainActivity extends AppCompatActivity implements Router {
     @Override
     public void showScreen(int nextScreenKey, Bundle args) {
         switch (nextScreenKey) {
-            case Screens.MAP_SCREEN: {
-                Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
-                replaceFragment(MapsFragment.newInstance(location), MapsFragment.TAG, false);
-                break;
-            }
-            case Screens.GEOFENCES_SCREEN: {
-                Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
-                replaceFragment(GeofenceFragment.newInstance(location), GeofenceFragment.TAG, false);
-                break;
-            }
             case Screens.MESSAGING_SCREEN: {
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
                 addFragment(MessageFragment.newInstance(location), MessageFragment.TAG, true);

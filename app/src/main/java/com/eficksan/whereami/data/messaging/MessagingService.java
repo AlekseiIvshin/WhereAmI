@@ -22,6 +22,9 @@ public class MessagingService extends IntentService {
     private static final String ACTION_PREFIX = "com.eficksan.whereami.messaging.action.";
     private static final String ACTION_CREATE_MESSAGE = ACTION_PREFIX + "CREATE_MESSAGE";
 
+    private static final String EXTRA_MESSAGE_DATA = ACTION_PREFIX + ".EXTRA_MESSAGE_DATA";
+    private static final String EXTRA_RESULT_RECEIVER = ACTION_PREFIX + ".EXTRA_RESULT_RECEIVER";
+
     public MessagingService() {
         super(TAG);
     }
@@ -29,8 +32,8 @@ public class MessagingService extends IntentService {
     public static void createMessage(Context context, LocationMessage locationMessage, ResultReceiver resultReceiver) {
         Intent intent = new Intent(context, MessagingService.class);
         intent.setAction(ACTION_CREATE_MESSAGE);
-        intent.putExtra(Constants.EXTRA_MESSAGE_DATA, locationMessage);
-        intent.putExtra(Constants.EXTRA_RESULT_RECEIVER, resultReceiver);
+        intent.putExtra(EXTRA_MESSAGE_DATA, locationMessage);
+        intent.putExtra(EXTRA_RESULT_RECEIVER, resultReceiver);
         context.startService(intent);
     }
 
@@ -46,7 +49,7 @@ public class MessagingService extends IntentService {
 
                     //TODO: user broadcast receiver for notify that message was created
 
-                    ResultReceiver resultReceiver = intent.getParcelableExtra(Constants.EXTRA_RESULT_RECEIVER);
+                    ResultReceiver resultReceiver = intent.getParcelableExtra(EXTRA_RESULT_RECEIVER);
                     resultReceiver.send(Constants.SUCCESS_RESULT, Bundle.EMPTY);
                 }
                 break;

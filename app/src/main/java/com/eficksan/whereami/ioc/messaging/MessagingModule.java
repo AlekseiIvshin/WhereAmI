@@ -1,4 +1,4 @@
-package com.eficksan.whereami.ioc.messaging.location;
+package com.eficksan.whereami.ioc.messaging;
 
 import android.app.Activity;
 

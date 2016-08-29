@@ -35,7 +35,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".geofence.GeofenceTransitionsIntentService" />
         <service
             android:name=".data.messaging.MessagingService"
             android:exported="false" />

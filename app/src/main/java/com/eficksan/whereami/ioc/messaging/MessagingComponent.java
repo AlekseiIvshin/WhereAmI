@@ -1,4 +1,4 @@
-package com.eficksan.whereami.ioc.messaging.location;
+package com.eficksan.whereami.ioc.messaging;
 
 import com.eficksan.whereami.ioc.activity.ActivityComponent;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;

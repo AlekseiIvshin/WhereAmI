@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
-import com.eficksan.whereami.ioc.messaging.location.MessagingComponent;
+import com.eficksan.whereami.ioc.messaging.MessagingComponent;
 
 /**
  */
@@ -50,10 +50,8 @@ public class MessageFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MessagingViewHolder viewHolder = new MessagingViewHolder();
-        viewHolder.takeView(view);
-
-        MessagingView messagingView = new MessagingView(viewHolder);
+        MessagingView messagingView = new MessagingView();
+        messagingView.takeView(view);
         mPresenter = new MessagingPresenter();
         mMessagingComponent.inject(messagingView);
         mMessagingComponent.inject(mPresenter);

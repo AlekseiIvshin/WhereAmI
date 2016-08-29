@@ -17,8 +17,6 @@ import com.eficksan.whereami.data.messaging.MessagingService;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.Interactor;
 
-import java.lang.ref.WeakReference;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -26,17 +24,24 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
+ * Messaging interactor component.
+ * Contains domain logic.
+ * <p/>
  * Created by Aleksei Ivshin
  * on 24.08.2016.
  */
 public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
 
     private static final String TAG = MessagingInteractor.class.getSimpleName();
+
     private PublishSubject<Integer> mMessageResultChannel;
-    private final WeakReference<Activity> mRefActivityContext;
-    private ResultReceiver mResultReceiver;
+
+    private Activity mActivity;
+
+    private ResultReceiver mMessagingResultReceiver;
     private IPlacingMessages mPlacingMessages;
     private boolean mIsServiceConnected = false;
+
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -47,15 +52,15 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mIsServiceConnected = false;
-            mPlacingMessages= null;
+            mPlacingMessages = null;
         }
     };
 
     public MessagingInteractor(Activity activityContext) {
         super(Schedulers.computation(), AndroidSchedulers.mainThread());
+        this.mActivity = activityContext;
         mMessageResultChannel = PublishSubject.create();
-        this.mRefActivityContext = new WeakReference<>(activityContext);
-        mResultReceiver = new ResultReceiver(activityContext.getWindow().getDecorView().getHandler()) {
+        mMessagingResultReceiver = new ResultReceiver(activityContext.getWindow().getDecorView().getHandler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == Constants.SUCCESS_RESULT) {
@@ -81,10 +86,7 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
 
     @Override
     protected Observable<Integer> buildObservable(LocationMessage parameter) {
-        Activity activity = mRefActivityContext.get();
-        if (activity != null) {
-            MessagingService.createMessage(activity, parameter, mResultReceiver);
-        }
+        MessagingService.createMessage(mActivity, parameter, mMessagingResultReceiver);
         if (mIsServiceConnected) {
             try {
                 PlaceMessage placeMessage = mPlacingMessages.addMessage(parameter.latitude, parameter.longitude, parameter.message, "temp_user_name");
@@ -97,19 +99,15 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
     }
 
     private void bindRemoteService() {
-        Activity activity = mRefActivityContext.get();
-        if (activity!=null) {
-            Intent remoteServiceIntent = new Intent("com.eficksan.messaging.BIND_PLACING_MESSAGE");
-            remoteServiceIntent.setPackage("com.eficksan.messaging");
+        Intent remoteServiceIntent = new Intent("com.eficksan.messaging.BIND_PLACING_MESSAGE");
+        remoteServiceIntent.setPackage("com.eficksan.messaging");
 //            remoteServiceIntent.setComponent(new ComponentName("com.eficksan.messaging", "com.eficksan.messaging.data.StubMessagingService"));
-            activity.bindService(remoteServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        }
+        mActivity.bindService(remoteServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void unbindRemoteService() {
-        Activity activity = mRefActivityContext.get();
-        if (activity!=null && mIsServiceConnected) {
-            activity.unbindService(mServiceConnection);
+        if (mIsServiceConnected) {
+            mActivity.unbindService(mServiceConnection);
         }
     }
 }

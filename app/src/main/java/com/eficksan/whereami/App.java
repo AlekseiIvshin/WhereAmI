@@ -12,9 +12,9 @@ import com.eficksan.whereami.ioc.app.DaggerAppComponent;
 import com.eficksan.whereami.ioc.location.DaggerLocationComponent;
 import com.eficksan.whereami.ioc.location.LocationComponent;
 import com.eficksan.whereami.ioc.location.LocationModule;
-import com.eficksan.whereami.ioc.messaging.location.DaggerMessagingComponent;
-import com.eficksan.whereami.ioc.messaging.location.MessagingComponent;
-import com.eficksan.whereami.ioc.messaging.location.MessagingModule;
+import com.eficksan.whereami.ioc.messaging.DaggerMessagingComponent;
+import com.eficksan.whereami.ioc.messaging.MessagingComponent;
+import com.eficksan.whereami.ioc.messaging.MessagingModule;
 
 /**
  * Created by Aleksei Ivshin
