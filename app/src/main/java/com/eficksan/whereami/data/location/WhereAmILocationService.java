@@ -198,7 +198,6 @@ public class WhereAmILocationService extends Service implements LocationListener
 
     @Override
     public IBinder onBind(Intent intent) {
-        handleCommand(intent);
         return binder;
     }
 
