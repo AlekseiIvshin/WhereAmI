@@ -4,6 +4,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import com.eficksan.whereami.App;
+
 public class SyncService extends Service {
     // Storage for an instance of the sync adapter
     private static SyncAdapter sSyncAdapter = null;
@@ -22,6 +24,7 @@ public class SyncService extends Service {
         synchronized (sSyncAdapterLock) {
             if (sSyncAdapter == null) {
                 sSyncAdapter = new SyncAdapter(getApplicationContext(), true);
+                ((App)this.getApplication()).getAppComponent().inject(sSyncAdapter);
             }
         }
     }

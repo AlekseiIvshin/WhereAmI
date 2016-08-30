@@ -2,7 +2,7 @@ package com.eficksan.placingmessages;
 
 import com.eficksan.placingmessages.PlaceMessage;
 
-interface IPlacingMessages {
+interface IPlaceMessageRepository {
 
     /**
     * Creates message and return new message.
@@ -12,12 +12,11 @@ interface IPlacingMessages {
     /**
     * Get near mesasges.
     */
-    List<PlaceMessage> getNearMessages(double latitude, double longitude);
+    List<PlaceMessage> getMessagesByUser(String userId);
 
     /**
     * Removes all messages.
     */
     void removeAllMessages();
-
 
 }

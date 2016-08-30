@@ -4,11 +4,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 
+import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.location.WaiEvent;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
 import com.eficksan.whereami.domain.location.LocationHistoryInteractor;
+import com.eficksan.whereami.domain.messaging.MessagesContainer;
+import com.eficksan.whereami.domain.sync.SyncConstants;
+import com.eficksan.whereami.domain.sync.SyncInteractor;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
@@ -35,13 +39,45 @@ public class WaiPresenter {
     ForegroundServiceInteractor foregroundServiceInteractor;
     @Inject
     LocationHistoryInteractor mLocationHistoryInteractor;
+    @Inject
+    SyncInteractor mSyncInteractor;
+
+    @Inject
+    MessagesContainer mMessagesContainer;
 
     private Location lastLocation = null;
     private Subscription mCreateMessageListener;
     private Subscription mLocationHistoryListener;
 
     public void onStart() {
-        this.mLocationHistoryInteractor.onStart();
+        mLocationHistoryInteractor.onStart();
+        mSyncInteractor.execute(0, new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer syncResultCode) {
+                switch (syncResultCode) {
+                    case SyncConstants.SYNC_SUCCESS: {
+                        mView.notifySyncResult(R.string.sync_success);
+                        mView.updateMessages(mMessagesContainer.getMessages());
+                        break;
+                    }
+                    case SyncConstants.SYNC_UNKNOWN_ERROR:
+                    default:{
+                        mView.notifySyncResult(R.string.sync_error_unknown);
+                        break;
+                    }
+                }
+            }
+        });
 
         foregroundServiceInteractor.stopForeground();
 

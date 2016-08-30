@@ -4,7 +4,9 @@ import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
+import com.eficksan.placingmessages.PlaceMessage;
 import com.eficksan.whereami.R;
 
 import java.util.List;
@@ -83,5 +85,13 @@ public class WaiView {
         } else {
             viewHolder.locationHistoryLast.setText(R.string.location_not_available);
         }
+    }
+
+    public void updateMessages(List<PlaceMessage> messages) {
+        viewHolder.messagesAdapter.setMessages(messages);
+    }
+
+    public void notifySyncResult(int resId) {
+        Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
     }
 }

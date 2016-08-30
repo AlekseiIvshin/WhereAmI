@@ -1,13 +1,13 @@
 package com.eficksan.whereami.ioc.location;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
 import com.eficksan.whereami.domain.location.LocationHistoryInteractor;
-import com.eficksan.whereami.ioc.fragments.FragmentModule;
+import com.eficksan.whereami.domain.sync.SyncInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
-import com.eficksan.whereami.presentation.routing.Router;
 
 import dagger.Module;
 import dagger.Provides;
@@ -33,5 +33,10 @@ public class LocationModule {
     @Provides
     public LocationHistoryInteractor provideLocationHistoryInteractor(Activity activity) {
         return new LocationHistoryInteractor(activity);
+    }
+
+    @Provides
+    public SyncInteractor provideInteractor(Context context) {
+        return new SyncInteractor(context);
     }
 }

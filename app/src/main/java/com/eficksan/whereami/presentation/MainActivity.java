@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ActivityComponent activityComponent = ((App)getApplication()).plusActivityComponent(this);
+        ((App)getApplication()).plusActivityComponent(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -100,8 +100,7 @@ public class MainActivity extends AppCompatActivity implements Router {
             showScreen(screenKey, getIntent().getExtras());
         }
 
-        SyncDelegate syncDelegate = new SyncDelegate();
-        syncDelegate.init(this);
+        SyncDelegate.startSync(this);
     }
 
     @Override
@@ -135,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     protected void onDestroy() {
+        SyncDelegate.stopSync(this);
         ((App)getApplication()).removeActivityComponent();
         super.onDestroy();
     }

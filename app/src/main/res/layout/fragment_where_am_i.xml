@@ -82,6 +82,12 @@
             android:paddingRight="@dimen/default.spacing.horizontal"
             android:paddingTop="@dimen/default.spacing.vertical"
             tools:text="50 x 50" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_messages"
+            android:layout_below="@id/location_history_last"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton

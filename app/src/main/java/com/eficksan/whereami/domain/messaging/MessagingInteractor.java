@@ -11,11 +11,12 @@ import android.os.RemoteException;
 import android.support.v4.os.ResultReceiver;
 import android.util.Log;
 
-import com.eficksan.placingmessages.IPlacingMessages;
+import com.eficksan.placingmessages.IPlaceMessageRepository;
 import com.eficksan.placingmessages.PlaceMessage;
 import com.eficksan.whereami.data.messaging.MessagingService;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.Interactor;
+import com.eficksan.whereami.domain.sync.SyncDelegate;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -38,14 +39,13 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
 
     private Activity mActivity;
 
-    private ResultReceiver mMessagingResultReceiver;
-    private IPlacingMessages mPlacingMessages;
+    private IPlaceMessageRepository mPlacingMessages;
     private boolean mIsServiceConnected = false;
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            mPlacingMessages = IPlacingMessages.Stub.asInterface(iBinder);
+            mPlacingMessages = IPlaceMessageRepository.Stub.asInterface(iBinder);
             mIsServiceConnected = true;
         }
 
@@ -59,17 +59,7 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
     public MessagingInteractor(Activity activityContext) {
         super(Schedulers.computation(), AndroidSchedulers.mainThread());
         this.mActivity = activityContext;
-        mMessageResultChannel = PublishSubject.create();
-        mMessagingResultReceiver = new ResultReceiver(activityContext.getWindow().getDecorView().getHandler()) {
-            @Override
-            protected void onReceiveResult(int resultCode, Bundle resultData) {
-                if (resultCode == Constants.SUCCESS_RESULT) {
-                    mMessageResultChannel.onCompleted();
-                } else {
-                    mMessageResultChannel.onError(new MessageDeliverException());
-                }
-            }
-        };
+
         bindRemoteService();
     }
 
@@ -86,10 +76,21 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
 
     @Override
     protected Observable<Integer> buildObservable(LocationMessage parameter) {
-        MessagingService.createMessage(mActivity, parameter, mMessagingResultReceiver);
+        mMessageResultChannel = PublishSubject.create();
+        ResultReceiver messagingResultReceiver = new ResultReceiver(mActivity.getWindow().getDecorView().getHandler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == Constants.SUCCESS_RESULT) {
+                    mMessageResultChannel.onCompleted();
+                } else {
+                    mMessageResultChannel.onError(new MessageDeliverException());
+                }
+            }
+        };
+        MessagingService.createMessage(mActivity, parameter, messagingResultReceiver);
         if (mIsServiceConnected) {
             try {
-                PlaceMessage placeMessage = mPlacingMessages.addMessage(parameter.latitude, parameter.longitude, parameter.message, "temp_user_name");
+                PlaceMessage placeMessage = mPlacingMessages.addMessage(parameter.latitude, parameter.longitude, parameter.message, SyncDelegate.getAccount(mActivity).name);
                 Log.v(TAG, String.format("Message saved: id=%s", placeMessage.id));
             } catch (RemoteException e) {
                 Log.e(TAG, e.getMessage(), e);

@@ -34,4 +34,6 @@
     <string name="error.message_too_long">Message too long</string>
     <string name="location_request.in_progress">Requesting...</string>
     <string name="location_history.label">Last saved location:</string>
+    <string name="sync.error.unknown">Doh! Sync was failed...</string>
+    <string name="sync.success">Sync was success</string>
 </resources>

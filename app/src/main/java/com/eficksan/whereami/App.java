@@ -34,6 +34,10 @@ public class App extends Application {
                 .build();
     }
 
+    public AppComponent getAppComponent() {
+        return appComponent;
+    }
+
     public ActivityComponent plusActivityComponent(Activity activity) {
         if (activityComponent == null) {
             activityComponent = DaggerActivityComponent.builder()
