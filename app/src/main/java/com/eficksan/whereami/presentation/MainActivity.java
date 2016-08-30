@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
+import com.eficksan.whereami.domain.sync.SyncDelegate;
+import com.eficksan.whereami.ioc.activity.ActivityComponent;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.presentation.messaging.MessageFragment;
 import com.eficksan.whereami.presentation.routing.Router;
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ((App)getApplication()).plusActivityComponent(this);
+        ActivityComponent activityComponent = ((App)getApplication()).plusActivityComponent(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -97,6 +99,9 @@ public class MainActivity extends AppCompatActivity implements Router {
             int screenKey = getIntent().getIntExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
             showScreen(screenKey, getIntent().getExtras());
         }
+
+        SyncDelegate syncDelegate = new SyncDelegate();
+        syncDelegate.init(this);
     }
 
     @Override
