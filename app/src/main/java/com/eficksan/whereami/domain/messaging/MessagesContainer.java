@@ -23,7 +23,7 @@ public class MessagesContainer {
         return placeMessages;
     }
 
-    public void setMesssages(List<PlaceMessage> messages) {
+    public void setMessages(List<PlaceMessage> messages) {
         placeMessages.addAll(messages);
     }
 }

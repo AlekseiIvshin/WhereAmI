@@ -90,7 +90,8 @@ public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
         MessagingService.createMessage(mActivity, parameter, messagingResultReceiver);
         if (mIsServiceConnected) {
             try {
-                PlaceMessage placeMessage = mPlacingMessages.addMessage(parameter.latitude, parameter.longitude, parameter.message, SyncDelegate.getAccount(mActivity).name);
+                PlaceMessage placeMessage = new PlaceMessage();
+                mPlacingMessages.addMessage(parameter.latitude, parameter.longitude, parameter.message, SyncDelegate.getAccount(mActivity).name, placeMessage);
                 Log.v(TAG, String.format("Message saved: id=%s", placeMessage.id));
             } catch (RemoteException e) {
                 Log.e(TAG, e.getMessage(), e);

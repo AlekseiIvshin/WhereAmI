@@ -19,6 +19,7 @@ import com.eficksan.placingmessages.PlaceMessage;
 import com.eficksan.whereami.domain.messaging.MessagesContainer;
 import com.eficksan.whereami.domain.sync.SyncConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -74,21 +75,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Log.v(TAG, "OnPerformSync");
 
         if (mIsServiceConnected) {
-            List<PlaceMessage> messagesByUser = null;
+            Log.v(TAG, "Sync service connected");
+            List<PlaceMessage> messagesByUser = new ArrayList<>();
             try {
-                messagesByUser = mPlacingMessages.getMessagesByUser(account.name);
-
+                mPlacingMessages.getMessagesByUser(account.name, messagesByUser);
+                Log.v(TAG, String.format("Messages count from server = %d", messagesByUser.size()));
             } catch (RemoteException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            if (messagesByUser != null) {
-                messagesContainer.setMesssages(messagesByUser);
-                Intent intent = new Intent(SyncConstants.ACTION_SYNC_MESSAGE_BROADCAST);
-                intent.putExtra(SyncConstants.SYNC_RESULT_CODE, SyncConstants.SYNC_SUCCESS);
-                LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-            }
+            messagesContainer.setMessages(messagesByUser);
+            Intent intent = new Intent(SyncConstants.ACTION_SYNC_MESSAGE_BROADCAST);
+            intent.putExtra(SyncConstants.SYNC_RESULT_CODE, SyncConstants.SYNC_SUCCESS);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         }
-
     }
 
     @Override

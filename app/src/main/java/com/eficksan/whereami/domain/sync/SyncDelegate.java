@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Created by Aleksei Ivshin
@@ -12,6 +13,7 @@ import android.os.Bundle;
  */
 public class SyncDelegate {
     // Constants
+    private static final String TAG = SyncDelegate.class.getSimpleName();
     // Content provider authority
     public static final String AUTHORITY = "com.eficksan.messaging.datasync.provider";
     public static final String ACCOUNT_TYPE = "com.eficksan.messaging.datasync";
@@ -26,26 +28,16 @@ public class SyncDelegate {
 
     public static void startSync(Context context) {
         Account account = getAccount(context);
-//        ContentResolver.addPeriodicSync(account, AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
-
-        // Pass the settings flags by inserting them in a bundle
-        Bundle settingsBundle = new Bundle();
-        settingsBundle.putBoolean(
-                ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        settingsBundle.putBoolean(
-                ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        /*
-         * Request the sync for the default account, authority, and
-         * manual sync settings
-         */
-        ContentResolver.setIsSyncable(account, AUTHORITY, 1);
+//        ContentResolver.setIsSyncable(account, AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
-        ContentResolver.requestSync(account, AUTHORITY, settingsBundle);
+        ContentResolver.addPeriodicSync(account, AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+        Log.v(TAG, String.format("Start periodic sync every %d", SYNC_INTERVAL));
     }
 
     public static void stopSync(Context context) {
         Account account = getAccount(context);
         ContentResolver.removePeriodicSync(account, AUTHORITY, Bundle.EMPTY);
+        Log.v(TAG, "Stop periodic sync");
     }
 
     public static Account getAccount(Context context) {
