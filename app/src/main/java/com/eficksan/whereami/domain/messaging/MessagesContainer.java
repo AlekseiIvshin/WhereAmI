@@ -24,6 +24,7 @@ public class MessagesContainer {
     }
 
     public void setMessages(List<PlaceMessage> messages) {
+        placeMessages.clear();
         placeMessages.addAll(messages);
     }
 }
