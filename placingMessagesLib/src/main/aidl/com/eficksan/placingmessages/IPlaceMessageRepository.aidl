@@ -23,6 +23,6 @@ interface IPlaceMessageRepository {
     /**
     * Saves messages to CVS file and return uri to this file.
     */
-    Uri saveMessagesToCvs();
+    Uri saveMessagesToCsv();
 
 }
