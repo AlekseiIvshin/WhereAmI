@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     public void closeScreen(int key) {
         switch (key) {
             case Screens.MESSAGING_SCREEN:
-                getFragmentManager().popBackStack();
+                getSupportFragmentManager().popBackStack();
                 break;
         }
     }

@@ -1,6 +1,8 @@
 package com.eficksan.whereami.presentation.messaging;
 
+import android.content.Context;
 import android.location.Location;
+import android.view.inputmethod.InputMethodManager;
 
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
@@ -32,6 +34,9 @@ public class MessagingPresenter {
     @Inject
     MessagingInteractor messagingInteractor;
 
+    @Inject
+    Context context;
+
     private MessagingView messagingView;
 
     private Location mMessageLocation;
@@ -51,6 +56,11 @@ public class MessagingPresenter {
     public void onStart(Location messageLocation) {
         this.mMessageLocation = messageLocation;
         setListeners();
+        messagingView.viewHolder.messageInput.requestFocus();
+
+        InputMethodManager keyboard = (InputMethodManager)
+                context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        keyboard.showSoftInput(messagingView.viewHolder.messageInput, 0);
     }
 
     /**
@@ -112,6 +122,10 @@ public class MessagingPresenter {
                             public void onCompleted() {
                                 // Message was sent. Return to previous screen.
                                 messagingView.showSuccess(R.string.success_message_was_delivered);
+
+                                InputMethodManager keyboard = (InputMethodManager)
+                                        context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                keyboard.hideSoftInputFromWindow(messagingView.viewHolder.messageInput.getWindowToken(), 0);
                                 router.closeScreen(Screens.MESSAGING_SCREEN);
                             }
 
