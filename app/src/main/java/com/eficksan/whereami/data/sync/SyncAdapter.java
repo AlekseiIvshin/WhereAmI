@@ -76,17 +76,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         if (mIsServiceConnected) {
             Log.v(TAG, "Sync service connected");
-            List<PlaceMessage> messagesByUser = new ArrayList<>();
+            List<PlaceMessage> messagesByUser = null;
             try {
-                mPlacingMessages.getMessagesByUser(account.name, messagesByUser);
+                messagesByUser = mPlacingMessages.getMessagesByUser(account.name);
                 Log.v(TAG, String.format("Messages count from server = %d", messagesByUser.size()));
             } catch (RemoteException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            messagesContainer.setMessages(messagesByUser);
-            Intent intent = new Intent(SyncConstants.ACTION_SYNC_MESSAGE_BROADCAST);
-            intent.putExtra(SyncConstants.SYNC_RESULT_CODE, SyncConstants.SYNC_SUCCESS);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+            if (messagesByUser != null) {
+                messagesContainer.setMessages(messagesByUser);
+                Intent intent = new Intent(SyncConstants.ACTION_SYNC_MESSAGE_BROADCAST);
+                intent.putExtra(SyncConstants.SYNC_RESULT_CODE, SyncConstants.SYNC_SUCCESS);
+                LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+            }
         }
     }
 
