@@ -6,10 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:padding="@dimen/default.spacing.horizontal"
-    card_view:cardCornerRadius="4dp">
+    android:elevation="@dimen/elevation.card"
+    android:layout_margin="@dimen/activity_vertical_margin">
 
     <RelativeLayout
+        android:padding="@dimen/default.spacing.horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -17,6 +18,7 @@
             android:id="@+id/message_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/default.spacing.horizontal"
             tools:text="User name" />
 
         <TextView
