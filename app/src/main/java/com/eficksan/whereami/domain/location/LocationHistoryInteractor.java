@@ -15,8 +15,10 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
+import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 /**
@@ -70,6 +72,20 @@ public class LocationHistoryInteractor {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mServiceMessenger = new Messenger(iBinder);
             mIsLocationServiceConnected = true;
+            final Message message = new Message();
+            message.what = MSG_GET_LAST_LOCATION;
+            message.replyTo = mResponseHandler;
+            Observable.interval(60, TimeUnit.SECONDS)
+                    .subscribe(new Action1<Long>() {
+                        @Override
+                        public void call(Long aLong) {
+                            try {
+                                mServiceMessenger.send(message);
+                            } catch (RemoteException e) {
+                                Log.e(TAG, e.getMessage(), e);
+                            }
+                        }
+                    });
         }
 
         @Override
@@ -109,16 +125,6 @@ public class LocationHistoryInteractor {
     }
 
     public Observable<Location> getLastLocation() {
-        if (mIsLocationServiceConnected) {
-            Message message = new Message();
-            message.what = MSG_GET_LAST_LOCATION;
-            message.replyTo = mResponseHandler;
-            try {
-                mServiceMessenger.send(message);
-            } catch (RemoteException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-        }
         return mLastLocationObservable;
     }
 
