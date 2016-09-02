@@ -1,4 +1,4 @@
-package com.eficksan.placingmessages;
+package com.eficksan.whereami.data.messaging;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -59,7 +59,7 @@ public class PlaceMessage implements Parcelable {
         this.timeStamp = in.readLong();
     }
 
-    public static final Parcelable.Creator<PlaceMessage> CREATOR = new Parcelable.Creator<PlaceMessage>() {
+    public static final Creator<PlaceMessage> CREATOR = new Creator<PlaceMessage>() {
         @Override
         public PlaceMessage createFromParcel(Parcel source) {
             return new PlaceMessage(source);

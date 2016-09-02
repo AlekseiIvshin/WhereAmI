@@ -20,7 +20,6 @@ import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.sync.SyncDelegate;
-import com.eficksan.whereami.ioc.activity.ActivityComponent;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.presentation.messaging.MessageFragment;
 import com.eficksan.whereami.presentation.routing.Router;

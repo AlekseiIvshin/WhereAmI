@@ -2,9 +2,6 @@ package com.eficksan.whereami.ioc.messaging;
 
 import android.app.Activity;
 
-import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
-import com.eficksan.whereami.domain.location.ListenLocationInteractor;
-import com.eficksan.whereami.domain.location.LocationHistoryInteractor;
 import com.eficksan.whereami.domain.messaging.MessagingInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 

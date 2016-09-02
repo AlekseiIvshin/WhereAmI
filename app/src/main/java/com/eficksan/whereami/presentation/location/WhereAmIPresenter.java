@@ -4,15 +4,12 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 
-import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.location.WaiEvent;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
-import com.eficksan.whereami.domain.location.LocationHistoryInteractor;
+import com.eficksan.whereami.domain.location.LocationAndAddressRequestInteractor;
 import com.eficksan.whereami.domain.messaging.MessagesContainer;
-import com.eficksan.whereami.domain.sync.SyncConstants;
-import com.eficksan.whereami.domain.sync.SyncInteractor;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
@@ -27,20 +24,20 @@ import rx.functions.Action1;
  * Created by Aleksei Ivshin
  * on 20.08.2016.
  */
-public class WaiPresenter {
+public class WhereAmIPresenter {
 
-    private WaiView mView;
+    private WhereAmIView mView;
 
     @Inject
     Router mRouter;
     @Inject
     ListenLocationInteractor listenLocationInteractor;
+
+    @Inject
+    LocationAndAddressRequestInteractor locationAndAddressRequestInteractor;
+
     @Inject
     ForegroundServiceInteractor foregroundServiceInteractor;
-    @Inject
-    LocationHistoryInteractor mLocationHistoryInteractor;
-    @Inject
-    SyncInteractor mSyncInteractor;
 
     @Inject
     MessagesContainer mMessagesContainer;
@@ -50,38 +47,9 @@ public class WaiPresenter {
     private Subscription mLocationHistoryListener;
 
     public void onStart() {
-        mLocationHistoryInteractor.onStart();
-        mSyncInteractor.execute(0, new Subscriber<Integer>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer syncResultCode) {
-                switch (syncResultCode) {
-                    case SyncConstants.SYNC_SUCCESS: {
-                        mView.notifySyncResult(R.string.sync_success);
-                        mView.updateMessages(mMessagesContainer.getMessages());
-                        break;
-                    }
-                    case SyncConstants.SYNC_UNKNOWN_ERROR:
-                    default:{
-                        mView.notifySyncResult(R.string.sync_error_unknown);
-                        break;
-                    }
-                }
-            }
-        });
-
         foregroundServiceInteractor.stopForeground();
 
-        handleSwitchLocationListening(mView.viewHolder.switchRequestLocation.isChecked());
+        handleSwitchLocationListening(mView.switchRequestLocation.isChecked());
 
         setListeners();
     }
@@ -90,21 +58,20 @@ public class WaiPresenter {
         removeListeners();
         foregroundServiceInteractor.startForeground();
         listenLocationInteractor.unsubscribe();
-        this.mLocationHistoryInteractor.onStop();
     }
 
     /**
      * Sets listeners on view events and other events.
      */
     private void setListeners() {
-        mView.viewHolder.switchRequestLocation.setOnClickListener(new View.OnClickListener() {
+        mView.switchRequestLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                handleSwitchLocationListening(mView.viewHolder.switchRequestLocation.isChecked());
+                handleSwitchLocationListening(mView.switchRequestLocation.isChecked());
             }
         });
 
-        mCreateMessageListener = RxView.clicks(mView.viewHolder.createMessage)
+        mCreateMessageListener = RxView.clicks(mView.createMessage)
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
@@ -117,20 +84,13 @@ public class WaiPresenter {
                         }
                     }
                 });
-
-        mLocationHistoryListener = mLocationHistoryInteractor.getLastLocation().subscribe(new Action1<Location>() {
-            @Override
-            public void call(Location location) {
-                mView.onLocationHistoryLoaded(location);
-            }
-        });
     }
 
     /**
      * Remove listeners.
      */
     private void removeListeners() {
-        mView.viewHolder.switchRequestLocation.setOnClickListener(null);
+        mView.switchRequestLocation.setOnClickListener(null);
         mCreateMessageListener.unsubscribe();
         mCreateMessageListener = null;
         mLocationHistoryListener.unsubscribe();
@@ -140,7 +100,7 @@ public class WaiPresenter {
     /**
      * Handles switching location requesting.
      *
-     * @param isNeedToListenLocation
+     * @param isNeedToListenLocation flag for starting location listening
      */
     private void handleSwitchLocationListening(boolean isNeedToListenLocation) {
         mView.disableMessageCreating();
@@ -167,7 +127,6 @@ public class WaiPresenter {
                     } else {
                         mView.enableMessageCreating();
                     }
-                    mLocationHistoryInteractor.addLocation(waiEvent.location);
                 }
             });
         } else {
@@ -177,7 +136,7 @@ public class WaiPresenter {
         }
     }
 
-    public void setView(WaiView view) {
+    public void setView(WhereAmIView view) {
         this.mView = view;
     }
 }

@@ -71,23 +71,6 @@
             android:layout_below="@id/label_location"
             android:text="@string/location_history.label" />
 
-        <TextView
-            android:id="@+id/location_history_last"
-            style="@style/AppTextAppearance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/label_location_history"
-            android:paddingBottom="@dimen/default.spacing.vertical"
-            android:paddingLeft="@dimen/default.spacing.horizontal"
-            android:paddingRight="@dimen/default.spacing.horizontal"
-            android:paddingTop="@dimen/default.spacing.vertical"
-            tools:text="50 x 50" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_messages"
-            android:layout_below="@id/location_history_last"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton

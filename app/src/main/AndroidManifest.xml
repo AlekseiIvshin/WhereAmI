@@ -46,16 +46,6 @@
             android:enabled="true"
             android:exported="false" />
 
-        <receiver
-            android:name=".data.location.BootCompletedReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
-
         <provider
             android:name=".data.sync.MessagingContentProvider"
             android:authorities="com.eficksan.messaging.datasync.provider"

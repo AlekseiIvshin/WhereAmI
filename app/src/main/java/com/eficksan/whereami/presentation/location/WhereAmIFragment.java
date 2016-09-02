@@ -23,7 +23,7 @@ public class WhereAmIFragment extends Fragment {
     /**
      * Presenter for location requesting.
      */
-    WaiPresenter mPresenter;
+    WhereAmIPresenter mPresenter;
 
     /**
      * New instance factory method.
@@ -51,14 +51,12 @@ public class WhereAmIFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        WaiViewHolder viewHolder = new WaiViewHolder();
-        viewHolder.takeView(getView());
-
-        WaiView waiView = new WaiView(viewHolder);
-        mPresenter = new WaiPresenter();
-        mLocationComponent.inject(waiView);
+        WhereAmIView whereAmIView = new WhereAmIView();
+        whereAmIView.takeView(view);
+        mPresenter = new WhereAmIPresenter();
+        mLocationComponent.inject(whereAmIView);
         mLocationComponent.inject(mPresenter);
-        mPresenter.setView(waiView);
+        mPresenter.setView(whereAmIView);
     }
 
     @Override
