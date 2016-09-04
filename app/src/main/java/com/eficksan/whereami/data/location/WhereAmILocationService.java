@@ -23,14 +23,13 @@ import android.widget.Toast;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.presentation.MainActivity;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationSettingsResult;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class WhereAmILocationService extends Service implements LocationListener, LocationRepository, LocationRequestDelegate.DelegateCallback {
+public class WhereAmILocationService extends Service implements LocationRepository, LocationRequestDelegate.DelegateCallback {
     private static final String TAG = WhereAmILocationService.class.getSimpleName();
 
     public static final String KEY_LOCATION = "KEY_LOCATION";
