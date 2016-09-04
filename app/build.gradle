@@ -1,9 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
 
 ext {
-    supportLibraryVersion = '23.4.0';
+    supportLibraryVersion = '23.2.1';
     playServicesVersion = '9.4.0';
 }
 
@@ -56,6 +57,19 @@ task checkstyle(type: Checkstyle) {
     classpath = files()
     //Do not fail build
     ignoreFailures = true
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+task findbugs(type: FindBugs) {
+    ignoreFailures = true
+    excludeFilter = new File("${project.rootDir}/config/findbugs/exclude-filter.xml")
+    classes = files("${project.rootDir}/app/build/intermediates/classes")
+    source = fileTree('src/main/java/')
+    classpath = files()
+    effort = 'max'
     reports {
         xml.enabled false
         html.enabled true
