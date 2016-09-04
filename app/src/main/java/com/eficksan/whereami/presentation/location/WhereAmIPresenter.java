@@ -4,6 +4,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 
+import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.location.LocationAddress;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
@@ -73,7 +74,7 @@ public class WhereAmIPresenter {
                             args.putParcelable(Constants.EXTRA_LOCATION_DATA, lastLocation);
                             mRouter.showScreen(Screens.MESSAGING_SCREEN, args);
                         } else {
-                            //TODO: show error
+                            mView.showError(R.string.location_not_available);
                         }
                     }
                 });

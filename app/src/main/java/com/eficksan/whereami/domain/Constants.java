@@ -13,8 +13,4 @@ public interface Constants {
             ".EXTRA_LOCATION_DATA";
 
     int MAX_MESSAGE_SIZE = 120;
-
-    String PREF_NAME = "prefs_whereami";
-
-    String PREF_KEY_START_TRACK_LOCATION_ON_BOOT = "start_track_location_on_boot";
 }

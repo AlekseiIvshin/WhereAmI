@@ -8,11 +8,11 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.eficksan.whereami.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -21,9 +21,9 @@ import butterknife.ButterKnife;
 
 /**
  * View part of location request flow.
- *
+ * <p/>
  * Manages location controls and location requests results.
- *
+ * <p/>
  * Created by Aleksei Ivshin
  * on 16.08.2016.
  */
@@ -43,9 +43,10 @@ public class WhereAmIView {
 
     /**
      * Take view of component.
+     *
      * @param view view
      */
-    public void takeView(View  view) {
+    public void takeView(View view) {
         ButterKnife.bind(this, view);
     }
 
@@ -70,6 +71,7 @@ public class WhereAmIView {
 
     /**
      * Shows location updates.
+     *
      * @param location new location
      */
     public void onLocationChanged(Location location) {
@@ -82,6 +84,7 @@ public class WhereAmIView {
 
     /**
      * Shows address updates.
+     *
      * @param address new address
      */
     public void onAddressChanged(Address address) {
@@ -89,7 +92,7 @@ public class WhereAmIView {
         for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
             addressFragments.add(address.getAddressLine(i));
         }
-        locationAddresses.setText(TextUtils.join(System.getProperty("line.separator"),addressFragments));
+        locationAddresses.setText(TextUtils.join(System.getProperty("line.separator"), addressFragments));
     }
 
     public void disableMessageCreating() {
@@ -100,4 +103,7 @@ public class WhereAmIView {
         createMessage.setVisibility(View.VISIBLE);
     }
 
+    public void showError(int errorResId) {
+        Toast.makeText(context, errorResId, Toast.LENGTH_SHORT).show();
+    }
 }

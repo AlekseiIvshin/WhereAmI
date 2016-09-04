@@ -52,17 +52,6 @@
             android:paddingTop="@dimen/default.spacing.vertical"
             tools:text="Earth Hell" />
 
-
-        <ImageButton
-            android:id="@+id/button_maps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignRight="@id/label_coordinates"
-            android:layout_alignTop="@id/label_coordinates"
-            android:src="@drawable/google_maps"
-            android:visibility="gone" />
-
         <TextView
             android:id="@+id/label_location_history"
             style="@style/AppTextAppearance"

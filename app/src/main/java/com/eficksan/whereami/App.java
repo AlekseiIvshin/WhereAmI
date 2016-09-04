@@ -21,10 +21,10 @@ import com.eficksan.whereami.ioc.messaging.MessagingModule;
  * on 28.08.2016.
  */
 public class App extends Application {
-    AppComponent appComponent;
-    ActivityComponent activityComponent;
-    LocationComponent locationComponent;
-    MessagingComponent messagingComponent;
+    private AppComponent appComponent;
+    private ActivityComponent activityComponent;
+    private LocationComponent locationComponent;
+    private MessagingComponent messagingComponent;
 
     @Override
     public void onCreate() {

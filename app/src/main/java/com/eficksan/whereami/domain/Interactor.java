@@ -12,10 +12,10 @@ import rx.Subscription;
 public abstract class Interactor<ParameterType, ResultType> {
 
     private Subscription subscription;
-    protected final Scheduler jobScheduler;
+    private final Scheduler jobScheduler;
     private final Scheduler uiScheduler;
 
-    public Interactor(Scheduler jobScheduler, Scheduler uiScheduler) {
+    protected Interactor(Scheduler jobScheduler, Scheduler uiScheduler) {
         this.jobScheduler = jobScheduler;
         this.uiScheduler = uiScheduler;
     }

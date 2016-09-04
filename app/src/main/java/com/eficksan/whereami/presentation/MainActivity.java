@@ -21,7 +21,7 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.sync.SyncDelegate;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
-import com.eficksan.whereami.presentation.messaging.MessageFragment;
+import com.eficksan.whereami.presentation.messaging.PlacingMessageFragment;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.google.android.gms.common.api.Status;
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         switch (nextScreenKey) {
             case Screens.MESSAGING_SCREEN: {
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
-                addFragment(MessageFragment.newInstance(location), MessageFragment.TAG, true);
+                addFragment(PlacingMessageFragment.newInstance(location), PlacingMessageFragment.TAG, true);
                 break;
             }
             case Screens.LOCATION_SCREEN:

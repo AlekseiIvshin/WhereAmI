@@ -15,18 +15,18 @@ import com.eficksan.whereami.ioc.messaging.MessagingComponent;
 
 /**
  */
-public class MessageFragment extends Fragment {
+public class PlacingMessageFragment extends Fragment {
 
-    public static final String TAG = MessageFragment.class.getSimpleName();
+    public static final String TAG = PlacingMessageFragment.class.getSimpleName();
     private MessagingPresenter mPresenter;
     MessagingComponent mMessagingComponent;
 
-    public MessageFragment() {
+    public PlacingMessageFragment() {
         // Required empty public constructor
     }
 
-    public static MessageFragment newInstance(Location location) {
-        MessageFragment fragment = new MessageFragment();
+    public static PlacingMessageFragment newInstance(Location location) {
+        PlacingMessageFragment fragment = new PlacingMessageFragment();
         Bundle args = new Bundle();
         args.putParcelable(Constants.EXTRA_LOCATION_DATA, location);
         fragment.setArguments(args);
@@ -43,7 +43,7 @@ public class MessageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_message, container, false);
+        return inflater.inflate(R.layout.fragment_placing_message, container, false);
     }
 
     @Override
