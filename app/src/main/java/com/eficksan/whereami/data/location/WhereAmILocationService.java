@@ -1,12 +1,11 @@
 package com.eficksan.whereami.data.location;
 
-import android.Manifest;
 import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.IntentFilter;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,33 +15,22 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.eficksan.whereami.R;
+import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.presentation.MainActivity;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class WhereAmILocationService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, LocationRepository {
+public class WhereAmILocationService extends Service implements LocationListener, LocationRepository, LocationRequestDelegate.DelegateCallback {
     private static final String TAG = WhereAmILocationService.class.getSimpleName();
 
     public static final String KEY_LOCATION = "KEY_LOCATION";
@@ -89,24 +77,32 @@ public class WhereAmILocationService extends Service implements LocationListener
         }
     };
 
-    private static final int NOTIFICATION_ID = 42;
 
-    public static final int LOCATION_REQUEST_INTERVAL = 10000;
-    public static final int LOCATION_REQUEST_FASTEST_INTERVAL = 5000;
+    private BroadcastReceiver mRequirementsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action) {
+                case Constants.ACTION_PERMISSIONS_REQUEST_RESULT:
+                case Constants.ACTION_SETTINGS_REQUEST_RESULT:
+                    mLocationRequestDelegate.startLocationRequest();
+                    break;
+            }
+        }
+    };
+
+    private static final int NOTIFICATION_ID = 42;
 
     private static final String ACTION_START_FOREGROUND = "ACTION_START_FOREGROUND";
     private static final String ACTION_STOP_FOREGROUND = "ACTION_STOP_FOREGROUND";
     private static final String ACTION_START_TRACK_LOCATION = "ACTION_START_TRACK_LOCATION";
-    private static final String ACTION_LAST_LOCATION = "ACTION_LAST_LOCATION";
 
-    private GoogleApiClient mGoogleApiClient;
     private Geocoder mGeocoder;
-    private boolean mIsApiClientConnected = false;
     private Location mLastLocation;
     private Address mLastAddress;
-    private LocationRequest mLocationRequest;
 
     private final LocalBinder binder = new LocalBinder();
+    private LocationRequestDelegate mLocationRequestDelegate;
 
     /**
      * Creates intent for commanding service to work in foreground.
@@ -138,40 +134,10 @@ public class WhereAmILocationService extends Service implements LocationListener
      * @param context some kind of context
      * @return intent
      */
-    public static Intent startService(Context context) {
-        return new Intent(context, WhereAmILocationService.class);
-    }
-
-    /**
-     * Creates intent for commanding service to start request location.
-     *
-     * @param context some kind of context
-     * @return intent
-     */
     public static Intent startTrackLocation(Context context) {
         Intent intent = new Intent(context, WhereAmILocationService.class);
         intent.setAction(ACTION_START_TRACK_LOCATION);
         return intent;
-    }
-
-    /**
-     * Creates intent for commanding service to start request location.
-     *
-     * @param context some kind of context
-     * @return intent
-     */
-    public static Intent getLastLocation(Context context) {
-        Intent intent = new Intent(context, WhereAmILocationService.class);
-        intent.setAction(ACTION_LAST_LOCATION);
-        return intent;
-    }
-
-    public static LocationRequest createLocationRequest() {
-        LocationRequest request = new LocationRequest();
-        request.setInterval(LOCATION_REQUEST_INTERVAL);
-        request.setFastestInterval(LOCATION_REQUEST_FASTEST_INTERVAL);
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return request;
     }
 
     public WhereAmILocationService() {
@@ -185,16 +151,17 @@ public class WhereAmILocationService extends Service implements LocationListener
     @Override
     public void onCreate() {
         super.onCreate();
+        mLocationRequestDelegate = new LocationRequestDelegate(getApplicationContext(), this);
+        mLocationRequestDelegate.connect();
         mGeocoder = new Geocoder(this, Locale.getDefault());
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addApi(LocationServices.API)
-                .addOnConnectionFailedListener(this).build();
-        mGoogleApiClient.connect();
 
         mUiHandler = new Handler(callback);
         mComputingThread.start();
         mComputingHandler = new Handler(mComputingThread.getLooper(), callback);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.ACTION_PERMISSIONS_REQUEST_RESULT);
+        intentFilter.addAction(Constants.ACTION_SETTINGS_REQUEST_RESULT);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRequirementsReceiver, intentFilter);
     }
 
     @Override
@@ -205,75 +172,29 @@ public class WhereAmILocationService extends Service implements LocationListener
     }
 
     @Override
-    public boolean onUnbind(Intent intent) {
-        if (ACTION_START_TRACK_LOCATION.equals(intent.getAction())) {
-            stopLocationRequest();
-        }
-        return false;
-    }
-
-    @Override
     public void onDestroy() {
+        mLocationRequestDelegate.stopLocationRequest();
+        mLocationRequestDelegate.disconnect();
         mComputingHandler.removeCallbacksAndMessages(null);
         mUiHandler.removeCallbacksAndMessages(null);
-        mGoogleApiClient.disconnect();
-        mGoogleApiClient = null;
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequirementsReceiver);
         super.onDestroy();
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.v(TAG, "GoogleApiClient connected");
-        mIsApiClientConnected = true;
-
-        mLocationRequest = createLocationRequest();
-        getLastLocationRequest();
+    public void onPermissionsRequired(String[] permissions) {
+        MainActivity.requestPermissions(this, permissions);
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-        Log.v(TAG, "GoogleApiClient suspended");
-        mIsApiClientConnected = false;
+    public void onSettingsResolutionRequired(LocationSettingsResult result) {
+        Toast.makeText(this, R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();
+        MainActivity.requestSettings(this, result.getStatus());
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.v(TAG, "GoogleApiClient connection failed");
-        mIsApiClientConnected = false;
-        //TODO: Notify user about problem
-    }
-
-    @Override
-    public void onResult(@NonNull LocationSettingsResult result) {
-        final Status status = result.getStatus();
-        switch (status.getStatusCode()) {
-            case LocationSettingsStatusCodes.SUCCESS:
-                Log.v(TAG, "Location settings are satisfied");
-                Log.v(TAG, "Location requested: " + mLocationRequest.toString());
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(startTrackLocation(this));
-                    return;
-                }
-                LocationServices.FusedLocationApi
-                        .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-                break;
-            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                Log.v(TAG, "Location settings are required");
-                Toast.makeText(this, R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();
-                try {
-                    PendingIntent pendingIntent = PendingIntent.getService(this, 0, startService(this), 0);
-                    MainActivity.requestSettings(this, status, pendingIntent).send();
-                } catch (PendingIntent.CanceledException e) {
-                    Log.e(TAG, e.getMessage(), e);
-                }
-                break;
-            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                Log.v(TAG, "Location settings are required, but cannot be changed");
-                // Location settings are not satisfied. However, we have no way
-                // to fix the settings so we won't show the dialog.
-                Toast.makeText(this, R.string.settings_change_unavailable, Toast.LENGTH_SHORT).show();
-                break;
-        }
+    public void onSettingsChangeUnavailable(LocationSettingsResult result) {
+        Toast.makeText(this, R.string.settings_change_unavailable, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -281,90 +202,6 @@ public class WhereAmILocationService extends Service implements LocationListener
         Log.v(TAG, String.format("Location changed: %1$.4f x %2$.4f", location.getLatitude(), location.getLongitude()));
         mLastLocation = location;
         updateAddresses();
-
-
-        //TODO: Use best practices for best location
-    }
-
-    private void handleCommand(Intent intent) {
-        final String action = intent.getAction();
-        if (action != null) {
-            switch (action) {
-                case ACTION_START_FOREGROUND:
-                    startForegroundWAI();
-                    break;
-                case ACTION_STOP_FOREGROUND:
-                    stopForegroundWAI();
-                    break;
-                case ACTION_START_TRACK_LOCATION:
-                    startLocationRequest();
-                    break;
-                case ACTION_LAST_LOCATION:
-                    getLastLocationRequest();
-                    break;
-            }
-        }
-    }
-
-    /**
-     * Requests permissions.
-     */
-    private void requestPermissions(Intent intent) {
-        try {
-            PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
-            MainActivity.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, pendingIntent).send();
-        } catch (PendingIntent.CanceledException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Start service foreground.
-     */
-    private void startForegroundWAI() {
-        Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.eye)
-                .setContentTitle(getString(R.string.notification_title))
-                .setContentText(getString(R.string.notification_text))
-                .setContentIntent(MainActivity.showLocationScreen(this))
-                .build();
-        startForeground(NOTIFICATION_ID, notification);
-    }
-
-    /**
-     * Stop service foreground.
-     */
-    private void stopForegroundWAI() {
-        stopForeground(true);
-        stopSelf();
-    }
-
-    /**
-     * Stops requesting location.
-     */
-    private void stopLocationRequest() {
-        Log.v(TAG, "Stop location request");
-        if (mIsApiClientConnected) {
-            Log.v(TAG, "Location request stopped");
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-    }
-
-    private void startLocationRequest() {
-        checkSettings();
-    }
-
-    private void getLastLocationRequest() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(getLastLocation(this));
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-
-        updateAddresses();
-
-        checkSettings();
     }
 
     @Override
@@ -394,11 +231,38 @@ public class WhereAmILocationService extends Service implements LocationListener
         }
     }
 
-    private void checkSettings() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest);
-        PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
-        locationSettingsResultPendingResult.setResultCallback(this);
+    private void handleCommand(Intent intent) {
+        final String action = intent.getAction();
+        if (action != null) {
+            switch (action) {
+                case ACTION_START_FOREGROUND:
+                    startForegroundWAI();
+                    break;
+                case ACTION_STOP_FOREGROUND:
+                    stopForegroundWAI();
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Start service foreground.
+     */
+    private void startForegroundWAI() {
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.eye)
+                .setContentTitle(getString(R.string.notification_title))
+                .setContentText(getString(R.string.notification_text))
+                .setContentIntent(MainActivity.showLocationScreen(this))
+                .build();
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
+    /**
+     * Stop service foreground.
+     */
+    private void stopForegroundWAI() {
+        stopForeground(true);
+        stopSelf();
     }
 }

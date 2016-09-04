@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,22 +33,20 @@ import com.google.android.gms.common.api.Status;
  */
 public class MainActivity extends AppCompatActivity implements Router {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int REQUEST_LOCATION_PERMISSION = 1;
-    private static final String ACTION_REQUEST_PERMISSIONS = MainActivity.class.getPackage().getName() + "/ACTION_REQUEST_PERMISSIONS";
+    private static final String ACTION_REQUEST_PERMISSIONS = MainActivity.class.getPackage().getName() + "/ACTION_PERMISSIONS_REQUEST_RESULT";
     private static final String ACTION_SHOW_SCREEN = MainActivity.class.getPackage().getName() + "/ACTION_SHOW_SCREEN";
 
 
-    private static final String ACTION_REQUEST_SETTINGS = MainActivity.class.getPackage().getName() + "/ACTION_REQUEST_SETTINGS";
+    private static final String ACTION_REQUEST_SETTINGS = MainActivity.class.getPackage().getName() + "/ACTION_SETTINGS_REQUEST_RESULT";
 
     private static final String EXTRA_REQUESTED_PERMISSIONS = "EXTRA_REQUESTED_PERMISSIONS";
     private static final String EXTRA_SCREEN_KEY = "EXTRA_SCREEN_KEY";
-    private static final String EXTRA_PENDING_INTENT = "EXTRA_PENDING_INTENT";
     private static final String EXTRA_SETTINGS_STATUS = "EXTRA_SETTINGS_STATUS";
 
     private static final int ACTION_SHOW_LOCATION_SCREEN_CODE = 1;
-    private static final int ACTION_REQUEST_PERMISSION_CODE = 2;
-    private static final int ACTION_REQUEST_SETTINGS_CODE = 3;
-    private static final int REQUEST_CHECK_SETTINGS = 3;
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
+    private static final int REQUEST_CHECK_SETTINGS = 2;
 
     /**
      * Creates pending intent for show location screen.
@@ -66,23 +65,20 @@ public class MainActivity extends AppCompatActivity implements Router {
      * Creates pending intent for requesting permissions.
      *
      * @param context some kind of context
-     * @return pending intent
      */
-    public static PendingIntent requestPermissions(Context context, String[] permissions, PendingIntent pendingIntent) {
+
+    public static void requestPermissions(Context context, String[] permissions) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_PERMISSIONS);
         intent.putExtra(EXTRA_REQUESTED_PERMISSIONS, permissions);
-        intent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
-        return PendingIntent.getActivities(context, ACTION_REQUEST_PERMISSION_CODE, new Intent[]{intent}, 0);
+        context.startActivity(intent);
     }
 
-    public static PendingIntent requestSettings(Context context, Status status, PendingIntent pendingIntent) {
+    public static void requestSettings(Context context, Status status) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_SETTINGS);
-        intent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
         intent.putExtra(EXTRA_SETTINGS_STATUS, status);
-        return PendingIntent.getActivities(context, ACTION_REQUEST_SETTINGS_CODE, new Intent[]{intent}, 0);
-
+        context.startActivity(intent);
     }
 
     @Override
@@ -117,11 +113,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         }
         if (ACTION_REQUEST_SETTINGS.equals(action)) {
             Status status = intent.getParcelableExtra(EXTRA_SETTINGS_STATUS);
-            // Location settings are not satisfied, but this can be fixed
-            // by showing the user a dialog.
             try {
-                // Show the dialog by calling startResolutionForResult(),
-                // and check the result in onActivityResult().
                 status.startResolutionForResult(
                         this,
                         REQUEST_CHECK_SETTINGS);
@@ -193,14 +185,7 @@ public class MainActivity extends AppCompatActivity implements Router {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, R.string.permission_granted_try_again, Toast.LENGTH_SHORT).show();
-                    PendingIntent pendingIntent = getIntent().getParcelableExtra(EXTRA_PENDING_INTENT);
-                    if (pendingIntent != null) {
-                        try {
-                            pendingIntent.send();
-                        } catch (PendingIntent.CanceledException e) {
-                            Log.e(TAG, e.getMessage(), e);
-                        }
-                    }
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getIntent().getAction()));
                 } else {
                     Toast.makeText(this, R.string.permission_was_not_granted, Toast.LENGTH_SHORT).show();
                 }
@@ -216,14 +201,7 @@ public class MainActivity extends AppCompatActivity implements Router {
             switch (resultCode) {
                 case RESULT_OK:
                     Toast.makeText(this, R.string.settings_satisfied, Toast.LENGTH_SHORT).show();
-                    PendingIntent pendingIntent = getIntent().getParcelableExtra(EXTRA_PENDING_INTENT);
-                    if (pendingIntent != null) {
-                        try {
-                            pendingIntent.send();
-                        } catch (PendingIntent.CanceledException e) {
-                            Log.e(TAG, e.getMessage(), e);
-                        }
-                    }
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getIntent().getAction()));
                     break;
                 case RESULT_CANCELED:
                     Toast.makeText(this, R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();
