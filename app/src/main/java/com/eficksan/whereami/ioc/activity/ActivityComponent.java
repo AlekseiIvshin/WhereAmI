@@ -3,8 +3,6 @@ package com.eficksan.whereami.ioc.activity;
 import android.app.Activity;
 import android.content.Context;
 
-import com.eficksan.whereami.domain.messaging.MessagesContainer;
-import com.eficksan.whereami.domain.sync.SyncDelegate;
 import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.presentation.routing.Router;
 
@@ -19,7 +17,8 @@ import dagger.Component;
 public interface ActivityComponent {
 
     Context applicationContext();
+
     Router router();
+
     Activity activity();
-    MessagesContainer messagesContainer();
 }

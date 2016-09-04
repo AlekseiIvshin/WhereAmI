@@ -1,12 +1,6 @@
 package com.eficksan.whereami.ioc.app;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
-
-import com.eficksan.whereami.domain.Constants;
-import com.eficksan.whereami.domain.messaging.MessagesContainer;
-import com.eficksan.whereami.ioc.activity.ActivityScope;
 
 import javax.inject.Singleton;
 
@@ -31,9 +25,4 @@ public class AppModule {
         return applicationContext;
     }
 
-    @Provides
-    @Singleton
-    public MessagesContainer provideMessagesContainer() {
-        return new MessagesContainer();
-    }
 }
