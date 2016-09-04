@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'checkstyle'
 
 ext {
     supportLibraryVersion = '23.4.0';
@@ -44,4 +45,19 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+}
+
+task checkstyle(type: Checkstyle) {
+    configFile file('../config/checkstyle/checkstyle.xml')
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    // empty classpath
+    classpath = files()
+    //Do not fail build
+    ignoreFailures = true
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
 }
