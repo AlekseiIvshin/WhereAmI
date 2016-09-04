@@ -1,20 +1,19 @@
 package com.eficksan.whereami.data.location;
 
+import android.location.Address;
 import android.location.Location;
-
-import java.util.List;
 
 /**
  * Created by Aleksei Ivshin
  * on 21.08.2016.
  */
-public class WaiEvent {
+public class LocationAddress {
 
     public final Location location;
-    public final List<String> addresses;
+    public final Address address;
 
-    public WaiEvent(Location location, List<String> addresses) {
+    public LocationAddress(Location location, Address address) {
         this.location = location;
-        this.addresses = addresses;
+        this.address = address;
     }
 }

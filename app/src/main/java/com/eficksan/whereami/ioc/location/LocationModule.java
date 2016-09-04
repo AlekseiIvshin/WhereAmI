@@ -20,8 +20,8 @@ import dagger.Provides;
 public class LocationModule {
 
     @Provides
-    public ListenLocationInteractor provideListenLocationInteractor(Activity activity) {
-        return new ListenLocationInteractor(activity);
+    public ListenLocationInteractor provideListenLocationInteractor(Context context) {
+        return new ListenLocationInteractor(context);
     }
 
     @Provides

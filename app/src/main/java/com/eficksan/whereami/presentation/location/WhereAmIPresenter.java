@@ -4,12 +4,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 
-import com.eficksan.whereami.data.location.WaiEvent;
+import com.eficksan.whereami.data.location.LocationAddress;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.ListenLocationInteractor;
-import com.eficksan.whereami.domain.location.LocationAndAddressRequestInteractor;
-import com.eficksan.whereami.domain.messaging.MessagesContainer;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
@@ -30,24 +28,19 @@ public class WhereAmIPresenter {
 
     @Inject
     Router mRouter;
+
     @Inject
     ListenLocationInteractor listenLocationInteractor;
 
     @Inject
-    LocationAndAddressRequestInteractor locationAndAddressRequestInteractor;
-
-    @Inject
     ForegroundServiceInteractor foregroundServiceInteractor;
-
-    @Inject
-    MessagesContainer mMessagesContainer;
 
     private Location lastLocation = null;
     private Subscription mCreateMessageListener;
     private Subscription mLocationHistoryListener;
 
     public void onStart() {
-        foregroundServiceInteractor.stopForeground();
+        foregroundServiceInteractor.onStart();
 
         handleSwitchLocationListening(mView.switchRequestLocation.isChecked());
 
@@ -56,7 +49,7 @@ public class WhereAmIPresenter {
 
     public void onStop() {
         removeListeners();
-        foregroundServiceInteractor.startForeground();
+        foregroundServiceInteractor.onStop();
         listenLocationInteractor.unsubscribe();
     }
 
@@ -104,9 +97,10 @@ public class WhereAmIPresenter {
      */
     private void handleSwitchLocationListening(boolean isNeedToListenLocation) {
         mView.disableMessageCreating();
+        foregroundServiceInteractor.turnLocationRequesting(isNeedToListenLocation);
         if (isNeedToListenLocation) {
             mView.onGeoDataTurnOn();
-            listenLocationInteractor.execute(30000L, new Subscriber<WaiEvent>() {
+            listenLocationInteractor.execute(30000L, new Subscriber<LocationAddress>() {
                 @Override
                 public void onCompleted() {
 
@@ -118,11 +112,11 @@ public class WhereAmIPresenter {
                 }
 
                 @Override
-                public void onNext(WaiEvent waiEvent) {
-                    lastLocation = waiEvent.location;
-                    mView.onLocationChanged(waiEvent.location);
-                    mView.onAddressChanged(waiEvent.addresses);
-                    if (waiEvent.location == null) {
+                public void onNext(LocationAddress locationAddress) {
+                    lastLocation = locationAddress.location;
+                    mView.onLocationChanged(locationAddress.location);
+                    mView.onAddressChanged(locationAddress.address);
+                    if (locationAddress.location == null) {
                         mView.disableMessageCreating();
                     } else {
                         mView.enableMessageCreating();

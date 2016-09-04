@@ -1,26 +1,23 @@
 package com.eficksan.whereami.domain.location;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
-import android.location.Location;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.eficksan.whereami.data.location.LocationAddress;
 import com.eficksan.whereami.data.location.LocationRepository;
-import com.eficksan.whereami.data.location.WaiEvent;
 import com.eficksan.whereami.data.location.WhereAmILocationService;
 import com.eficksan.whereami.domain.Interactor;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -30,15 +27,23 @@ import rx.subjects.PublishSubject;
  * Created by Aleksei Ivshin
  * on 22.08.2016.
  */
-public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
+public class ListenLocationInteractor extends Interactor<Long, LocationAddress> {
+
+    private static final String TAG = ListenLocationInteractor.class.getSimpleName();
 
     private static final long DEFAULT_SECONDS_DELAY = 30;
-    private static final String TAG = ListenLocationInteractor.class.getSimpleName();
-    private final WeakReference<Activity> mRefActivityContext;
+
+    /**
+     * Interval for request location from service.
+     */
+    private long mLocationRequestSecondsInterval = DEFAULT_SECONDS_DELAY;
+
+    private Context mContext;
+
     /**
      * Location channel will dispatch events every N seconds to subscriber.
      */
-    private PublishSubject<WaiEvent> mLocationChannel;
+    private PublishSubject<LocationAddress> mLocationChannel;
     /**
      * Subscription for receiving current location every N seconds from service.
      */
@@ -46,48 +51,33 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
     private boolean mIsServiceConnected = false;
 
     private ServiceConnection mLocationServiceConnection = new ServiceConnection() {
-        public long secondsDelay = DEFAULT_SECONDS_DELAY;
 
         @Override
         public void onServiceConnected(ComponentName componentName, final IBinder iBinder) {
             mIsServiceConnected = true;
-            final LocationRepository locationDataSource = ((WhereAmILocationService.LocalBinder) iBinder).getDataSource();
+            final LocationRepository locationRepository = ((WhereAmILocationService.LocalBinder) iBinder).getDataSource();
             Log.v(TAG, "Location service was bound");
-            mDataSourceSubscription = Observable.interval(0L, secondsDelay, TimeUnit.SECONDS)
-                    .subscribe(new Action1<Object>() {
-                        @Override
-                        public void call(Object o) {
-                            Location location = locationDataSource.getLocation();
-                            if (location != null) {
-                                List<String> addresses = locationDataSource.getAddresses();
-                                Log.v(TAG, String.format("Location obtain: %s", location.toString()));
-                                Log.v(TAG, String.format("Address obtain: %s", addresses.toString()));
-                                mLocationChannel.onNext(new WaiEvent(location, addresses));
-                            }
-                        }
-                    });
+            mDataSourceSubscription = subscribeOnLocationChanges(locationRepository);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             Log.v(TAG, "Location service was disconnected");
             mIsServiceConnected = false;
-            mLocationChannel.onCompleted();
-            if (mDataSourceSubscription != null) {
-                mDataSourceSubscription.unsubscribe();
-            }
+            unsubscribeLocationChanges();
         }
     };
 
-    public ListenLocationInteractor(Activity activity) {
+    public ListenLocationInteractor(Context context) {
         super(Schedulers.computation(), AndroidSchedulers.mainThread());
+        mContext = context;
         mLocationChannel = PublishSubject.create();
-        mRefActivityContext = new WeakReference<>(activity);
     }
 
     @Override
-    protected Observable<WaiEvent> buildObservable(Long parameter) {
-        startLocationRequest(parameter);
+    protected Observable<LocationAddress> buildObservable(Long parameter) {
+        mLocationRequestSecondsInterval = (parameter > 0? parameter : DEFAULT_SECONDS_DELAY);
+        startLocationRequest();
         return mLocationChannel;
     }
 
@@ -95,19 +85,15 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
     public void unsubscribe() {
         super.unsubscribe();
         stopLocationRequest();
+        mContext = null;
     }
 
     /**
      * Starts listen location. Bind service and add listener on service connected.
-     *
-     * @param secondsDelay delay between location requesting.
      */
-    private void startLocationRequest(long secondsDelay) {
+    private void startLocationRequest() {
         Log.v(TAG, "startLocationRequest");
-        Activity activity = mRefActivityContext.get();
-        if (activity != null) {
-            activity.bindService(WhereAmILocationService.startTrackLocation(activity), mLocationServiceConnection, Context.BIND_AUTO_CREATE);
-        }
+        mContext.bindService(WhereAmILocationService.startTrackLocation(mContext), mLocationServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     /**
@@ -118,10 +104,45 @@ public class ListenLocationInteractor extends Interactor<Long, WaiEvent> {
         if (mDataSourceSubscription != null) {
             mDataSourceSubscription.unsubscribe();
         }
-        Activity activity = mRefActivityContext.get();
-        if (activity != null && mIsServiceConnected) {
-            activity.unbindService(mLocationServiceConnection);
+        if (mIsServiceConnected) {
+            mContext.unbindService(mLocationServiceConnection);
             mIsServiceConnected = false;
+        }
+    }
+
+    /**
+     * Subscribes on location changes.
+     *
+     * @param locationRepository location repository
+     * @return subscription
+     */
+    private Subscription subscribeOnLocationChanges(final LocationRepository locationRepository) {
+        return Observable.interval(0L, mLocationRequestSecondsInterval, TimeUnit.SECONDS)
+                .map(new Func1<Long, LocationAddress>() {
+                    @Override
+                    public LocationAddress call(Long aLong) {
+                        return new LocationAddress(locationRepository.getLocation(), locationRepository.getAddress());
+                    }
+                })
+                .subscribe(new Action1<LocationAddress>() {
+                    @Override
+                    public void call(LocationAddress location) {
+                        if (location != null) {
+                            Log.v(TAG, String.format("Location obtain: %s", location.toString()));
+                            mLocationChannel.onNext(location);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Unsubscribes location changes observer.
+     */
+    private void unsubscribeLocationChanges() {
+        mLocationChannel.onCompleted();
+        if (mDataSourceSubscription != null) {
+            mDataSourceSubscription.unsubscribe();
+            mDataSourceSubscription = null;
         }
     }
 }

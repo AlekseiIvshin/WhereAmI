@@ -1,6 +1,7 @@
 package com.eficksan.whereami.presentation.location;
 
 import android.content.Context;
+import android.location.Address;
 import android.location.Location;
 import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.eficksan.whereami.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -82,8 +84,12 @@ public class WhereAmIView {
      * Shows address updates.
      * @param address new address
      */
-    public void onAddressChanged(List<String> address) {
-        locationAddresses.setText(TextUtils.join(System.getProperty("line.separator"),address));
+    public void onAddressChanged(Address address) {
+        ArrayList<String> addressFragments = new ArrayList<>();
+        for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+            addressFragments.add(address.getAddressLine(i));
+        }
+        locationAddresses.setText(TextUtils.join(System.getProperty("line.separator"),addressFragments));
     }
 
     public void disableMessageCreating() {
