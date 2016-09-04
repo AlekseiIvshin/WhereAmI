@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
+apply plugin: 'pmd'
 
 ext {
     supportLibraryVersion = '23.2.1';
@@ -48,7 +49,8 @@ dependencies {
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
 }
 
-task checkstyle(type: Checkstyle) {
+task checkstyle(type: Checkstyle, dependsOn: check) {
+    group 'verification'
     configFile file('../config/checkstyle/checkstyle.xml')
     source 'src'
     include '**/*.java'
@@ -63,7 +65,8 @@ task checkstyle(type: Checkstyle) {
     }
 }
 
-task findbugs(type: FindBugs) {
+task findbugs(type: FindBugs, dependsOn: check) {
+    group 'verification'
     ignoreFailures = true
     excludeFilter = new File("${project.rootDir}/config/findbugs/exclude-filter.xml")
     classes = files("${project.rootDir}/app/build/intermediates/classes")
@@ -73,5 +76,20 @@ task findbugs(type: FindBugs) {
     reports {
         xml.enabled false
         html.enabled true
+    }
+}
+
+task pmd (type: Pmd, dependsOn: check) {
+    ignoreFailures = true
+    description 'Run pmd'
+    group 'verification'
+
+    ruleSetFiles = files("${project.rootDir}/config/pmd/rule-sets.xml")
+//    ["basic", "braces", "strings", "design", "unusedcode"]
+    source = fileTree('src/main/java')
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
     }
 }
