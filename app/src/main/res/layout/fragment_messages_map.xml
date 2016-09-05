@@ -1,0 +1,21 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.maps.MapMessagesFragment">
+
+    <com.google.android.gms.maps.MapView xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/messages_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        map:cameraTilt="30"
+        map:cameraZoom="13"
+        map:mapType="normal"
+        map:uiCompass="false"
+        map:uiRotateGestures="true"
+        map:uiScrollGestures="false"
+        map:uiTiltGestures="true"
+        map:uiZoomControls="false"
+        map:uiZoomGestures="true" />
+
+</FrameLayout>

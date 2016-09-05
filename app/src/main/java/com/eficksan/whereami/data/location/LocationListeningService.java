@@ -24,59 +24,22 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.presentation.MainActivity;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class WhereAmILocationService extends Service implements LocationListener, LocationRepository, LocationRequestDelegate.DelegateCallback {
-    private static final String TAG = WhereAmILocationService.class.getSimpleName();
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.subjects.PublishSubject;
+
+public class LocationListeningService extends Service implements LocationDataSource, LocationRequestDelegate.DelegateCallback {
+    private static final String TAG = LocationListeningService.class.getSimpleName();
 
     public static final String KEY_LOCATION = "KEY_LOCATION";
-    public static final String KEY_ADDRESS = "KEY_ADDRESS";
-
-
-    private HandlerThread mComputingThread = new HandlerThread("LocationComputingThread");
-    private Handler mUiHandler;
-    private Handler mComputingHandler;
-
-    private Handler.Callback callback = new Handler.Callback() {
-
-        @Override
-        public boolean handleMessage(Message message) {
-            if (message.what == 0) {
-                Location location = message.getData().getParcelable(KEY_LOCATION);
-                if (location == null) {
-                    return true;
-                }
-                List<Address> addressList = null;
-                try {
-                    addressList = mGeocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                } catch (IOException e) {
-                    //TODO: notify about error
-//            errorMessage = getString(R.string.service_not_available);
-                    Log.e(TAG, e.getMessage(), e);
-                } catch (IllegalArgumentException e) {
-                    //TODO: notify about error
-//            errorMessage = getString(R.string.wrong_lat_lon_used);
-                    Log.e(TAG, e.getMessage() + ". Location: " + location, e);
-                }
-                if (addressList != null && !addressList.isEmpty()) {
-                    Message nextMessage = new Message();
-                    message.what = 1;
-                    Bundle data = new Bundle();
-                    data.putParcelable(KEY_ADDRESS, addressList.get(0));
-                    message.setData(data);
-                    mUiHandler.sendMessage(nextMessage);
-                }
-            } else {
-                mLastAddress = message.getData().getParcelable(KEY_ADDRESS);
-            }
-            return true;
-        }
-    };
-
 
     private BroadcastReceiver mRequirementsReceiver = new BroadcastReceiver() {
         @Override
@@ -97,12 +60,10 @@ public class WhereAmILocationService extends Service implements LocationListener
     private static final String ACTION_STOP_FOREGROUND = "ACTION_STOP_FOREGROUND";
     private static final String ACTION_START_TRACK_LOCATION = "ACTION_START_TRACK_LOCATION";
 
-    private Geocoder mGeocoder;
-    private Location mLastLocation;
-    private Address mLastAddress;
-
     private final LocalBinder binder = new LocalBinder();
     private LocationRequestDelegate mLocationRequestDelegate;
+    private PublishSubject<Location> mLocationChannel;
+    private Subscription mLocatioSubscription;
 
     /**
      * Creates intent for commanding service to work in foreground.
@@ -111,7 +72,7 @@ public class WhereAmILocationService extends Service implements LocationListener
      * @return intent
      */
     public static Intent startForeground(Context context) {
-        Intent intent = new Intent(context, WhereAmILocationService.class);
+        Intent intent = new Intent(context, LocationListeningService.class);
         intent.setAction(ACTION_START_FOREGROUND);
         return intent;
     }
@@ -123,7 +84,7 @@ public class WhereAmILocationService extends Service implements LocationListener
      * @return intent
      */
     public static Intent stopForeground(Context context) {
-        Intent intent = new Intent(context, WhereAmILocationService.class);
+        Intent intent = new Intent(context, LocationListeningService.class);
         intent.setAction(ACTION_STOP_FOREGROUND);
         return intent;
     }
@@ -135,12 +96,12 @@ public class WhereAmILocationService extends Service implements LocationListener
      * @return intent
      */
     public static Intent startTrackLocation(Context context) {
-        Intent intent = new Intent(context, WhereAmILocationService.class);
+        Intent intent = new Intent(context, LocationListeningService.class);
         intent.setAction(ACTION_START_TRACK_LOCATION);
         return intent;
     }
 
-    public WhereAmILocationService() {
+    public LocationListeningService() {
     }
 
     @Override
@@ -152,12 +113,7 @@ public class WhereAmILocationService extends Service implements LocationListener
     public void onCreate() {
         super.onCreate();
         mLocationRequestDelegate = new LocationRequestDelegate(getApplicationContext(), this);
-        mLocationRequestDelegate.connect();
-        mGeocoder = new Geocoder(this, Locale.getDefault());
 
-        mUiHandler = new Handler(callback);
-        mComputingThread.start();
-        mComputingHandler = new Handler(mComputingThread.getLooper(), callback);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_PERMISSIONS_REQUEST_RESULT);
         intentFilter.addAction(Constants.ACTION_SETTINGS_REQUEST_RESULT);
@@ -173,10 +129,7 @@ public class WhereAmILocationService extends Service implements LocationListener
 
     @Override
     public void onDestroy() {
-        mLocationRequestDelegate.stopLocationRequest();
-        mLocationRequestDelegate.disconnect();
-        mComputingHandler.removeCallbacksAndMessages(null);
-        mUiHandler.removeCallbacksAndMessages(null);
+        unsubscribe();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequirementsReceiver);
         super.onDestroy();
     }
@@ -200,34 +153,29 @@ public class WhereAmILocationService extends Service implements LocationListener
     @Override
     public void onLocationChanged(Location location) {
         Log.v(TAG, String.format("Location changed: %1$.4f x %2$.4f", location.getLatitude(), location.getLongitude()));
-        mLastLocation = location;
-        updateAddresses();
+        mLocationChannel.onNext(location);
     }
 
     @Override
-    public Location getLocation() {
-        return mLastLocation;
+    public void subscribe(LocationRequest locationRequest, Subscriber<Location> locationSubscriber) {
+        mLocationChannel = PublishSubject.create();
+        mLocatioSubscription = mLocationChannel.subscribe(locationSubscriber);
+        mLocationRequestDelegate.setLocationRequest(locationRequest);
+        mLocationRequestDelegate.connect();
     }
 
     @Override
-    public Address getAddress() {
-        return mLastAddress;
+    public void unsubscribe() {
+        if (mLocatioSubscription!= null && !mLocatioSubscription.isUnsubscribed()) {
+            mLocatioSubscription.unsubscribe();
+        }
+        mLocationRequestDelegate.stopLocationRequest();
+        mLocationRequestDelegate.disconnect();
     }
 
     public class LocalBinder extends Binder {
-        public LocationRepository getDataSource() {
-            return WhereAmILocationService.this;
-        }
-    }
-
-    public void updateAddresses() {
-        if (mLastLocation != null) {
-            Message message = new Message();
-            message.what = 0;
-            Bundle data = new Bundle();
-            data.putParcelable(KEY_LOCATION, mLastLocation);
-            message.setData(data);
-            mComputingHandler.sendMessage(message);
+        public LocationDataSource getDataSource() {
+            return LocationListeningService.this;
         }
     }
 

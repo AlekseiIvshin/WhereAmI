@@ -1,14 +1,16 @@
 package com.eficksan.whereami.presentation.location;
 
+import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.data.location.LocationAddress;
+import com.eficksan.whereami.data.location.LocationRequestDelegate;
 import com.eficksan.whereami.domain.Constants;
+import com.eficksan.whereami.domain.location.AddressFetchingInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
-import com.eficksan.whereami.domain.location.ListenLocationInteractor;
+import com.eficksan.whereami.domain.location.LocationListeningInteractor;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
@@ -31,10 +33,57 @@ public class WhereAmIPresenter {
     Router mRouter;
 
     @Inject
-    ListenLocationInteractor listenLocationInteractor;
+    ForegroundServiceInteractor foregroundServiceInteractor;
 
     @Inject
-    ForegroundServiceInteractor foregroundServiceInteractor;
+    LocationListeningInteractor locationListeningInteractor;
+
+    @Inject
+    AddressFetchingInteractor addressFetchingInteractor;
+
+    /**
+     * Listens address changes.
+     */
+    private Subscriber<Address> addressSubscriber = new Subscriber<Address> (){
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(Address address) {
+            mView.onAddressChanged(address);
+            addressFetchingInteractor.unsubscribe();
+        }
+    };
+
+    /**
+     * Listens location changes.
+     */
+    private Subscriber<Location> locationSubscriber = new Subscriber<Location> (){
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(Location location) {
+            lastLocation = location;
+            mView.onLocationChanged(location);
+            updateAvailabilityToCreateMessage(location);
+            addressFetchingInteractor.execute(location, addressSubscriber);
+        }
+    };
 
     private Location lastLocation = null;
     private Subscription mCreateMessageListener;
@@ -51,7 +100,7 @@ public class WhereAmIPresenter {
     public void onStop() {
         removeListeners();
         foregroundServiceInteractor.onStop();
-        listenLocationInteractor.unsubscribe();
+        locationListeningInteractor.unsubscribe();
     }
 
     /**
@@ -101,37 +150,23 @@ public class WhereAmIPresenter {
         foregroundServiceInteractor.turnLocationRequesting(isNeedToListenLocation);
         if (isNeedToListenLocation) {
             mView.onGeoDataTurnOn();
-            listenLocationInteractor.execute(30000L, new Subscriber<LocationAddress>() {
-                @Override
-                public void onCompleted() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-
-                }
-
-                @Override
-                public void onNext(LocationAddress locationAddress) {
-                    lastLocation = locationAddress.location;
-                    mView.onLocationChanged(locationAddress.location);
-                    mView.onAddressChanged(locationAddress.address);
-                    if (locationAddress.location == null) {
-                        mView.disableMessageCreating();
-                    } else {
-                        mView.enableMessageCreating();
-                    }
-                }
-            });
+            locationListeningInteractor.execute(LocationRequestDelegate.createDefaultLocationRequest(), locationSubscriber);
         } else {
             mView.onGeoDataTurnOff();
             lastLocation = null;
-            listenLocationInteractor.unsubscribe();
+            locationListeningInteractor.unsubscribe();
         }
     }
 
     public void setView(WhereAmIView view) {
         this.mView = view;
+    }
+
+    private void updateAvailabilityToCreateMessage(Location location) {
+        if (location == null) {
+            mView.disableMessageCreating();
+        } else {
+            mView.enableMessageCreating();
+        }
     }
 }

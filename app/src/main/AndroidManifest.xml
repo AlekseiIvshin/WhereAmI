@@ -42,7 +42,7 @@
             android:name=".data.messaging.MessagingService"
             android:exported="false" />
         <service
-            android:name=".data.location.WhereAmILocationService"
+            android:name=".data.location.LocationListeningService"
             android:enabled="true"
             android:exported="false" />
 

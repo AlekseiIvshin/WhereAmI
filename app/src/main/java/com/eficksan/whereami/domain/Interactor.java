@@ -9,29 +9,9 @@ import rx.Subscription;
  * Created by Aleksei Ivshin
  * on 22.08.2016.
  */
-public abstract class Interactor<ParameterType, ResultType> {
+public interface Interactor<ParameterType, ResultType> {
 
-    private Subscription subscription;
-    private final Scheduler jobScheduler;
-    private final Scheduler uiScheduler;
+    void execute(ParameterType parameter, Subscriber<ResultType> subscriber);
 
-    protected Interactor(Scheduler jobScheduler, Scheduler uiScheduler) {
-        this.jobScheduler = jobScheduler;
-        this.uiScheduler = uiScheduler;
-    }
-
-    protected abstract Observable<ResultType> buildObservable(ParameterType parameter);
-
-    public void execute(ParameterType parameter, Subscriber<ResultType> subscriber) {
-        subscription = buildObservable(parameter)
-                .subscribeOn(jobScheduler)
-                .observeOn(uiScheduler)
-                .subscribe(subscriber);
-    }
-
-    public void unsubscribe() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
-    }
+    void unsubscribe();
 }

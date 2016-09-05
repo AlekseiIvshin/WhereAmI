@@ -39,7 +39,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     private LocationRequest mLocationRequest;
     private final DelegateCallback delegateCallback;
 
-    public static LocationRequest createLocationRequest() {
+    public static LocationRequest createDefaultLocationRequest() {
         LocationRequest request = new LocationRequest();
         request.setInterval(LOCATION_REQUEST_INTERVAL);
         request.setFastestInterval(LOCATION_REQUEST_FASTEST_INTERVAL);
@@ -50,6 +50,14 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     public LocationRequestDelegate(Context context, DelegateCallback delegateCallback) {
         this.context = context;
         this.delegateCallback = delegateCallback;
+    }
+
+    public void setLocationRequest(LocationRequest locationRequest) {
+        if (mLocationRequest == null || !mLocationRequest.equals(locationRequest)) {
+            mLocationRequest = locationRequest;
+            stopLocationRequest();
+            startLocationRequest();
+        }
     }
 
     public void connect() {
@@ -69,7 +77,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
         Log.v(TAG, "GoogleApiClient connected");
         mIsApiClientConnected = true;
 
-        mLocationRequest = createLocationRequest();
+        mLocationRequest = createDefaultLocationRequest();
         getLastLocationRequest();
         checkSettings();
     }

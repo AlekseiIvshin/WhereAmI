@@ -3,7 +3,7 @@ package com.eficksan.whereami.domain.location;
 import android.app.ActivityManager;
 import android.content.Context;
 
-import com.eficksan.whereami.data.location.WhereAmILocationService;
+import com.eficksan.whereami.data.location.LocationListeningService;
 
 /**
  * Interactor for starting and stopping location service in foreground.
@@ -25,7 +25,7 @@ public class ForegroundServiceInteractor {
      */
     public void onStop() {
         if (mIsNeedRequestLocation) {
-            context.startService(WhereAmILocationService.startForeground(context));
+            context.startService(LocationListeningService.startForeground(context));
         }
     }
 
@@ -33,8 +33,8 @@ public class ForegroundServiceInteractor {
      * Stops foreground service.
      */
     public void onStart() {
-        if (isMyServiceRunning(WhereAmILocationService.class)) {
-            context.startService(WhereAmILocationService.stopForeground(context));
+        if (isMyServiceRunning(LocationListeningService.class)) {
+            context.startService(LocationListeningService.stopForeground(context));
         }
     }
 
