@@ -39,9 +39,9 @@ import com.google.android.gms.common.api.Status;
  */
 public class MainActivity extends AppCompatActivity implements Router {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String ACTION_REQUEST_PERMISSIONS = MainActivity.class.getPackage().getName() + "/ACTION_PERMISSIONS_REQUEST_RESULT";
-    private static final String ACTION_SHOW_SCREEN = MainActivity.class.getPackage().getName() + "/ACTION_SHOW_SCREEN";
 
+    private static final String ACTION_SHOW_SCREEN = MainActivity.class.getPackage().getName() + "/ACTION_SHOW_SCREEN";
+    private static final String ACTION_REQUEST_PERMISSIONS = MainActivity.class.getPackage().getName() + "/ACTION_PERMISSIONS_REQUEST_RESULT";
 
     private static final String ACTION_REQUEST_SETTINGS = MainActivity.class.getPackage().getName() + "/ACTION_SETTINGS_REQUEST_RESULT";
 
@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements Router {
     private static final String EXTRA_SETTINGS_STATUS = "EXTRA_SETTINGS_STATUS";
 
     private static final int ACTION_SHOW_LOCATION_SCREEN_CODE = 1;
+    private static final int ACTION_REQUEST_PERMISSION_CODE = 2;
+    private static final int ACTION_REQUEST_SETTINGS_CODE = 3;
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private static final int REQUEST_CHECK_SETTINGS = 2;
@@ -70,22 +72,28 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     /**
      * Creates pending intent for requesting permissions.
-     *
      * @param context some kind of context
+     * @param permissions required permissions
+     * @return pending intent
      */
-
-    public static void requestPermissions(Context context, String[] permissions) {
+    public static PendingIntent requestPermissions(Context context, String[] permissions) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_PERMISSIONS);
         intent.putExtra(EXTRA_REQUESTED_PERMISSIONS, permissions);
-        context.startActivity(intent);
+        return PendingIntent.getActivities(context, ACTION_REQUEST_PERMISSION_CODE, new Intent[]{intent}, 0);
     }
 
-    public static void requestSettings(Context context, Status status) {
+    /**
+     * Creates pending intetnt for requesting settings.
+     * @param context some kind of context
+     * @param status settings status
+     * @return pending intent
+     */
+    public static PendingIntent requestSettings(Context context, Status status) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_SETTINGS);
         intent.putExtra(EXTRA_SETTINGS_STATUS, status);
-        context.startActivity(intent);
+        return PendingIntent.getActivities(context, ACTION_REQUEST_SETTINGS_CODE, new Intent[]{intent}, 0);
     }
 
     @Override

@@ -64,7 +64,9 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
 
     @Override
     public void unsubscribe() {
-        locationDataSource.unsubscribe();
+        if (locationDataSource!=null) {
+            locationDataSource.unsubscribe();
+        }
         stopLocationRequest();
         mContext = null;
     }

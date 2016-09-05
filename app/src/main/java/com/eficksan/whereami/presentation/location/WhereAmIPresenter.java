@@ -87,7 +87,6 @@ public class WhereAmIPresenter {
 
     private Location lastLocation = null;
     private Subscription mCreateMessageListener;
-    private Subscription mLocationHistoryListener;
 
     public void onStart() {
         foregroundServiceInteractor.onStart();
@@ -136,8 +135,6 @@ public class WhereAmIPresenter {
         mView.switchRequestLocation.setOnClickListener(null);
         mCreateMessageListener.unsubscribe();
         mCreateMessageListener = null;
-        mLocationHistoryListener.unsubscribe();
-        mLocationHistoryListener = null;
     }
 
     /**

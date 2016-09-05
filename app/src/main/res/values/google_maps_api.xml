@@ -1,3 +1,4 @@
 <resources>
+    <!--TODO: this is debug key. Generate release and move this key to debug build type-->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyByKGcW3gMew6SNAPUIUHIm07Lt3OQLT_Y</string>
 </resources>

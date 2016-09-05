@@ -38,6 +38,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     private boolean mIsApiClientConnected = false;
     private LocationRequest mLocationRequest;
     private final DelegateCallback delegateCallback;
+    private boolean mIsLocationRequesting = false;
 
     public static LocationRequest createDefaultLocationRequest() {
         LocationRequest request = new LocationRequest();
@@ -55,8 +56,10 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     public void setLocationRequest(LocationRequest locationRequest) {
         if (mLocationRequest == null || !mLocationRequest.equals(locationRequest)) {
             mLocationRequest = locationRequest;
-            stopLocationRequest();
-            startLocationRequest();
+            if (mIsLocationRequesting && mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                stopLocationRequest();
+                startLocationRequest();
+            }
         }
     }
 
@@ -134,6 +137,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
                 }
                 LocationServices.FusedLocationApi
                         .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+                mIsLocationRequesting = true;
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 delegateCallback.onSettingsResolutionRequired(result);
@@ -149,6 +153,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
      */
     public void stopLocationRequest() {
         Log.v(TAG, "Stop location request");
+        mIsLocationRequesting = false;
         if (mIsApiClientConnected) {
             Log.v(TAG, "Location request stopped");
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);

@@ -1,6 +1,7 @@
 package com.eficksan.whereami.data.location;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -122,13 +123,21 @@ public class LocationListeningService extends Service implements LocationDataSou
 
     @Override
     public void onPermissionsRequired(String[] permissions) {
-        MainActivity.requestPermissions(this, permissions);
+        try {
+            MainActivity.requestPermissions(this, permissions).send();
+        } catch (PendingIntent.CanceledException e) {
+            Log.e(TAG, e.getMessage(),e);
+        }
     }
 
     @Override
     public void onSettingsResolutionRequired(LocationSettingsResult result) {
         Toast.makeText(this, R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();
-        MainActivity.requestSettings(this, result.getStatus());
+        try {
+            MainActivity.requestSettings(this, result.getStatus()).send();
+        } catch (PendingIntent.CanceledException e) {
+            Log.e(TAG, e.getMessage(),e);
+        }
     }
 
     @Override
