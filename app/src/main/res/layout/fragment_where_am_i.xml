@@ -51,15 +51,6 @@
             android:paddingRight="@dimen/default.spacing.horizontal"
             android:paddingTop="@dimen/default.spacing.vertical"
             tools:text="Earth Hell" />
-
-        <TextView
-            android:id="@+id/label_location_history"
-            style="@style/AppTextAppearance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/label_location"
-            android:text="@string/location_history.label" />
-
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton

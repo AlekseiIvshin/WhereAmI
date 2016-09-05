@@ -6,8 +6,8 @@ import android.support.v4.os.ResultReceiver;
 import android.util.Log;
 
 import com.eficksan.whereami.data.messaging.MessagingService;
+import com.eficksan.whereami.domain.BaseInteractor;
 import com.eficksan.whereami.domain.Constants;
-import com.eficksan.whereami.domain.Interactor;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -22,7 +22,7 @@ import rx.subjects.PublishSubject;
  * Created by Aleksei Ivshin
  * on 24.08.2016.
  */
-public class MessagingInteractor extends Interactor<LocationMessage, Integer> {
+public class MessagingInteractor extends BaseInteractor<LocationMessage, Integer> {
     private static final String TAG = MessagingInteractor.class.getSimpleName();
 
     private PublishSubject<Integer> mMessageResultChannel;

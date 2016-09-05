@@ -7,4 +7,5 @@ package com.eficksan.whereami.presentation.routing;
 public interface Screens {
     int LOCATION_SCREEN = 1;
     int MESSAGING_SCREEN = 2;
+    int MAPS_SCREEN = 3;
 }

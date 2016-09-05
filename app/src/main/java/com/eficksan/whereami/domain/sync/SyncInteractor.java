@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.eficksan.whereami.domain.BaseInteractor;
 import com.eficksan.whereami.domain.Interactor;
 
 import rx.Observable;
@@ -17,7 +18,7 @@ import rx.subjects.PublishSubject;
  * Created by Aleksei Ivshin
  * on 30.08.2016.
  */
-public class SyncInteractor extends Interactor<Integer, Integer> {
+public class SyncInteractor extends BaseInteractor<Integer, Integer> {
 
     private final PublishSubject<Integer> mSyncResultChannel;
 
