@@ -6,15 +6,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Binder;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -23,23 +17,15 @@ import android.widget.Toast;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.presentation.MainActivity;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-
-import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
 
 public class LocationListeningService extends Service implements LocationDataSource, LocationRequestDelegate.DelegateCallback {
     private static final String TAG = LocationListeningService.class.getSimpleName();
-
-    public static final String KEY_LOCATION = "KEY_LOCATION";
 
     private BroadcastReceiver mRequirementsReceiver = new BroadcastReceiver() {
         @Override
@@ -63,7 +49,7 @@ public class LocationListeningService extends Service implements LocationDataSou
     private final LocalBinder binder = new LocalBinder();
     private LocationRequestDelegate mLocationRequestDelegate;
     private PublishSubject<Location> mLocationChannel;
-    private Subscription mLocatioSubscription;
+    private Subscription mLocationSubscription;
 
     /**
      * Creates intent for commanding service to work in foreground.
@@ -159,15 +145,15 @@ public class LocationListeningService extends Service implements LocationDataSou
     @Override
     public void subscribe(LocationRequest locationRequest, Subscriber<Location> locationSubscriber) {
         mLocationChannel = PublishSubject.create();
-        mLocatioSubscription = mLocationChannel.subscribe(locationSubscriber);
+        mLocationSubscription = mLocationChannel.subscribe(locationSubscriber);
         mLocationRequestDelegate.setLocationRequest(locationRequest);
         mLocationRequestDelegate.connect();
     }
 
     @Override
     public void unsubscribe() {
-        if (mLocatioSubscription!= null && !mLocatioSubscription.isUnsubscribed()) {
-            mLocatioSubscription.unsubscribe();
+        if (mLocationSubscription != null && !mLocationSubscription.isUnsubscribed()) {
+            mLocationSubscription.unsubscribe();
         }
         mLocationRequestDelegate.stopLocationRequest();
         mLocationRequestDelegate.disconnect();
