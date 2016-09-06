@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "582083205831",
+    "firebase_url": "https://placingmessages.firebaseio.com",
+    "project_id": "placingmessages",
+    "storage_bucket": "placingmessages.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582083205831:android:15bee1e088a4a2ec",
+        "android_client_info": {
+          "package_name": "com.eficksan.whereami"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582083205831-bgf7bd2j0adqd9fmv95hc5b8lfhge41t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eficksan.whereami",
+            "certificate_hash": "C1B64B1596714494FAEFD1616A801BE6C83C96EF"
+          }
+        },
+        {
+          "client_id": "582083205831-p28pu8drp1jp1p7o8udrd8jbv10ictcc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuof6bcAL19GeokgoFe5AlkrX1pZxgMaw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582083205831-p28pu8drp1jp1p7o8udrd8jbv10ictcc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
