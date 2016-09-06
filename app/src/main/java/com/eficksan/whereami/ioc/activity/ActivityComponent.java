@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.presentation.routing.Router;
+import com.google.firebase.auth.FirebaseAuth;
 
 import dagger.Component;
 
@@ -17,6 +18,8 @@ import dagger.Component;
 public interface ActivityComponent {
 
     Context applicationContext();
+
+    FirebaseAuth firebaseAuth();
 
     Router router();
 

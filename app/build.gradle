@@ -27,6 +27,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -42,13 +46,13 @@ dependencies {
     compile "com.google.android.gms:play-services-location:${playServicesVersion}"
     compile "com.google.android.gms:play-services-maps:${playServicesVersion}"
     compile "com.android.support:support-v4:${supportLibraryVersion}"
+    compile "com.google.firebase:firebase-core:${playServicesVersion}"
+    compile "com.google.firebase:firebase-auth:${playServicesVersion}"
     compile 'com.google.dagger:dagger:2.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
-    compile "com.android.support:support-v4:${supportLibraryVersion}"
-    compile "com.google.firebase:firebase-core:${playServicesVersion}"
 }
 
 apply plugin: 'com.google.gms.google-services'
@@ -83,7 +87,7 @@ task findbugs(type: FindBugs, dependsOn: check) {
     }
 }
 
-task pmd (type: Pmd, dependsOn: check) {
+task pmd(type: Pmd, dependsOn: check) {
     ignoreFailures = true
     description 'Run pmd'
     group 'verification'

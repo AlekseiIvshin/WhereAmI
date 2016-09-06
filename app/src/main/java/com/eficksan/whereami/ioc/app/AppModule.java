@@ -2,6 +2,8 @@ package com.eficksan.whereami.ioc.app;
 
 import android.content.Context;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -23,6 +25,12 @@ public class AppModule {
     @Singleton
     public Context provideContext() {
         return applicationContext;
+    }
+
+    @Provides
+    @Singleton
+    public FirebaseAuth provideFirebaseAuth() {
+        return FirebaseAuth.getInstance();
     }
 
 }
