@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 /**
  * Provides validation entered email.
  */
-public class EmailValidator {
+public class EmailValidator implements Validator {
     private static final String EMAIL_PATTERN =
             "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                     + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -15,6 +15,7 @@ public class EmailValidator {
         mPattern = Pattern.compile(EMAIL_PATTERN);
     }
 
+    @Override
     public boolean validate(String email) {
         return mPattern.matcher(email).matches();
     }

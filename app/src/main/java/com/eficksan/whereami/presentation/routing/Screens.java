@@ -10,4 +10,7 @@ public interface Screens {
     int LOCATION_SCREEN = 1;
     int MESSAGING_SCREEN = 2;
     int MAPS_SCREEN = 3;
+    int SIGN_IN_SCREEN = 4;
+    int SIGN_UP_SCREEN = 5;
+    int RESET_PASSWORD_SCREEN = 6;
 }

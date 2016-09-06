@@ -45,4 +45,9 @@
     <string name="hint_password">Enter password</string>
     <string name="label_sign_up">Sign Up</string>
     <string name="label_sign_in">Sign In</string>
+    <string name="auth_password_invalid">Email should be 6 to 20 characters string with at least one digit, one upper case letter, one lower case letter and one special symbol.</string>
+    <string name="auth_email_invalid">Email is not valid.</string>
+    <string name="label_reset_password">Reset password</string>
+    <string name="auth.error.sign_in">Wrong email or password.</string>
+    <string name="auth.error.empty_email_or_password">Email or password is empty.</string>
 </resources>

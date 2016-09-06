@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -26,6 +25,8 @@ import android.widget.Toast;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
+import com.eficksan.whereami.ioc.activity.ActivityComponent;
+import com.eficksan.whereami.presentation.auth.signin.SignInFragment;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.presentation.maps.MapMessagesFragment;
 import com.eficksan.whereami.presentation.messaging.PlacingMessageFragment;
@@ -106,15 +107,18 @@ public class MainActivity extends AppCompatActivity implements Router {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ((App) getApplication()).plusActivityComponent(this);
+        ActivityComponent activityComponent = ((App) getApplication()).plusActivityComponent(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
-        initNavigationView(toolbar);
+        initNavigationView();
 
         if (savedInstanceState == null && mCurrentScreenKey == Screens.NONE) {
-            int screenKey = getIntent().getIntExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
-            showScreen(screenKey, getIntent().getExtras());
+            if (activityComponent.currentUser() == null) {
+                showScreen(Screens.SIGN_IN_SCREEN, Bundle.EMPTY);
+            } else {
+                showScreen(Screens.LOCATION_SCREEN, Bundle.EMPTY);
+            }
         }
     }
 
@@ -190,8 +194,10 @@ public class MainActivity extends AppCompatActivity implements Router {
                 break;
             }
             case Screens.LOCATION_SCREEN:
-            default:
                 replaceFragment(WhereAmIFragment.newInstance(), WhereAmIFragment.TAG, false);
+                break;
+            case Screens.SIGN_IN_SCREEN:
+                replaceFragment(SignInFragment.newInstance(), SignInFragment.TAG, false);
                 break;
 
         }
@@ -202,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         Log.v(TAG, String.format("Close screen: current screen key = %d", mCurrentScreenKey));
         switch (key) {
             case Screens.LOCATION_SCREEN:
+            case Screens.SIGN_IN_SCREEN:
                 finish();
                 break;
             case Screens.MAPS_SCREEN:
@@ -255,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         }
     }
 
-    private void initNavigationView(Toolbar toolbar) {
+    private void initNavigationView() {
         //Initializing NavigationView
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         if (navigationView == null) {
@@ -289,13 +296,5 @@ public class MainActivity extends AppCompatActivity implements Router {
                 return true;
             }
         });
-
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
-
-        //Setting the actionbarToggle to drawer layout
-        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
-
-        //calling sync state is necessay or else your hamburger icon wont show up
-        actionBarDrawerToggle.syncState();
     }
 }

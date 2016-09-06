@@ -1,16 +1,13 @@
 package com.eficksan.whereami.presentation.auth.signin;
 
-import android.content.Context;
 import android.support.annotation.StringRes;
-import android.support.design.widget.TextInputLayout;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.presentation.auth.common.InputFieldsDelegate;
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -20,20 +17,23 @@ import butterknife.ButterKnife;
  */
 public class SignInView {
 
-    @Inject
-    Context context;
-
     @Bind(R.id.input_email)
     EditText emailInput;
-
-    @Bind(R.id.input_layout_email)
-    protected TextInputLayout emailInputLayout;
 
     @Bind(R.id.input_password)
     EditText passwordInput;
 
-    @Bind(R.id.input_layout_password)
-    protected TextInputLayout passwordInputLayout;
+    @Bind(R.id.sign_in)
+    Button signIn;
+
+    @Bind(R.id.sign_up)
+    Button signUp;
+
+    @Bind(R.id.reset_password)
+    Button resetPassword;
+
+    @Bind(R.id.sign_in_results)
+    TextView signInResults;
 
     @Bind(R.id.progress_bar)
     ProgressBar progressBar;
@@ -43,27 +43,59 @@ public class SignInView {
         progressBar.setIndeterminate(true);
     }
 
-    public void showEmailValidationError(@StringRes int resId) {
-        InputFieldsDelegate.showValidatoinError(emailInputLayout, resId, context);
+    /**
+     * Shows sign in error message.
+     *
+     * @param errorResId sign in error
+     */
+    public void showSignInError(@StringRes int errorResId) {
+        signInResults.setText(errorResId);
+        if (signInResults.getVisibility() != View.VISIBLE) {
+            signInResults.setVisibility(View.VISIBLE);
+        }
     }
 
-    public void hideEmailValidationError(@StringRes int resId) {
-        InputFieldsDelegate.hideValidatoinError(emailInputLayout);
+    /**
+     * Hides sign in error.
+     */
+    public void hideSignInError() {
+        signInResults.setText(null);
+        if (signInResults.getVisibility() != View.GONE) {
+            signInResults.setVisibility(View.GONE);
+        }
     }
 
-    public void showPasswordValidationError(@StringRes int resId) {
-        InputFieldsDelegate.showValidatoinError(passwordInputLayout, resId, context);
-    }
-
-    public void hidePasswordValidationError(@StringRes int resId) {
-        InputFieldsDelegate.hideValidatoinError(passwordInputLayout);
-    }
-
+    /**
+     * Shows sign in progress.
+     */
     public void showProgress() {
+        blockControls();
         progressBar.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Hides sign in progress.
+     */
     public void hideProgress() {
         progressBar.setVisibility(View.GONE);
+        unblockControls();
+    }
+
+    private void blockControls() {
+        signUp.setClickable(true);
+        signIn.setClickable(true);
+        resetPassword.setClickable(true);
+    }
+
+    private void unblockControls() {
+        signUp.setClickable(false);
+        signIn.setClickable(false);
+        resetPassword.setClickable(false);
+    }
+
+    public void showResetPassword() {
+        if (View.VISIBLE != resetPassword.getVisibility()) {
+            resetPassword.setVisibility(View.VISIBLE);
+        }
     }
 }

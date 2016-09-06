@@ -1,9 +1,11 @@
 package com.eficksan.whereami.ioc.app;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.eficksan.whereami.data.sync.SyncAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import javax.inject.Singleton;
 
@@ -18,6 +20,9 @@ import dagger.Component;
 public interface AppComponent {
     Context applicationContext();
     FirebaseAuth firebaseAuth();
+
+    @Nullable
+    FirebaseUser currentUser();
 
     void inject(SyncAdapter syncAdapter);
 }
