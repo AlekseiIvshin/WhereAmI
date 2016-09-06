@@ -7,7 +7,6 @@ import android.location.Geocoder;
 import com.eficksan.whereami.domain.location.AddressFetchingInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
-import com.eficksan.whereami.domain.sync.SyncInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 
 import java.util.Locale;
@@ -26,11 +25,6 @@ public class LocationModule {
     @Provides
     public ForegroundServiceInteractor provideForegroundServiceInteractor(Activity activity) {
         return new ForegroundServiceInteractor(activity);
-    }
-
-    @Provides
-    public SyncInteractor provideInteractor(Context context) {
-        return new SyncInteractor(context);
     }
 
     @Provides

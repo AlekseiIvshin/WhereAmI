@@ -5,6 +5,8 @@ package com.eficksan.whereami.presentation.routing;
  * on 22.06.2016.
  */
 public interface Screens {
+
+    int NONE = -1;
     int LOCATION_SCREEN = 1;
     int MESSAGING_SCREEN = 2;
     int MAPS_SCREEN = 3;

@@ -18,6 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -25,7 +26,6 @@ import android.widget.Toast;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
-import com.eficksan.whereami.domain.sync.SyncDelegate;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.presentation.maps.MapMessagesFragment;
 import com.eficksan.whereami.presentation.messaging.PlacingMessageFragment;
@@ -55,8 +55,9 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private static final int REQUEST_CHECK_SETTINGS = 2;
-    private int mCurrentScreenKey = -1;
+    private int mCurrentScreenKey = Screens.NONE;
     private DrawerLayout mDrawerLayout;
+
     /**
      * Creates pending intent for show location screen.
      *
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements Router {
      * @return pending intent
      */
     public static PendingIntent showLocationScreen(Context context) {
+        Log.v(TAG, "Request show location screen");
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_SHOW_SCREEN);
         intent.putExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
@@ -72,11 +74,13 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     /**
      * Creates pending intent for requesting permissions.
-     * @param context some kind of context
+     *
+     * @param context     some kind of context
      * @param permissions required permissions
      * @return pending intent
      */
     public static PendingIntent requestPermissions(Context context, String[] permissions) {
+        Log.v(TAG, "Request permissions: " + TextUtils.join(", ", permissions));
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_PERMISSIONS);
         intent.putExtra(EXTRA_REQUESTED_PERMISSIONS, permissions);
@@ -85,11 +89,13 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     /**
      * Creates pending intetnt for requesting settings.
+     *
      * @param context some kind of context
-     * @param status settings status
+     * @param status  settings status
      * @return pending intent
      */
     public static PendingIntent requestSettings(Context context, Status status) {
+        Log.v(TAG, "Request settings: status = " + status.toString());
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_SETTINGS);
         intent.putExtra(EXTRA_SETTINGS_STATUS, status);
@@ -106,12 +112,10 @@ public class MainActivity extends AppCompatActivity implements Router {
         setSupportActionBar(toolbar);
         initNavigationView(toolbar);
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && mCurrentScreenKey == Screens.NONE) {
             int screenKey = getIntent().getIntExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
             showScreen(screenKey, getIntent().getExtras());
         }
-
-        SyncDelegate.startSync(this);
     }
 
     @Override
@@ -119,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         super.onNewIntent(intent);
         setIntent(intent);
         String action = intent.getAction();
+        Log.v(TAG, "On receive new intent. Action = " + action);
         if (ACTION_SHOW_SCREEN.equals(action)) {
             int screenKey = intent.getIntExtra(EXTRA_SCREEN_KEY, Screens.LOCATION_SCREEN);
             showScreen(screenKey, intent.getExtras());
@@ -141,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     protected void onDestroy() {
-        SyncDelegate.stopSync(this);
         ((App) getApplication()).removeActivityComponent();
         super.onDestroy();
     }
@@ -170,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     public void showScreen(int nextScreenKey, Bundle args) {
+        Log.v(TAG, String.format("Show screen: current screen key = %d, next screen key = %d", mCurrentScreenKey, nextScreenKey));
         if (mCurrentScreenKey == nextScreenKey) {
             return;
         }
@@ -194,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     public void closeScreen(int key) {
+        Log.v(TAG, String.format("Close screen: current screen key = %d", mCurrentScreenKey));
         switch (key) {
             case Screens.LOCATION_SCREEN:
                 finish();
@@ -266,8 +272,7 @@ public class MainActivity extends AppCompatActivity implements Router {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 if (menuItem.isChecked()) {
                     menuItem.setChecked(false);
-                }
-                else {
+                } else {
                     menuItem.setChecked(true);
                 }
 

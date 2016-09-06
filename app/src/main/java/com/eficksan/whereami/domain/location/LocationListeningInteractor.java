@@ -25,9 +25,10 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
 
     private static final String TAG = LocationListeningInteractor.class.getSimpleName();
 
-    private Context mContext;
+    private final Context mContext;
 
     private boolean mIsServiceConnected = false;
+    private boolean mIsNeedRequestLocation =true;
 
     private LocationDataSource locationDataSource;
     private LocationRequest mLocationRequest;
@@ -38,8 +39,10 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
         public void onServiceConnected(ComponentName componentName, final IBinder iBinder) {
             mIsServiceConnected = true;
 
-            locationDataSource = ((LocationListeningService.LocalBinder) iBinder).getDataSource();
-            locationDataSource.subscribe(mLocationRequest, mLocationSubscriber);
+            if (mIsNeedRequestLocation) {
+                locationDataSource = ((LocationListeningService.LocalBinder) iBinder).getDataSource();
+                locationDataSource.subscribe(mLocationRequest, mLocationSubscriber);
+            }
         }
 
         @Override
@@ -51,24 +54,23 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
         }
     };
 
-    @Override
-    public void execute(@NonNull LocationRequest parameter,@NonNull Subscriber<Location> subscriber) {
-        mLocationRequest = parameter;
-        mLocationSubscriber = subscriber;
-        startLocationRequest();
-    }
-
     public LocationListeningInteractor(Context context) {
         mContext = context;
     }
 
     @Override
+    public void execute(@NonNull LocationRequest parameter, @NonNull Subscriber<Location> subscriber) {
+        mLocationRequest = parameter;
+        mLocationSubscriber = subscriber;
+        startLocationRequest();
+    }
+
+    @Override
     public void unsubscribe() {
-        if (locationDataSource!=null) {
+        if (locationDataSource != null) {
             locationDataSource.unsubscribe();
         }
         stopLocationRequest();
-        mContext = null;
     }
 
     /**
@@ -76,6 +78,7 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
      */
     private void startLocationRequest() {
         Log.v(TAG, "startLocationRequest");
+        mIsNeedRequestLocation = true;
         mContext.bindService(LocationListeningService.startTrackLocation(mContext), mLocationServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -84,6 +87,7 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
      */
     private void stopLocationRequest() {
         Log.v(TAG, "stopLocationRequest");
+        mIsNeedRequestLocation = false;
         if (mIsServiceConnected) {
             mContext.unbindService(mLocationServiceConnection);
             mIsServiceConnected = false;

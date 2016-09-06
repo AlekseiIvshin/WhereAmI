@@ -22,6 +22,10 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
+import rx.Subscriber;
+import rx.Subscription;
+import rx.subjects.PublishSubject;
+
 /**
  * Created by Aleksei Ivshin
  * on 04.09.2016.
@@ -35,10 +39,11 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
 
     private final Context context;
     private GoogleApiClient mGoogleApiClient;
-    private boolean mIsApiClientConnected = false;
     private LocationRequest mLocationRequest;
     private final DelegateCallback delegateCallback;
-    private boolean mIsLocationRequesting = false;
+    private PublishSubject<Location> mLocationChannel;
+    private Subscription mLocationSubscription;
+    private boolean mIsRequestLocationOnStart = false;
 
     public static LocationRequest createDefaultLocationRequest() {
         LocationRequest request = new LocationRequest();
@@ -51,16 +56,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     public LocationRequestDelegate(Context context, DelegateCallback delegateCallback) {
         this.context = context;
         this.delegateCallback = delegateCallback;
-    }
-
-    public void setLocationRequest(LocationRequest locationRequest) {
-        if (mLocationRequest == null || !mLocationRequest.equals(locationRequest)) {
-            mLocationRequest = locationRequest;
-            if (mIsLocationRequesting && mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-                stopLocationRequest();
-                startLocationRequest();
-            }
-        }
+        mLocationChannel = PublishSubject.create();
     }
 
     public void connect() {
@@ -75,52 +71,40 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
         mGoogleApiClient.disconnect();
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.v(TAG, "GoogleApiClient connected");
-        mIsApiClientConnected = true;
-
-        mLocationRequest = createDefaultLocationRequest();
-        getLastLocationRequest();
-        checkSettings();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.v(TAG, "GoogleApiClient suspended");
-        mIsApiClientConnected = false;
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.v(TAG, "GoogleApiClient connection failed");
-        mIsApiClientConnected = false;
-        //TODO: Notify user about problem
-    }
-
-
-    private void getLastLocationRequest() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            delegateCallback.onPermissionsRequired(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
-            return;
-        }
-        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-
-        delegateCallback.onLocationChanged(lastLocation);
+    public void prepareNewRequest(LocationRequest locationRequest, Subscriber<Location> locationSubscriber) {
+        stopLocationRequest();
+        mLocationSubscription = mLocationChannel.subscribe(locationSubscriber);
+        mLocationRequest = locationRequest;
     }
 
     public void startLocationRequest() {
-        checkSettings();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            checkSettingsAndRequestLocation();
+            mIsRequestLocationOnStart = false;
+        } else {
+            mIsRequestLocationOnStart = true;
+        }
     }
 
-    private void checkSettings() {
+    /**
+     * Stops requesting location.
+     */
+    public void stopLocationRequest() {
+        Log.v(TAG, "Stop location request");
+        unsubscribeLocationListener();
+        if (mGoogleApiClient.isConnected()) {
+            Log.v(TAG, "Location request stopped");
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+    private void checkSettingsAndRequestLocation() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);
         PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
                 LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
         locationSettingsResultPendingResult.setResultCallback(this);
+
     }
 
     @Override
@@ -137,7 +121,6 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
                 }
                 LocationServices.FusedLocationApi
                         .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-                mIsLocationRequesting = true;
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 delegateCallback.onSettingsResolutionRequired(result);
@@ -148,30 +131,56 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
         }
     }
 
-    /**
-     * Stops requesting location.
-     */
-    public void stopLocationRequest() {
-        Log.v(TAG, "Stop location request");
-        mIsLocationRequesting = false;
-        if (mIsApiClientConnected) {
-            Log.v(TAG, "Location request stopped");
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.v(TAG, "GoogleApiClient connected");
+        getLastLocationRequest();
+        if (mIsRequestLocationOnStart) {
+            checkSettingsAndRequestLocation();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.v(TAG, "GoogleApiClient suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.v(TAG, "GoogleApiClient connection failed");
+        //TODO: Notify user about problem
+    }
+
+    private void getLastLocationRequest() {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            delegateCallback.onPermissionsRequired(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+            return;
+        }
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        mLocationChannel.onNext(lastLocation);
+    }
+
+    private void unsubscribeLocationListener() {
+        if (mLocationSubscription!=null && !mLocationSubscription.isUnsubscribed()) {
+            mLocationSubscription.isUnsubscribed();
         }
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        delegateCallback.onLocationChanged(location);
+        mLocationChannel.onNext(location);
     }
 
     public interface DelegateCallback {
+
         void onPermissionsRequired(String[] permissions);
 
         void onSettingsResolutionRequired(LocationSettingsResult result);
 
         void onSettingsChangeUnavailable(LocationSettingsResult result);
-
-        void onLocationChanged(Location location);
     }
 }

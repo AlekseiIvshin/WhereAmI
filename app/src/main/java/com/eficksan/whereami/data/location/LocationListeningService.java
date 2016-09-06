@@ -22,8 +22,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 
 import rx.Subscriber;
-import rx.Subscription;
-import rx.subjects.PublishSubject;
 
 public class LocationListeningService extends Service implements LocationDataSource, LocationRequestDelegate.DelegateCallback {
     private static final String TAG = LocationListeningService.class.getSimpleName();
@@ -49,8 +47,6 @@ public class LocationListeningService extends Service implements LocationDataSou
 
     private final LocalBinder binder = new LocalBinder();
     private LocationRequestDelegate mLocationRequestDelegate;
-    private PublishSubject<Location> mLocationChannel;
-    private Subscription mLocationSubscription;
 
     /**
      * Creates intent for commanding service to work in foreground.
@@ -99,12 +95,14 @@ public class LocationListeningService extends Service implements LocationDataSou
     @Override
     public void onCreate() {
         super.onCreate();
-        mLocationRequestDelegate = new LocationRequestDelegate(getApplicationContext(), this);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_PERMISSIONS_REQUEST_RESULT);
         intentFilter.addAction(Constants.ACTION_SETTINGS_REQUEST_RESULT);
         LocalBroadcastManager.getInstance(this).registerReceiver(mRequirementsReceiver, intentFilter);
+
+        mLocationRequestDelegate = new LocationRequestDelegate(getApplicationContext(), this);
+        mLocationRequestDelegate.connect();
     }
 
     @Override
@@ -117,6 +115,7 @@ public class LocationListeningService extends Service implements LocationDataSou
     @Override
     public void onDestroy() {
         unsubscribe();
+        mLocationRequestDelegate.disconnect();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequirementsReceiver);
         super.onDestroy();
     }
@@ -146,26 +145,14 @@ public class LocationListeningService extends Service implements LocationDataSou
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        Log.v(TAG, String.format("Location changed: %1$.4f x %2$.4f", location.getLatitude(), location.getLongitude()));
-        mLocationChannel.onNext(location);
-    }
-
-    @Override
     public void subscribe(LocationRequest locationRequest, Subscriber<Location> locationSubscriber) {
-        mLocationChannel = PublishSubject.create();
-        mLocationSubscription = mLocationChannel.subscribe(locationSubscriber);
-        mLocationRequestDelegate.setLocationRequest(locationRequest);
-        mLocationRequestDelegate.connect();
+        mLocationRequestDelegate.prepareNewRequest(locationRequest, locationSubscriber);
+        mLocationRequestDelegate.startLocationRequest();
     }
 
     @Override
     public void unsubscribe() {
-        if (mLocationSubscription != null && !mLocationSubscription.isUnsubscribed()) {
-            mLocationSubscription.unsubscribe();
-        }
         mLocationRequestDelegate.stopLocationRequest();
-        mLocationRequestDelegate.disconnect();
     }
 
     public class LocalBinder extends Binder {
