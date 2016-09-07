@@ -7,6 +7,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +53,33 @@ public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
                         } catch (ExecutionException | InterruptedException | TimeoutException e) {
                             e.printStackTrace();
                             return false;
+                        }
+                    }
+                })
+                //TODO: Check on user is auto sign in when user registered
+//                .doOnNext(new Action1<Boolean>() {
+//                    @Override
+//                    public void call(Boolean aBoolean) {
+//                        // Sign in user
+//                        Task<AuthResult> authResultTask = mFirebaseAuth.signInWithEmailAndPassword(parameter.email, parameter.password);
+//                        try {
+//                            Tasks.await(authResultTask);
+//                        } catch (ExecutionException | InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                })
+                .doOnNext(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean isSucceed) {
+                        if (isSucceed) {
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(parameter.userName)
+                                    .build();
+                            assert user != null;
+                            user.updateProfile(profileUpdates);
+                            mUsersRepository.setCurrentUserName(parameter.userName);
                         }
                     }
                 })
