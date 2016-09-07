@@ -32,7 +32,7 @@ public class SignInView {
     @Bind(R.id.reset_password)
     Button resetPassword;
 
-    @Bind(R.id.sign_in_results)
+    @Bind(R.id.auth_results)
     TextView signInResults;
 
     @Bind(R.id.progress_bar)

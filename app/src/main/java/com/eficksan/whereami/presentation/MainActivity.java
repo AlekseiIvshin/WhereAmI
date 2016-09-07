@@ -27,6 +27,7 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.ioc.activity.ActivityComponent;
 import com.eficksan.whereami.presentation.auth.signin.SignInFragment;
+import com.eficksan.whereami.presentation.auth.signup.SignUpFragment;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.presentation.maps.MapMessagesFragment;
 import com.eficksan.whereami.presentation.messaging.PlacingMessageFragment;
@@ -198,6 +199,9 @@ public class MainActivity extends AppCompatActivity implements Router {
                 break;
             case Screens.SIGN_IN_SCREEN:
                 replaceFragment(SignInFragment.newInstance(), SignInFragment.TAG, false);
+                break;
+            case Screens.SIGN_UP_SCREEN:
+                replaceFragment(SignUpFragment.newInstance(), SignUpFragment.TAG, false);
                 break;
 
         }
