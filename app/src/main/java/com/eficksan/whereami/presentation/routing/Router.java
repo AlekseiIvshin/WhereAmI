@@ -13,6 +13,12 @@ public interface Router {
     /**
      * Show screen.
      * @param nextScreenKey screen key
+     */
+    void showScreen(int nextScreenKey);
+
+    /**
+     * Show screen.
+     * @param nextScreenKey screen key
      * @param args arguments for next screen
      */
     void showScreen(int nextScreenKey, Bundle args);

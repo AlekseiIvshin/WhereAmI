@@ -68,7 +68,7 @@ public class SignUpPresenter implements View.OnClickListener {
             public void onNext(Boolean isSucceed) {
                 if (isSucceed) {
                     mView.hideSignUpError();
-                    router.showScreen(Screens.SIGN_IN_SCREEN, Bundle.EMPTY);
+                    router.showScreen(Screens.SIGN_IN_SCREEN);
 
                 } else {
                     mView.showSignUpError(R.string.auth_error_sign_up);

@@ -116,9 +116,9 @@ public class MainActivity extends AppCompatActivity implements Router {
 
         if (savedInstanceState == null && mCurrentScreenKey == Screens.NONE) {
             if (activityComponent.currentUser() == null) {
-                showScreen(Screens.SIGN_IN_SCREEN, Bundle.EMPTY);
+                showScreen(Screens.SIGN_IN_SCREEN);
             } else {
-                showScreen(Screens.LOCATION_SCREEN, Bundle.EMPTY);
+                showScreen(Screens.LOCATION_SCREEN);
             }
         }
     }
@@ -175,6 +175,11 @@ public class MainActivity extends AppCompatActivity implements Router {
             transaction.addToBackStack(tag);
         }
         transaction.commit();
+    }
+
+    @Override
+    public void showScreen(int nextScreenKey) {
+        showScreen(nextScreenKey);
     }
 
     @Override
@@ -291,10 +296,10 @@ public class MainActivity extends AppCompatActivity implements Router {
 
                 switch (menuItem.getItemId()) {
                     case R.id.menu_where_am_i:
-                        showScreen(Screens.LOCATION_SCREEN, Bundle.EMPTY);
+                        showScreen(Screens.LOCATION_SCREEN);
                         break;
                     case R.id.menu_maps:
-                        showScreen(Screens.MAPS_SCREEN, Bundle.EMPTY);
+                        showScreen(Screens.MAPS_SCREEN);
                         break;
                 }
                 return true;

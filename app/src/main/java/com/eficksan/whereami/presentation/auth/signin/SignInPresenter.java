@@ -48,7 +48,7 @@ public class SignInPresenter implements View.OnClickListener {
                 mSignInView.hideProgress();
                 if (isSucceed) {
                     mSignInView.hideSignInError();
-                    router.showScreen(Screens.LOCATION_SCREEN, Bundle.EMPTY);
+                    router.showScreen(Screens.LOCATION_SCREEN);
                 } else {
                     mSignInView.showSignInError(R.string.auth_error_sign_in);
                     mSignInView.showResetPassword();
@@ -86,10 +86,10 @@ public class SignInPresenter implements View.OnClickListener {
                 }
                 break;
             case R.id.sign_up:
-                router.showScreen(Screens.SIGN_UP_SCREEN, Bundle.EMPTY);
+                router.showScreen(Screens.SIGN_UP_SCREEN);
                 break;
             case R.id.reset_password:
-                router.showScreen(Screens.RESET_PASSWORD_SCREEN, Bundle.EMPTY);
+                router.showScreen(Screens.RESET_PASSWORD_SCREEN);
                 break;
         }
     }
