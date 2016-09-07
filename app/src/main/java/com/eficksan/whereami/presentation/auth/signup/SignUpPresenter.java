@@ -1,10 +1,8 @@
 package com.eficksan.whereami.presentation.auth.signup;
 
-import android.os.Bundle;
 import android.view.View;
 
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.data.auth.SignInData;
 import com.eficksan.whereami.data.auth.SignUpData;
 import com.eficksan.whereami.domain.auth.EmailValidator;
 import com.eficksan.whereami.domain.auth.SignUpInteractor;
@@ -71,7 +69,7 @@ public class SignUpPresenter implements View.OnClickListener {
                     router.showScreen(Screens.SIGN_IN_SCREEN);
 
                 } else {
-                    mView.showSignUpError(R.string.auth_error_sign_up);
+                    mView.showSignUpError(R.string.error_auth_sign_up);
                 }
             }
         };
@@ -86,7 +84,7 @@ public class SignUpPresenter implements View.OnClickListener {
                             if (mIsEmailValid) {
                                 mView.hideEmailValidationError();
                             } else {
-                                mView.showEmailValidationError(R.string.auth_email_invalid);
+                                mView.showEmailValidationError(R.string.error_auth_email_invalid);
                             }
                             updateSignUpEnable();
                         }
@@ -101,7 +99,7 @@ public class SignUpPresenter implements View.OnClickListener {
                             if (mIsUserNameValid) {
                                 mView.hideUserNamelValidationError();
                             } else {
-                                mView.showUserNamelValidationError(R.string.auth_username_invalid);
+                                mView.showUserNamelValidationError(R.string.error_auth_username_invalid);
                             }
                             updateSignUpEnable();
                         }
@@ -116,7 +114,7 @@ public class SignUpPresenter implements View.OnClickListener {
                             if (mIsPasswordValid) {
                                 mView.hidePasswordValidationError();
                             } else {
-                                mView.showPasswordValidationError(R.string.auth_password_invalid);
+                                mView.showPasswordValidationError(R.string.error_auth_password_invalid);
                             }
                             updateSignUpEnable();
                         }
@@ -131,7 +129,7 @@ public class SignUpPresenter implements View.OnClickListener {
                             if (mIsPasswordConfirmationSame) {
                                 mView.hidePasswordConfirmationError();
                             } else {
-                                mView.showPasswordConfirmationError(R.string.auth_password_confirmation_is_diffrent);
+                                mView.showPasswordConfirmationError(R.string.error_auth_password_confirmation_is_not_equal);
                             }
                             updateSignUpEnable();
                         }
@@ -153,7 +151,7 @@ public class SignUpPresenter implements View.OnClickListener {
                 String password = mView.passwordInput.getText().toString();
 
                 if (email.isEmpty() || userName.isEmpty() || password.isEmpty()) {
-                    mView.showSignUpError(R.string.auth_error_sign_up_some_fields_empty);
+                    mView.showSignUpError(R.string.error_auth_sign_up_some_fields_empty);
                     return;
                 }
 

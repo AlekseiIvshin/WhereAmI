@@ -6,7 +6,6 @@ import com.eficksan.whereami.domain.auth.SignInInteractor;
 import com.eficksan.whereami.domain.auth.SignUpInteractor;
 import com.eficksan.whereami.domain.auth.UserNameValidator;
 import com.eficksan.whereami.domain.auth.ValidatingInteractor;
-import com.eficksan.whereami.domain.auth.Validator;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 import com.google.firebase.auth.FirebaseAuth;
 

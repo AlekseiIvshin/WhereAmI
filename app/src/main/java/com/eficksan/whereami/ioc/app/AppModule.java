@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import javax.inject.Singleton;
 
@@ -33,6 +34,13 @@ public class AppModule {
     @Singleton
     public FirebaseAuth provideFirebaseAuth() {
         return FirebaseAuth.getInstance();
+    }
+
+    @Provides
+    @Singleton
+    public FirebaseDatabase provideFirebaseDatabase() {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        return FirebaseDatabase.getInstance();
     }
 
     @Provides

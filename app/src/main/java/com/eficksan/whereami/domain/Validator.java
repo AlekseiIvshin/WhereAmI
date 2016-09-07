@@ -1,4 +1,4 @@
-package com.eficksan.whereami.domain.auth;
+package com.eficksan.whereami.domain;
 
 /**
  * Provide method for validation string value.

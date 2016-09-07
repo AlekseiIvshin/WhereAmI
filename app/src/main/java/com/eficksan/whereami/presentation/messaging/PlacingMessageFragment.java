@@ -18,7 +18,7 @@ import com.eficksan.whereami.ioc.messaging.MessagingComponent;
 public class PlacingMessageFragment extends Fragment {
 
     public static final String TAG = PlacingMessageFragment.class.getSimpleName();
-    private MessagingPresenter mPresenter;
+    private PlacingMessagePresenter mPresenter;
     MessagingComponent mMessagingComponent;
 
     public PlacingMessageFragment() {
@@ -50,12 +50,12 @@ public class PlacingMessageFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MessagingView messagingView = new MessagingView();
-        messagingView.takeView(view);
-        mPresenter = new MessagingPresenter();
-        mMessagingComponent.inject(messagingView);
+        PlacingMessageView placingMessageView = new PlacingMessageView();
+        placingMessageView.takeView(view);
+        mPresenter = new PlacingMessagePresenter();
+        mMessagingComponent.inject(placingMessageView);
         mMessagingComponent.inject(mPresenter);
-        mPresenter.setView(messagingView);
+        mPresenter.setView(placingMessageView);
     }
 
     @Override

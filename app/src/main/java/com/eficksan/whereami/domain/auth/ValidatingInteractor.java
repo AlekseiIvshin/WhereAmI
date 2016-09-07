@@ -1,6 +1,7 @@
 package com.eficksan.whereami.domain.auth;
 
 import com.eficksan.whereami.domain.BaseInteractor;
+import com.eficksan.whereami.domain.Validator;
 
 import java.util.concurrent.TimeUnit;
 

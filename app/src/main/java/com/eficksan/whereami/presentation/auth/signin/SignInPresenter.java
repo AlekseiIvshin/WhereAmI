@@ -1,6 +1,5 @@
 package com.eficksan.whereami.presentation.auth.signin;
 
-import android.os.Bundle;
 import android.view.View;
 
 import com.eficksan.whereami.R;
@@ -49,7 +48,7 @@ public class SignInPresenter implements View.OnClickListener {
                 if (isSucceed) {
                     mSignInView.hideSignInError();
                 } else {
-                    mSignInView.showSignInError(R.string.auth_error_sign_in);
+                    mSignInView.showSignInError(R.string.error_auth_sign_in);
                     mSignInView.showResetPassword();
                 }
             }
@@ -75,7 +74,7 @@ public class SignInPresenter implements View.OnClickListener {
                 String password = mSignInView.passwordInput.getText().toString();
 
                 if (email.isEmpty() || password.isEmpty()) {
-                    mSignInView.showSignInError(R.string.auth_error_empty_email_or_password);
+                    mSignInView.showSignInError(R.string.error_auth_empty_email_or_password);
                 } else {
                     mSignInView.showProgress();
                     mSignInView.hideSignInError();

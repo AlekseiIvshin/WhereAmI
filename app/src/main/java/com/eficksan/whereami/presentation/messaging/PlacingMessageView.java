@@ -21,27 +21,32 @@ import butterknife.ButterKnife;
  * Created by Aleksei Ivshin
  * on 24.08.2016.
  */
-public class MessagingView {
+public class PlacingMessageView {
 
     @Inject
     Context context;
 
-    public final MessagingViewHolder viewHolder = new MessagingViewHolder();
+    @Bind(R.id.input_layout_message)
+    public TextInputLayout messageInputLayout;
+    @Bind(R.id.input_message)
+    public EditText messageInput;
+    @Bind(R.id.create_message)
+    public FloatingActionButton sendMessage;
 
     /**
      * Inject inflated view.
      * @param view iew
      */
     public void takeView(View view) {
-        this.viewHolder.takeView(view);
+        ButterKnife.bind(this, view);
     }
 
     /**
      * Disable or enable creating message.
      * @param isEnabled flag
      */
-    public void changeEnableSendMessage(boolean isEnabled) {
-        viewHolder.sendMessage.setEnabled(isEnabled);
+    public void setEnableSendMessage(boolean isEnabled) {
+        sendMessage.setEnabled(isEnabled);
     }
 
     /**
@@ -64,15 +69,15 @@ public class MessagingView {
      * Show error on wrong message text.
      * @param errorResId error resource id
      */
-    public void showMessageError(int errorResId) {
-        viewHolder.messageInputLayout.setError(context.getString(errorResId));
+    public void showMessageValidationError(int errorResId) {
+        messageInputLayout.setError(context.getString(errorResId));
     }
 
     /**
      * Hides error about wrong message.
      */
-    public void hideMessageError() {
-        viewHolder.messageInputLayout.setError(null);
+    public void hideMessageValidationError() {
+        messageInputLayout.setError(null);
     }
 
     /**
@@ -81,22 +86,5 @@ public class MessagingView {
      */
     private void notifyUser(int messageResId) {
         Toast.makeText(context, messageResId, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * View holder of messaging view.
-     */
-    public class MessagingViewHolder {
-
-        @Bind(R.id.input_layout_message)
-        public TextInputLayout messageInputLayout;
-        @Bind(R.id.input_message)
-        public EditText messageInput;
-        @Bind(R.id.create_message)
-        public FloatingActionButton sendMessage;
-
-        public void takeView(View view) {
-            ButterKnife.bind(this, view);
-        }
     }
 }

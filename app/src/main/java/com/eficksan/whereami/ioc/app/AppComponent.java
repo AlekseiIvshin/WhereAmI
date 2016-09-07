@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.eficksan.whereami.data.sync.SyncAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import javax.inject.Singleton;
 
@@ -20,6 +21,7 @@ import dagger.Component;
 public interface AppComponent {
     Context applicationContext();
     FirebaseAuth firebaseAuth();
+    FirebaseDatabase firebaseDatabase();
 
     @Nullable
     FirebaseUser currentUser();

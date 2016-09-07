@@ -1,5 +1,7 @@
 package com.eficksan.whereami.domain.auth;
 
+import com.eficksan.whereami.domain.Validator;
+
 import junit.framework.Assert;
 
 import org.junit.After;

@@ -22,14 +22,14 @@ import rx.subjects.PublishSubject;
  * Created by Aleksei Ivshin
  * on 24.08.2016.
  */
-public class MessagingInteractor extends BaseInteractor<LocationMessage, Integer> {
-    private static final String TAG = MessagingInteractor.class.getSimpleName();
+public class PlaceMessageInteractor extends BaseInteractor<LocationMessage, Integer> {
+    private static final String TAG = PlaceMessageInteractor.class.getSimpleName();
 
     private PublishSubject<Integer> mMessageResultChannel;
 
     private Activity mActivity;
 
-    public MessagingInteractor(Activity activityContext) {
+    public PlaceMessageInteractor(Activity activityContext) {
         super(Schedulers.computation(), AndroidSchedulers.mainThread());
         this.mActivity = activityContext;
     }

@@ -2,8 +2,9 @@ package com.eficksan.whereami.ioc.messaging;
 
 import com.eficksan.whereami.ioc.activity.ActivityComponent;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
-import com.eficksan.whereami.presentation.messaging.MessagingPresenter;
-import com.eficksan.whereami.presentation.messaging.MessagingView;
+import com.eficksan.whereami.presentation.messaging.PlacingMessagePresenter;
+import com.eficksan.whereami.presentation.messaging.PlacingMessageView;
+import com.google.firebase.database.FirebaseDatabase;
 
 import dagger.Component;
 
@@ -15,7 +16,7 @@ import dagger.Component;
 @Component(dependencies = ActivityComponent.class, modules = MessagingModule.class)
 public interface MessagingComponent {
 
-    void inject(MessagingView messagingView);
+    void inject(PlacingMessageView placingMessageView);
 
-    void inject(MessagingPresenter mPresenter);
+    void inject(PlacingMessagePresenter mPresenter);
 }

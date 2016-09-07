@@ -24,7 +24,7 @@
                 android:id="@+id/input_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_message" />
+                android:hint="@string/hint.placing_message.message" />
 
         </android.support.design.widget.TextInputLayout>
 
