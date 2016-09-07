@@ -3,6 +3,7 @@ package com.eficksan.whereami.ioc.activity;
 import android.app.Activity;
 
 import com.eficksan.whereami.data.messaging.FirebaseDatabaseMessagesRepository;
+import com.eficksan.whereami.data.messaging.MessagesRepository;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
@@ -36,7 +37,7 @@ public class ActivityModule {
     }
 
     @Provides
-    public FirebaseDatabaseMessagesRepository provideMessagesRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
+    public MessagesRepository provideMessagesRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
         return new FirebaseDatabaseMessagesRepository(firebaseDatabase,firebaseAuth);
     }
 }

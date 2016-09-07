@@ -3,6 +3,7 @@ package com.eficksan.whereami.ioc.messaging;
 import android.app.Activity;
 
 import com.eficksan.whereami.data.messaging.FirebaseDatabaseMessagesRepository;
+import com.eficksan.whereami.data.messaging.MessagesRepository;
 import com.eficksan.whereami.domain.messaging.PlaceMessageInteractor;
 import com.eficksan.whereami.domain.messaging.PlaceMessageValidator;
 import com.eficksan.whereami.domain.messaging.PlacingMessageInteractor;
@@ -30,7 +31,7 @@ public class MessagingModule {
     }
 
     @Provides
-    public PlacingMessageInteractor providePlacingMessageInteractor(FirebaseDatabaseMessagesRepository messagesRepository) {
+    public PlacingMessageInteractor providePlacingMessageInteractor(MessagesRepository messagesRepository) {
         return new PlacingMessageInteractor(messagesRepository);
     }
 

@@ -1,6 +1,7 @@
 package com.eficksan.whereami.domain.messaging;
 
 import com.eficksan.whereami.data.messaging.FirebaseDatabaseMessagesRepository;
+import com.eficksan.whereami.data.messaging.MessagesRepository;
 import com.eficksan.whereami.data.messaging.PlacingMessage;
 import com.eficksan.whereami.domain.BaseInteractor;
 import com.google.android.gms.tasks.Task;
@@ -18,9 +19,9 @@ import rx.schedulers.Schedulers;
  */
 public class PlacingMessageInteractor extends BaseInteractor<PlacingMessage, Boolean> {
 
-    private final FirebaseDatabaseMessagesRepository mMessagesRepository;
+    private final MessagesRepository mMessagesRepository;
 
-    public PlacingMessageInteractor(FirebaseDatabaseMessagesRepository messagesRepository) {
+    public PlacingMessageInteractor(MessagesRepository messagesRepository) {
         super(Schedulers.computation(), AndroidSchedulers.mainThread());
         this.mMessagesRepository = messagesRepository;
     }
@@ -29,22 +30,10 @@ public class PlacingMessageInteractor extends BaseInteractor<PlacingMessage, Boo
     protected Observable<Boolean> buildObservable(final PlacingMessage parameter) {
         return Observable.just(parameter)
                 .subscribeOn(jobScheduler)
-                .map(new Func1<PlacingMessage, Task<Void>>() {
+                .map(new Func1<PlacingMessage, Boolean>() {
                     @Override
-                    public Task<Void> call(PlacingMessage locationMessage) {
+                    public Boolean call(PlacingMessage locationMessage) {
                         return mMessagesRepository.addMessage(parameter);
-                    }
-                })
-                .map(new Func1<Task<Void>, Boolean>() {
-                    @Override
-                    public Boolean call(Task<Void> addingTask) {
-                        try {
-                            Tasks.await(addingTask);
-                        } catch (ExecutionException | InterruptedException e) {
-                            e.printStackTrace();
-                            return false;
-                        }
-                        return addingTask.isSuccessful();
                     }
                 });
     }
