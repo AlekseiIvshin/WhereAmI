@@ -1,13 +1,15 @@
-package com.eficksan.whereami.data.messaging;
+package com.eficksan.whereami.data.messages;
+
+import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
  * POJO for creating message
  */
 public class PlacingMessage {
 
-    public final double latitude;
-    public final double longitude;
-    public final String message;
+    public double latitude;
+    public double longitude;
+    public String message;
 
     public PlacingMessage(double latitude, double longitude, String message) {
         this.latitude = latitude;

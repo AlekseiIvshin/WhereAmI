@@ -1,5 +1,6 @@
 package com.eficksan.whereami.ioc.auth;
 
+import com.eficksan.whereami.data.auth.UsersRepository;
 import com.eficksan.whereami.domain.auth.EmailValidator;
 import com.eficksan.whereami.domain.auth.PasswordValidator;
 import com.eficksan.whereami.domain.auth.SignInInteractor;
@@ -44,8 +45,8 @@ public class AuthModule {
 
     @Provides
     @FragmentScope
-    public SignUpInteractor provideSignUpInteractor(FirebaseAuth firebaseAuth) {
-        return new SignUpInteractor(firebaseAuth);
+    public SignUpInteractor provideSignUpInteractor(FirebaseAuth firebaseAuth, UsersRepository usersRepository) {
+        return new SignUpInteractor(firebaseAuth, usersRepository);
     }
 
     @Provides

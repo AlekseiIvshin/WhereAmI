@@ -1,13 +1,8 @@
 package com.eficksan.whereami.domain.messaging;
 
-import com.eficksan.whereami.data.messaging.FirebaseDatabaseMessagesRepository;
-import com.eficksan.whereami.data.messaging.MessagesRepository;
-import com.eficksan.whereami.data.messaging.PlacingMessage;
+import com.eficksan.whereami.data.messages.MessagesRepository;
+import com.eficksan.whereami.data.messages.PlacingMessage;
 import com.eficksan.whereami.domain.BaseInteractor;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-
-import java.util.concurrent.ExecutionException;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;

@@ -1,4 +1,4 @@
-package com.eficksan.whereami.data.messaging;
+package com.eficksan.whereami.data.auth;
 
 import android.util.Log;
 
@@ -8,47 +8,46 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Messags repository implementation using {@link <a href="https://firebase.google.com">Firebase</a>} services.
  */
-public class FirebaseDatabaseMessagesRepository implements MessagesRepository {
+public class FirebaseDatabaseUsersRepository implements UsersRepository {
 
-    private static final String DB_MESSAGES = "messages";
+    private static final String DB_USERS = "user";
 
-    private static final String TAG = FirebaseDatabaseMessagesRepository.class.getSimpleName();
+    private static final String TAG = FirebaseDatabaseUsersRepository.class.getSimpleName();
     private final FirebaseDatabase firebaseDatabase;
     private final FirebaseAuth firebaseAuth;
 
-    public FirebaseDatabaseMessagesRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
+    public FirebaseDatabaseUsersRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
         this.firebaseDatabase = firebaseDatabase;
         this.firebaseAuth = firebaseAuth;
     }
 
     @Override
-    public boolean addMessage(PlacingMessage placingMessage) {
+    public boolean setCurrentUserName(String userName) {
+
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser == null) {
             Log.e(TAG, "Adding message: user was not logged in");
             return false;
         }
+        String currentUserId = currentUser.getUid();
+
         DatabaseReference database = firebaseDatabase.getReference();
-        String newMessageKey = database.child(DB_MESSAGES).push().getKey();
-        Map<String, Object> messageValues = toMap(placingMessage, currentUser.getUid());
 
         HashMap<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(String.format("/%s/%s", DB_MESSAGES, newMessageKey), messageValues);
+        childUpdates.put(String.format("/%s/%s", DB_USERS, currentUserId), getUserNameUpdates(currentUserId, userName));
         database.updateChildren(childUpdates);
+
         return true;
     }
 
-    private static HashMap<String, Object> toMap(PlacingMessage placingMessage, String userId) {
+    private HashMap<String, Object> getUserNameUpdates(String userId, String userName) {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("userId", userId);
-        result.put("latitude", placingMessage.latitude);
-        result.put("longitude", placingMessage.longitude);
-        result.put("message", placingMessage.message);
+        result.put("id", userId);
+        result.put("name", userName);
         return result;
     }
 }

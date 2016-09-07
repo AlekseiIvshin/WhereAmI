@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.data.messaging.PlacingMessage;
+import com.eficksan.whereami.data.messages.PlacingMessage;
 import com.eficksan.whereami.domain.messaging.PlaceMessageValidator;
 import com.eficksan.whereami.domain.messaging.PlacingMessageInteractor;
 import com.eficksan.whereami.presentation.routing.Router;

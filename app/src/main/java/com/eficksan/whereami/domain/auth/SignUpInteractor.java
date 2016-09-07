@@ -1,7 +1,7 @@
 package com.eficksan.whereami.domain.auth;
 
-import com.eficksan.whereami.data.auth.SignInData;
 import com.eficksan.whereami.data.auth.SignUpData;
+import com.eficksan.whereami.data.auth.UsersRepository;
 import com.eficksan.whereami.domain.BaseInteractor;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -14,19 +14,22 @@ import java.util.concurrent.TimeoutException;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by Aleksei_Ivshin on 9/6/16.
+ * Sing up interactor provides method for creating new user.
  */
 public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
 
     private final FirebaseAuth mFirebaseAuth;
+    private final UsersRepository mUsersRepository;
 
-    public SignUpInteractor(FirebaseAuth mFirebaseAuth) {
+    public SignUpInteractor(FirebaseAuth mFirebaseAuth, UsersRepository mUsersRepository) {
         super(Schedulers.computation(), AndroidSchedulers.mainThread());
         this.mFirebaseAuth = mFirebaseAuth;
+        this.mUsersRepository = mUsersRepository;
     }
 
     @Override
@@ -48,6 +51,14 @@ public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
                         } catch (ExecutionException | InterruptedException | TimeoutException e) {
                             e.printStackTrace();
                             return false;
+                        }
+                    }
+                })
+                .doOnNext(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean isSucceed) {
+                        if (isSucceed) {
+                            mUsersRepository.setCurrentUserName(parameter.userName);
                         }
                     }
                 });

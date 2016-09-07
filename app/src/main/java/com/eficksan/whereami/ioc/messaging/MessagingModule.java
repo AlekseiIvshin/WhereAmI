@@ -1,6 +1,6 @@
 package com.eficksan.whereami.ioc.messaging;
 
-import com.eficksan.whereami.data.messaging.MessagesRepository;
+import com.eficksan.whereami.data.messages.MessagesRepository;
 import com.eficksan.whereami.domain.messaging.PlaceMessageValidator;
 import com.eficksan.whereami.domain.messaging.PlacingMessageInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
