@@ -49,12 +49,12 @@ dependencies {
     compile "com.android.support:support-v4:${supportLibraryVersion}"
     compile "com.google.firebase:firebase-core:${playServicesVersion}"
     compile "com.google.firebase:firebase-auth:${playServicesVersion}"
+    compile "com.google.firebase:firebase-database:${playServicesVersion}"
     compile 'com.google.dagger:dagger:2.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
