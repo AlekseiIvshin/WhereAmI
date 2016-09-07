@@ -75,7 +75,7 @@ public class SignInPresenter implements View.OnClickListener {
                 String email = mSignInView.emailInput.getText().toString();
                 String password = mSignInView.passwordInput.getText().toString();
 
-                if (email.length()==0 || password.length() ==0 ) {
+                if (email.isEmpty() || password.isEmpty()) {
                     mSignInView.showSignInError(R.string.auth_error_empty_email_or_password);
                 } else {
                     mSignInView.showProgress();
