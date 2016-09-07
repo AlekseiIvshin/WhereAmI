@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     public void showScreen(int nextScreenKey) {
-        showScreen(nextScreenKey);
+        showScreen(nextScreenKey, Bundle.EMPTY);
     }
 
     @Override
