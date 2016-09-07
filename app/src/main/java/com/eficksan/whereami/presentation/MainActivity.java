@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     private static final int REQUEST_CHECK_SETTINGS = 2;
     private int mCurrentScreenKey = Screens.NONE;
     private DrawerLayout mDrawerLayout;
+    ActivityComponent activityComponent;
 
     /**
      * Creates pending intent for show location screen.
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ActivityComponent activityComponent = ((App) getApplication()).plusActivityComponent(this);
+        activityComponent = ((App) getApplication()).plusActivityComponent(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -151,7 +152,8 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     protected void onDestroy() {
-        ((App) getApplication()).removeActivityComponent();
+        activityComponent = null;
+                ((App) getApplication()).removeActivityComponent();
         super.onDestroy();
     }
 
@@ -300,6 +302,12 @@ public class MainActivity extends AppCompatActivity implements Router {
                         break;
                     case R.id.menu_maps:
                         showScreen(Screens.MAPS_SCREEN);
+                        break;
+                    case R.id.sign_out:
+                        if (activityComponent != null) {
+                            activityComponent.firebaseAuth().signOut();
+                        }
+                        showScreen(Screens.SIGN_IN_SCREEN);
                         break;
                 }
                 return true;

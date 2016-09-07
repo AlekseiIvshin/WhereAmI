@@ -9,5 +9,9 @@
             android:id="@+id/menu_maps"
             android:checked="false"
             android:title="@string/menu.maps"/>
+        <item
+            android:id="@+id/sign_out"
+            android:checked="false"
+            android:title="@string/menu.sign_out"/>
     </group>
 </menu>
