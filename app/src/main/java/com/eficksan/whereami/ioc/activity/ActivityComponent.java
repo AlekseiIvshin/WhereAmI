@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.eficksan.whereami.ioc.app.AppComponent;
+import com.eficksan.whereami.presentation.MainActivity;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,4 +30,6 @@ public interface ActivityComponent {
     Router router();
 
     Activity activity();
+
+    void inject(MainActivity mainActivity);
 }

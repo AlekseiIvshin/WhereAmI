@@ -48,7 +48,6 @@ public class SignInPresenter implements View.OnClickListener {
                 mSignInView.hideProgress();
                 if (isSucceed) {
                     mSignInView.hideSignInError();
-                    router.showScreen(Screens.LOCATION_SCREEN);
                 } else {
                     mSignInView.showSignInError(R.string.auth_error_sign_in);
                     mSignInView.showResetPassword();

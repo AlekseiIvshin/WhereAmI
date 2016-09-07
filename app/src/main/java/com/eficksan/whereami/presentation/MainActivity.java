@@ -34,6 +34,9 @@ import com.eficksan.whereami.presentation.messaging.PlacingMessageFragment;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.google.android.gms.common.api.Status;
+import com.google.firebase.auth.FirebaseAuth;
+
+import javax.inject.Inject;
 
 /**
  * Main application activity.
@@ -59,7 +62,11 @@ public class MainActivity extends AppCompatActivity implements Router {
     private static final int REQUEST_CHECK_SETTINGS = 2;
     private int mCurrentScreenKey = Screens.NONE;
     private DrawerLayout mDrawerLayout;
-    ActivityComponent activityComponent;
+
+    @Inject
+    FirebaseAuth firebaseAuth;
+
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     /**
      * Creates pending intent for show location screen.
@@ -106,25 +113,6 @@ public class MainActivity extends AppCompatActivity implements Router {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        activityComponent = ((App) getApplication()).plusActivityComponent(this);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
-        setSupportActionBar(toolbar);
-        initNavigationView();
-
-        if (savedInstanceState == null && mCurrentScreenKey == Screens.NONE) {
-            if (activityComponent.currentUser() == null) {
-                showScreen(Screens.SIGN_IN_SCREEN);
-            } else {
-                showScreen(Screens.LOCATION_SCREEN);
-            }
-        }
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
@@ -151,8 +139,56 @@ public class MainActivity extends AppCompatActivity implements Router {
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ActivityComponent activityComponent = ((App) getApplication()).plusActivityComponent(this);
+        activityComponent.inject(this);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
+        initNavigationView();
+
+        if (savedInstanceState == null && mCurrentScreenKey == Screens.NONE) {
+            if (activityComponent.currentUser() == null) {
+                showScreen(Screens.SIGN_IN_SCREEN);
+            } else {
+                showScreen(Screens.LOCATION_SCREEN);
+            }
+        }
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null) {
+                    Log.v(TAG, "User signed OUT");
+                    showScreen(Screens.SIGN_IN_SCREEN);
+                } else {
+                    Log.v(TAG, "User signed IN");
+                    showScreen(Screens.LOCATION_SCREEN);
+                }
+            }
+        };
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            firebaseAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
-        activityComponent = null;
                 ((App) getApplication()).removeActivityComponent();
         super.onDestroy();
     }
@@ -304,10 +340,7 @@ public class MainActivity extends AppCompatActivity implements Router {
                         showScreen(Screens.MAPS_SCREEN);
                         break;
                     case R.id.sign_out:
-                        if (activityComponent != null) {
-                            activityComponent.firebaseAuth().signOut();
-                        }
-                        showScreen(Screens.SIGN_IN_SCREEN);
+                            firebaseAuth.signOut();
                         break;
                 }
                 return true;
