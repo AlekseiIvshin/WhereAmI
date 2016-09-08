@@ -15,8 +15,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -38,6 +40,7 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
     private GoogleMap mGoogleMap;
     private Marker mUserPositionMarker;
     private MapMessageClickListener mMessageClickListener;
+    private ClusterManager<MessageClusterItem> mClusterManager;
 
     public void takeView(View view) {
         ButterKnife.bind(this, view);
@@ -48,6 +51,7 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         mGoogleMap.setOnMarkerClickListener(this);
+        setUpClusterer(mGoogleMap);
     }
 
     /**
@@ -76,11 +80,16 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
      */
     public void showMessages(List<PlacingMessage> messages) {
         Marker marker;
+        MessageClusterItem clusterItem;
         for (PlacingMessage message : messages) {
+            clusterItem = new MessageClusterItem(new LatLng(message.latitude, message.longitude));
             marker = mGoogleMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(message.latitude, message.longitude))
+                    .position(clusterItem.getPosition())
                     .title(message.message));
             marker.setTag(message.messageId);
+            if (mClusterManager!=null) {
+                mClusterManager.addItem(clusterItem);
+            }
         }
     }
 
@@ -89,6 +98,8 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
     }
 
     public void onDestroy() {
+        mClusterManager.clearItems();
+        mClusterManager = null;
         mGoogleMap = null;
         messagesMap.onDestroy();
     }
@@ -97,7 +108,7 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
     public boolean onMarkerClick(Marker marker) {
         Log.v(TAG, "On marker click");
         Object markerTag = marker.getTag();
-        if (markerTag!=null && markerTag instanceof String) {
+        if (markerTag != null && markerTag instanceof String) {
             String messageId = String.valueOf(marker.getTag());
             Log.v(TAG, "Marker has message id = " + messageId);
             if (messageId != null && mMessageClickListener != null) {
@@ -106,7 +117,7 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
             }
         }
 
-        return false;
+        return mClusterManager != null && mClusterManager.onMarkerClick(marker);
     }
 
     public void setMessageClickListener(MapMessageClickListener messageClickListener) {
@@ -115,5 +126,23 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
 
     public interface MapMessageClickListener {
         void onMessageClick(String messageId);
+    }
+
+    public static class MessageClusterItem implements ClusterItem {
+        public final LatLng position;
+
+        public MessageClusterItem(LatLng position) {
+            this.position = position;
+        }
+
+        @Override
+        public LatLng getPosition() {
+            return position;
+        }
+    }
+
+    private void setUpClusterer(GoogleMap map) {
+        mClusterManager = new ClusterManager<>(context, map);
+        map.setOnCameraIdleListener(mClusterManager);
     }
 }
