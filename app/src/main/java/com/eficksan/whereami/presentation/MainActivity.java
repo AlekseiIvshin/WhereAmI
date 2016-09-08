@@ -30,6 +30,7 @@ import com.eficksan.whereami.presentation.auth.signin.SignInFragment;
 import com.eficksan.whereami.presentation.auth.signup.SignUpFragment;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.presentation.maps.MapMessagesFragment;
+import com.eficksan.whereami.presentation.message.MessageDetailsFragment;
 import com.eficksan.whereami.presentation.messaging.PlacingMessageFragment;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
@@ -226,7 +227,9 @@ public class MainActivity extends AppCompatActivity implements Router {
         if (mCurrentScreenKey == nextScreenKey) {
             return;
         }
-        mCurrentScreenKey = nextScreenKey;
+        if (Screens.MESSAGE_DETAILS != nextScreenKey) {
+            mCurrentScreenKey = nextScreenKey;
+        }
         switch (nextScreenKey) {
             case Screens.MESSAGING_SCREEN: {
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
@@ -246,6 +249,12 @@ public class MainActivity extends AppCompatActivity implements Router {
             case Screens.SIGN_UP_SCREEN:
                 replaceFragment(SignUpFragment.newInstance(), SignUpFragment.TAG, false);
                 break;
+            case Screens.MESSAGE_DETAILS: {
+                String messageId = args.getString(Constants.EXTRA_MESSAGE_ID);
+                MessageDetailsFragment fragment = MessageDetailsFragment.newInstance(messageId);
+                fragment.show(getSupportFragmentManager(), MessageDetailsFragment.TAG);
+                break;
+            }
 
         }
     }

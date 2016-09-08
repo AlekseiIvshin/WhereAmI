@@ -18,6 +18,9 @@ import com.eficksan.whereami.ioc.location.LocationModule;
 import com.eficksan.whereami.ioc.maps.DaggerMapsComponent;
 import com.eficksan.whereami.ioc.maps.MapsComponent;
 import com.eficksan.whereami.ioc.maps.MapsModule;
+import com.eficksan.whereami.ioc.message.DaggerMessageComponent;
+import com.eficksan.whereami.ioc.message.MessageComponent;
+import com.eficksan.whereami.ioc.message.MessageModule;
 import com.eficksan.whereami.ioc.messaging.DaggerMessagingComponent;
 import com.eficksan.whereami.ioc.messaging.MessagingComponent;
 import com.eficksan.whereami.ioc.messaging.MessagingModule;
@@ -33,6 +36,7 @@ public class App extends Application {
     private MessagingComponent messagingComponent;
     private MapsComponent mapsComponent;
     private AuthComponent authComponent;
+    private MessageComponent messageComponent;
 
     @Override
     public void onCreate() {
@@ -114,5 +118,20 @@ public class App extends Application {
 
     public void removeAuthComponent() {
         activityComponent = null;
+    }
+
+
+    public MessageComponent plusMessageDetailsComponent() {
+        if (messageComponent == null) {
+            messageComponent = DaggerMessageComponent.builder()
+                    .activityComponent(activityComponent)
+                    .messageModule(new MessageModule())
+                    .build();
+        }
+        return messageComponent;
+    }
+
+    public void removeMessageDetailsComponent() {
+        messageComponent = null;
     }
 }

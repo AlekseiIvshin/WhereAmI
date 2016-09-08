@@ -13,4 +13,5 @@ public interface Screens {
     int SIGN_IN_SCREEN = 4;
     int SIGN_UP_SCREEN = 5;
     int RESET_PASSWORD_SCREEN = 6;
+    int MESSAGE_DETAILS = 7;
 }

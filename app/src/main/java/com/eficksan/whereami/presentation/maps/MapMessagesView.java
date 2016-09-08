@@ -2,6 +2,7 @@ package com.eficksan.whereami.presentation.maps;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,8 +27,9 @@ import butterknife.ButterKnife;
 /**
  * Provides messages map view.
  */
-public class MapMessagesView implements OnMapReadyCallback {
+public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
+    private static final String TAG = MapMessagesView.class.getSimpleName();
     @Inject
     Context context;
 
@@ -35,6 +37,7 @@ public class MapMessagesView implements OnMapReadyCallback {
     public MapView messagesMap;
     private GoogleMap mGoogleMap;
     private Marker mUserPositionMarker;
+    private MapMessageClickListener mMessageClickListener;
 
     public void takeView(View view) {
         ButterKnife.bind(this, view);
@@ -44,6 +47,7 @@ public class MapMessagesView implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setOnMarkerClickListener(this);
     }
 
     /**
@@ -71,11 +75,12 @@ public class MapMessagesView implements OnMapReadyCallback {
      * @param messages messages
      */
     public void showMessages(List<PlacingMessage> messages) {
-        for (PlacingMessage message :
-                messages) {
-            mGoogleMap.addMarker(new MarkerOptions()
+        Marker marker;
+        for (PlacingMessage message : messages) {
+            marker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(message.latitude, message.longitude))
                     .title(message.message));
+            marker.setTag(message.messageId);
         }
     }
 
@@ -86,5 +91,29 @@ public class MapMessagesView implements OnMapReadyCallback {
     public void onDestroy() {
         mGoogleMap = null;
         messagesMap.onDestroy();
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.v(TAG, "On marker click");
+        Object markerTag = marker.getTag();
+        if (markerTag!=null && markerTag instanceof String) {
+            String messageId = String.valueOf(marker.getTag());
+            Log.v(TAG, "Marker has message id = " + messageId);
+            if (messageId != null && mMessageClickListener != null) {
+                mMessageClickListener.onMessageClick(messageId);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void setMessageClickListener(MapMessageClickListener messageClickListener) {
+        mMessageClickListener = messageClickListener;
+    }
+
+    public interface MapMessageClickListener {
+        void onMessageClick(String messageId);
     }
 }

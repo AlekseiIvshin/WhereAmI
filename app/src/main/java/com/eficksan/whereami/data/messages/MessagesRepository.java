@@ -24,4 +24,11 @@ public interface MessagesRepository {
      * @param subscriber subscriber
      */
     void fetchMessages(LatLng latLng, Subscriber<List<PlacingMessage>> subscriber);
+
+    /**
+     * Fing message by id.
+     * @param messId message id
+     * @param subscriber subscriber
+     */
+    void findMessageById(String messId, Subscriber<PlacingMessage> subscriber);
 }

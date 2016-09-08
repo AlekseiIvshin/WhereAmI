@@ -11,6 +11,7 @@ public interface Constants {
             "com.eficksan.whereami";
     String EXTRA_LOCATION_DATA = PACKAGE_NAME +
             ".EXTRA_LOCATION_DATA";
+    String EXTRA_MESSAGE_ID = "EXTRA_MESSAGE_ID";
 
     int MAX_MESSAGE_SIZE = 120;
 

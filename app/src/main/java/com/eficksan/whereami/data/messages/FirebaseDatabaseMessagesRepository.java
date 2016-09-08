@@ -64,6 +64,24 @@ public class FirebaseDatabaseMessagesRepository implements MessagesRepository {
                     placingMessages.add(placingMessage);
                 }
                 subscriber.onNext(placingMessages);
+                //TODO: maybe return in stream?
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                subscriber.onError(databaseError.toException());
+            }
+        });
+    }
+
+    @Override
+    public void findMessageById(final String messId, final Subscriber<PlacingMessage> subscriber) {
+        mDatabase.getReference().child(DB_MESSAGES).child(messId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.v(TAG, "Found message with id = " + messId);
+                subscriber.onNext(dataSnapshot.getValue(PlacingMessage.class));
+                subscriber.onCompleted();
             }
 
             @Override
