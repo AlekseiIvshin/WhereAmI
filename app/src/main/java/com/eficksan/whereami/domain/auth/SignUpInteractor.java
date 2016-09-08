@@ -56,19 +56,6 @@ public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
                         }
                     }
                 })
-                //TODO: Check on user is auto sign in when user registered
-//                .doOnNext(new Action1<Boolean>() {
-//                    @Override
-//                    public void call(Boolean aBoolean) {
-//                        // Sign in user
-//                        Task<AuthResult> authResultTask = mFirebaseAuth.signInWithEmailAndPassword(parameter.email, parameter.password);
-//                        try {
-//                            Tasks.await(authResultTask);
-//                        } catch (ExecutionException | InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                })
                 .doOnNext(new Action1<Boolean>() {
                     @Override
                     public void call(Boolean isSucceed) {
@@ -79,14 +66,6 @@ public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
                                     .build();
                             assert user != null;
                             user.updateProfile(profileUpdates);
-                            mUsersRepository.setCurrentUserName(parameter.userName);
-                        }
-                    }
-                })
-                .doOnNext(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean isSucceed) {
-                        if (isSucceed) {
                             mUsersRepository.setCurrentUserName(parameter.userName);
                         }
                     }

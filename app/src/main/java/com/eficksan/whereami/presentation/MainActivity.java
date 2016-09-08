@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     protected void onDestroy() {
-                ((App) getApplication()).removeActivityComponent();
+        ((App) getApplication()).removeActivityComponent();
         super.onDestroy();
     }
 
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements Router {
                         showScreen(Screens.MAPS_SCREEN);
                         break;
                     case R.id.sign_out:
-                            firebaseAuth.signOut();
+                        firebaseAuth.signOut();
                         break;
                 }
                 return true;
