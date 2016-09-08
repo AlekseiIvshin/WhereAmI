@@ -147,7 +147,7 @@ public class WhereAmIPresenter {
         foregroundServiceInteractor.turnLocationRequesting(isNeedToListenLocation);
         if (isNeedToListenLocation) {
             mView.onGeoDataTurnOn();
-            locationListeningInteractor.execute(LocationRequestDelegate.createDefaultLocationRequest(), locationSubscriber);
+            locationListeningInteractor.execute(LocationRequestDelegate.createIntervalLocationRequest(), locationSubscriber);
         } else {
             mView.onGeoDataTurnOff();
             lastLocation = null;

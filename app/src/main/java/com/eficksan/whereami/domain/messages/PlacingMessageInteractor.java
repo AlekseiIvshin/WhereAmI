@@ -1,4 +1,4 @@
-package com.eficksan.whereami.domain.messaging;
+package com.eficksan.whereami.domain.messages;
 
 import com.eficksan.whereami.data.messages.MessagesRepository;
 import com.eficksan.whereami.data.messages.PlacingMessage;

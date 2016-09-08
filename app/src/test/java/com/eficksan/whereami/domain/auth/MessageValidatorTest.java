@@ -1,6 +1,6 @@
 package com.eficksan.whereami.domain.auth;
 
-import com.eficksan.whereami.domain.messaging.PlaceMessageValidator;
+import com.eficksan.whereami.domain.messages.PlaceMessageValidator;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package com.eficksan.whereami.domain.messaging;
+package com.eficksan.whereami.domain.messages;
 
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.Validator;

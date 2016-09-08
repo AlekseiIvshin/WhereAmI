@@ -58,4 +58,5 @@
     <string name="menu.sign_out">Sign out</string>
     <string name="error.placing_message.message.invalid">Messge is invalid. May be it empty or too long.</string>
     <string name="error.placing_message.location.required">For placing message required location.</string>
+    <string name="error.maps.fetching_messages">Error during messages fetching</string>
 </resources>

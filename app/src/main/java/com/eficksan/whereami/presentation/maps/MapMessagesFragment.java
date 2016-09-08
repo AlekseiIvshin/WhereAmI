@@ -51,7 +51,12 @@ public class MapMessagesFragment extends Fragment {
         mMapMessagesPresenter = new MapMessagesPresenter();
         mapsComponent.inject(mMapMessagesPresenter);
         mMapMessagesPresenter.setView(mMapMessagesView);
-        mMapMessagesPresenter.onCreate();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mMapMessagesPresenter.onStart();
     }
 
     @Override
@@ -73,9 +78,14 @@ public class MapMessagesFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        mMapMessagesPresenter.onStop();
+    }
+
+    @Override
     public void onDestroyView() {
-        mMapMessagesView.messagesMap.onDestroy();
-        mMapMessagesPresenter.onDestroy();
+        mMapMessagesView.onDestroy();
         ((App)getActivity().getApplication()).removeMapsComponent();
         super.onDestroyView();
     }

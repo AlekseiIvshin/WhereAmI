@@ -36,6 +36,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
 
     public static final int LOCATION_REQUEST_INTERVAL = 10000;
     public static final int LOCATION_REQUEST_FASTEST_INTERVAL = 5000;
+    public static final float LOCATION_REQUEST_SMALLEST_DISPLACEMENT = 100f;
 
     private final Context context;
     private GoogleApiClient mGoogleApiClient;
@@ -45,11 +46,22 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     private Subscription mLocationSubscription;
     private boolean mIsRequestLocationOnStart = false;
 
-    public static LocationRequest createDefaultLocationRequest() {
+    public static LocationRequest createIntervalLocationRequest() {
         LocationRequest request = new LocationRequest();
         request.setInterval(LOCATION_REQUEST_INTERVAL);
+        request.setSmallestDisplacement(5f);
         request.setFastestInterval(LOCATION_REQUEST_FASTEST_INTERVAL);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        Log.v(TAG, "Creates request oriented on interval: " + request.toString());
+        return request;
+    }
+
+    public static LocationRequest createDisplacementRequest(float meters) {
+        LocationRequest request = new LocationRequest();
+        request.setSmallestDisplacement(meters);
+        request.setFastestInterval(LOCATION_REQUEST_FASTEST_INTERVAL);
+        request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        Log.v(TAG, "Creates request oriented on displacement: " + request.toString());
         return request;
     }
 
@@ -78,10 +90,13 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     }
 
     public void startLocationRequest() {
+        Log.v(TAG, "Start location request");
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Log.v(TAG, "Google client is connected");
             checkSettingsAndRequestLocation();
             mIsRequestLocationOnStart = false;
         } else {
+            Log.v(TAG, "Google client is not connected. Postpone requesting to client connection");
             mIsRequestLocationOnStart = true;
         }
     }
@@ -99,6 +114,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     }
 
     private void checkSettingsAndRequestLocation() {
+        Log.v(TAG, "Check settings for location request: " + mLocationRequest.toString());
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);
         PendingResult<LocationSettingsResult> locationSettingsResultPendingResult =
@@ -123,9 +139,11 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
                         .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.v(TAG, "Location settings require resolution");
                 delegateCallback.onSettingsResolutionRequired(result);
                 break;
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.v(TAG, "Location settings change unavailable");
                 delegateCallback.onSettingsChangeUnavailable(result);
                 break;
         }
@@ -153,6 +171,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     }
 
     private void getLastLocationRequest() {
+        Log.v(TAG, "Get last location");
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             delegateCallback.onPermissionsRequired(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
@@ -161,17 +180,20 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
         Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
-        mLocationChannel.onNext(lastLocation);
+        Log.v(TAG, "Last location is " + lastLocation.toString());
+
+        onLocationChanged(lastLocation);
     }
 
     private void unsubscribeLocationListener() {
-        if (mLocationSubscription!=null && !mLocationSubscription.isUnsubscribed()) {
+        if (mLocationSubscription != null && !mLocationSubscription.isUnsubscribed()) {
             mLocationSubscription.isUnsubscribed();
         }
     }
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.v(TAG, "Location changed to " + location.toString());
         mLocationChannel.onNext(location);
     }
 
