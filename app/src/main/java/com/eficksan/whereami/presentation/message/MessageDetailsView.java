@@ -1,6 +1,5 @@
 package com.eficksan.whereami.presentation.message;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -10,8 +9,6 @@ import com.eficksan.whereami.data.auth.User;
 import com.eficksan.whereami.data.messages.PlacingMessage;
 
 import java.util.Locale;
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -51,10 +48,17 @@ public class MessageDetailsView {
         text.setText(placingMessage.message);
     }
 
+    /**
+     * Shows message author.
+     * @param user author
+     */
     public void showAuthor(User user) {
         author.setText(user.name);
     }
 
+    /**
+     * Shows voting controls.
+     */
     public void showVoting() {
         if (View.VISIBLE != voteFor.getVisibility() || View.VISIBLE != voteAgainst.getVisibility()) {
             voteFor.setVisibility(View.VISIBLE);
@@ -62,6 +66,9 @@ public class MessageDetailsView {
         }
     }
 
+    /**
+     * Hides voting controls.
+     */
     public void hideVoting() {
         if (View.GONE != voteFor.getVisibility() || View.GONE != voteAgainst.getVisibility()) {
             voteFor.setVisibility(View.GONE);
@@ -69,6 +76,11 @@ public class MessageDetailsView {
         }
     }
 
+    /**
+     * Shows votes count.
+     * @param countVotesFor votes for
+     * @param countVotesAgainst voter against
+     */
     public void showVotesCount(int countVotesFor, int countVotesAgainst) {
         if (View.VISIBLE != voteForCount.getVisibility() || View.VISIBLE != voteAgainstCount.getVisibility()) {
             voteForCount.setVisibility(View.VISIBLE);
