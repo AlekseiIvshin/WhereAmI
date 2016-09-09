@@ -61,4 +61,6 @@
     <string name="error.maps.fetching_messages">Error during messages fetching</string>
     <string name="label.message.author.said">said</string>
     <string name="label.message.location.at">at</string>
+    <string name="label.message.vote.against">Burn in hell!</string>
+    <string name="label.message.vote.for">Coolio!</string>
 </resources>

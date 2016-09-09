@@ -1,7 +1,9 @@
-package com.eficksan.whereami.domain.messages;
+package com.eficksan.whereami.domain.votes;
 
 import com.eficksan.whereami.data.messages.MessagesRepository;
 import com.eficksan.whereami.data.messages.PlacingMessage;
+import com.eficksan.whereami.data.votes.VotesRepository;
+import com.eficksan.whereami.domain.BaseInteractor;
 
 import rx.Observable;
 import rx.Scheduler;
@@ -12,30 +14,28 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
- * Provides methods for async loading messages.
+ * Created by Aleksei_Ivshin on 9/9/16.
  */
-public class FindMessageInteractor {
-
-    private static final String TAG = FindMessageInteractor.class.getSimpleName();
+public class DidUserVoteInteractor {
 
     private Subscription subscription;
     private final Scheduler jobScheduler;
     private final Scheduler uiScheduler;
-    private final MessagesRepository messagesRepository;
+    private final VotesRepository votesRepository;
 
-    public FindMessageInteractor(MessagesRepository messagesRepository) {
-        this.messagesRepository = messagesRepository;
+    public DidUserVoteInteractor(VotesRepository votesRepository) {
+        this.votesRepository = votesRepository;
         this.jobScheduler = Schedulers.computation();
         this.uiScheduler = AndroidSchedulers.mainThread();
     }
 
-    public void execute(String messageId, final Subscriber<PlacingMessage> subscriber) {
+    public void execute(String messageId, final Subscriber<Boolean> subscriber) {
         subscription = Observable.just(messageId)
                 .subscribeOn(jobScheduler)
                 .doOnNext(new Action1<String>() {
                     @Override
                     public void call(String messId) {
-                        messagesRepository.findMessageById(messId, subscriber);
+                        votesRepository.canVoteMessage(messId, subscriber);
                     }
                 })
                 .observeOn(uiScheduler)

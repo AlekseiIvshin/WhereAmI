@@ -11,6 +11,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,11 +76,11 @@ public class FirebaseDatabaseMessagesRepository implements MessagesRepository {
     }
 
     @Override
-    public void findMessageById(final String messId, final Subscriber<PlacingMessage> subscriber) {
-        mDatabase.getReference().child(DB_MESSAGES).child(messId).addListenerForSingleValueEvent(new ValueEventListener() {
+    public void findMessageById(final String messageId, final Subscriber<PlacingMessage> subscriber) {
+        mDatabase.getReference().child(DB_MESSAGES).child(messageId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.v(TAG, "Found message with id = " + messId);
+                Log.v(TAG, "Found message with id = " + messageId);
                 subscriber.onNext(dataSnapshot.getValue(PlacingMessage.class));
                 subscriber.onCompleted();
             }

@@ -26,9 +26,9 @@ public interface MessagesRepository {
     void fetchMessages(LatLng latLng, Subscriber<List<PlacingMessage>> subscriber);
 
     /**
-     * Fing message by id.
-     * @param messId message id
+     * Find message by id.
+     * @param messageId message id
      * @param subscriber subscriber
      */
-    void findMessageById(String messId, Subscriber<PlacingMessage> subscriber);
+    void findMessageById(String messageId, Subscriber<PlacingMessage> subscriber);
 }
