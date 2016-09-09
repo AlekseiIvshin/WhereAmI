@@ -20,7 +20,7 @@ public class UserNameValidatorTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                { "UseraANmsd2", true },
+                { "UseraANmsd2", false },
                 { "username", true },
                 { "USERNAME", true },
                 { "USER_NAME", true },
@@ -50,6 +50,9 @@ public class UserNameValidatorTest {
         boolean actualResult = mValidator.validate(testUsername);
 
         // When
-        assertEquals(testExpectedResult, actualResult);
+        assertEquals(
+                String.format("For '%s' expected:<%b> but was:<%b>", testUsername, testExpectedResult, actualResult),
+                testExpectedResult,
+                actualResult);
     }
 }
