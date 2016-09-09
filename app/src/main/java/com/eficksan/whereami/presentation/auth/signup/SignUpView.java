@@ -6,11 +6,9 @@ import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.presentation.auth.common.InputFieldsDelegate;
 
 import javax.inject.Inject;
 
@@ -18,7 +16,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Created by Aleksei_Ivshin on 9/6/16.
+ * Signing up view.
+ * Provides fields for registration user in system.
  */
 public class SignUpView {
 
@@ -51,6 +50,24 @@ public class SignUpView {
     @Bind(R.id.auth_results)
     TextView signUpResults;
 
+    /**
+     * Shows validation error of input field.
+     * @param inputLayout error container
+     * @param resId error string resource id
+     * @param context context
+     */
+    public static void showValidationError(TextInputLayout inputLayout, @StringRes int resId, Context context) {
+        inputLayout.setError(context.getString(resId));
+    }
+
+    /**
+     * Hides validation error of input field.
+     * @param inputLayout error container
+     */
+    public static void hideValidationError(TextInputLayout inputLayout) {
+        inputLayout.setError(null);
+    }
+
     public void takeView(View view) {
         ButterKnife.bind(this, view);
     }
@@ -78,27 +95,27 @@ public class SignUpView {
     }
 
     public void showEmailValidationError(@StringRes int errorResId) {
-        InputFieldsDelegate.showValidatoinError(emailInputLayout,errorResId,context);
+        showValidationError(emailInputLayout,errorResId,context);
     }
 
     public void hideEmailValidationError(){
-        InputFieldsDelegate.hideValidatoinError(emailInputLayout);
+        hideValidationError(emailInputLayout);
     }
 
     public void showUserNamelValidationError(@StringRes int errorResId) {
-        InputFieldsDelegate.showValidatoinError(usernameInputLayout,errorResId,context);
+        showValidationError(usernameInputLayout,errorResId,context);
     }
 
     public void hideUserNamelValidationError(){
-        InputFieldsDelegate.hideValidatoinError(usernameInputLayout);
+        hideValidationError(usernameInputLayout);
     }
 
     public void showPasswordValidationError(@StringRes int errorResId) {
-        InputFieldsDelegate.showValidatoinError(passwordInputLayout,errorResId,context);
+        showValidationError(passwordInputLayout,errorResId,context);
     }
 
     public void hidePasswordValidationError(){
-        InputFieldsDelegate.hideValidatoinError(passwordInputLayout);
+        hideValidationError(passwordInputLayout);
     }
 
     public void showPasswordConfirmationError(int errorResId) {
