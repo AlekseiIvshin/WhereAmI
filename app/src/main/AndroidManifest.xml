@@ -42,31 +42,6 @@
             android:name=".data.location.LocationListeningService"
             android:enabled="true"
             android:exported="false" />
-
-        <provider
-            android:name=".data.sync.MessagingContentProvider"
-            android:authorities="com.eficksan.messaging.datasync.provider"
-            android:exported="false" />
-
-        <service android:name=".data.sync.AuthenticatorService">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
-
-        <service
-            android:name=".data.sync.SyncService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
-            </intent-filter>
-            <meta-data android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter" />
-        </service>
     </application>
 
 </manifest>
