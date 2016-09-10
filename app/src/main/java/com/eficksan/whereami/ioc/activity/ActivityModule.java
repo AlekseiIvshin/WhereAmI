@@ -54,4 +54,9 @@ public class ActivityModule {
     public VotesRepository provideVotesRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
         return new FirebaseDatabaseVotesRepository(firebaseDatabase,firebaseAuth);
     }
+
+    @Provides
+    public FirebaseDatabaseVotesRepository provideFirebaseVotesRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
+        return new FirebaseDatabaseVotesRepository(firebaseDatabase,firebaseAuth);
+    }
 }

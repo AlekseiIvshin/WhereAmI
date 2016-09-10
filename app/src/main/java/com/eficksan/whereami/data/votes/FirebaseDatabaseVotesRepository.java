@@ -53,6 +53,14 @@ public class FirebaseDatabaseVotesRepository implements VotesRepository {
             }
         });
     }
+    public void canVoteMessage(String messageId, ValueEventListener valueEventListener) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            valueEventListener.onCancelled(DatabaseError.fromException(new IllegalAccessError("User is not authenticated")));
+            return;
+        }
+        mDatabase.getReference().child(DB_VOTES).child(messageId).child(currentUser.getUid()).addListenerForSingleValueEvent(valueEventListener);
+    }
 
     @Override
     public boolean voteMessage(String messageId, boolean isVotedFor) {

@@ -1,50 +1,47 @@
 package com.eficksan.whereami.domain.votes;
 
-import com.eficksan.whereami.data.messages.MessagesRepository;
-import com.eficksan.whereami.data.messages.PlacingMessage;
-import com.eficksan.whereami.data.votes.VotesRepository;
-import com.eficksan.whereami.domain.BaseInteractor;
+import com.eficksan.whereami.data.votes.FirebaseDatabaseVotesRepository;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
-import rx.Observable;
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
- * Created by Aleksei_Ivshin on 9/9/16.
+ * Interactor for checking user available to vote message.
  */
 public class DidUserVoteInteractor {
 
     private Subscription subscription;
-    private final Scheduler jobScheduler;
-    private final Scheduler uiScheduler;
-    private final VotesRepository votesRepository;
+    private final FirebaseDatabaseVotesRepository votesRepository;
 
-    public DidUserVoteInteractor(VotesRepository votesRepository) {
+    public DidUserVoteInteractor(FirebaseDatabaseVotesRepository votesRepository) {
         this.votesRepository = votesRepository;
-        this.jobScheduler = Schedulers.computation();
-        this.uiScheduler = AndroidSchedulers.mainThread();
     }
 
     public void execute(String messageId, final Subscriber<Boolean> subscriber) {
-        subscription = Observable.just(messageId)
-                .subscribeOn(jobScheduler)
-                .doOnNext(new Action1<String>() {
-                    @Override
-                    public void call(String messId) {
-                        votesRepository.canVoteMessage(messId, subscriber);
-                    }
-                })
-                .observeOn(uiScheduler)
-                .subscribe();
+        final PublishSubject<Boolean> canUserVoteChannel = PublishSubject.create();
+        subscription = canUserVoteChannel.subscribe(subscriber);
+
+        final ValueEventListener mValueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Boolean isVotedBefore = dataSnapshot.getValue(Boolean.class);
+                canUserVoteChannel.onNext(isVotedBefore == null);
+                canUserVoteChannel.onCompleted();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                canUserVoteChannel.onError(databaseError.toException());
+            }
+        };
+        votesRepository.canVoteMessage(messageId, mValueListener);
     }
 
     public void unsubscribe() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
+        subscription.unsubscribe();
     }
 }

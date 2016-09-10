@@ -1,5 +1,6 @@
 package com.eficksan.whereami.ioc.message;
 
+import com.eficksan.whereami.data.votes.FirebaseDatabaseVotesRepository;
 import com.eficksan.whereami.data.votes.VotesRepository;
 import com.eficksan.whereami.domain.votes.DidUserVoteInteractor;
 import com.eficksan.whereami.domain.votes.FetchingVotesCountInteractor;
@@ -16,7 +17,7 @@ import dagger.Provides;
 public class VoteModule {
 
     @Provides
-    public DidUserVoteInteractor provideDidUserVoteInteractor(VotesRepository votesRepository) {
+    public DidUserVoteInteractor provideDidUserVoteInteractor(FirebaseDatabaseVotesRepository votesRepository) {
         return new DidUserVoteInteractor(votesRepository);
     }
 
