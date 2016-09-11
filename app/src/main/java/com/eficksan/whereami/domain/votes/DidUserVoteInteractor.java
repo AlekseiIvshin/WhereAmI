@@ -5,8 +5,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 
 /**
@@ -21,10 +24,8 @@ public class DidUserVoteInteractor {
         this.votesRepository = votesRepository;
     }
 
-    public void execute(String messageId, final Subscriber<Boolean> subscriber) {
+    public void execute(final String messageId, final Subscriber<Boolean> subscriber) {
         final PublishSubject<Boolean> canUserVoteChannel = PublishSubject.create();
-        subscription = canUserVoteChannel.subscribe(subscriber);
-
         final ValueEventListener mValueListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -38,7 +39,14 @@ public class DidUserVoteInteractor {
                 canUserVoteChannel.onError(databaseError.toException());
             }
         };
-        votesRepository.canVoteMessage(messageId, mValueListener);
+        canUserVoteChannel.doOnSubscribe(new Action0() {
+            @Override
+            public void call() {
+                votesRepository.canVoteMessage(messageId, mValueListener);
+            }
+        });
+
+        subscription = canUserVoteChannel.subscribe(subscriber);
     }
 
     public void unsubscribe() {
