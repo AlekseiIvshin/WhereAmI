@@ -13,13 +13,20 @@ import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.auth.AuthComponent;
 
+import javax.inject.Inject;
+
 /**
  * Sign in fragment provides methods for signing in, singing up and resetting password(in case failed sign in).
  */
 public class SignInFragment extends Fragment {
 
     public static final String TAG = SignInFragment.class.getSimpleName();
-    private SignInPresenter mPresenter;
+
+    @Inject
+    SignInPresenter mPresenter;
+
+    @Inject
+    SignInView signInView;
 
     /**
      * Use this factory method to create a new instance of
@@ -44,6 +51,12 @@ public class SignInFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAuthComponent.inject(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -53,12 +66,9 @@ public class SignInFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SignInView signInView = new SignInView();
-        signInView.takeView(view);
 
-        mPresenter = new SignInPresenter();
+        signInView.takeView(view);
         mPresenter.setView(signInView);
-        mAuthComponent.inject(mPresenter);
     }
 
     @Override

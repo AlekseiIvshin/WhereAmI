@@ -30,13 +30,13 @@ import com.eficksan.whereami.ioc.messaging.MessagingModule;
  * on 28.08.2016.
  */
 public class App extends Application {
-    private AppComponent appComponent;
-    private ActivityComponent activityComponent;
-    private LocationComponent locationComponent;
-    private MessagingComponent messagingComponent;
-    private MapsComponent mapsComponent;
-    private AuthComponent authComponent;
-    private MessageComponent messageComponent;
+    protected AppComponent appComponent;
+    protected ActivityComponent activityComponent;
+    protected LocationComponent locationComponent;
+    protected MessagingComponent messagingComponent;
+    protected MapsComponent mapsComponent;
+    protected AuthComponent authComponent;
+    protected MessageComponent messageComponent;
 
     @Override
     public void onCreate() {

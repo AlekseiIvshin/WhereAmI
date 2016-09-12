@@ -8,7 +8,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -16,17 +15,18 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.ArrayList;
+
 import rx.observers.TestSubscriber;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Created by Aleksei_Ivshin on 9/12/16.
- */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class,
         application = App.class)
@@ -44,14 +44,13 @@ public class VotesDataSourceTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnTrueWhenUserVotedForMessage() {
         // Given
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
 
         // Mock database
         DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
-        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef);
+        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
 
         final DataSnapshot snapshot = mock(DataSnapshot.class);
         when(snapshot.getValue(Boolean.class)).thenReturn(true);
@@ -76,14 +75,13 @@ public class VotesDataSourceTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnFalseWhenUserVotedAgainstMessage() {
         // Given
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
 
         // Mock database
         DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
-        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef);
+        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
 
         final DataSnapshot snapshot = mock(DataSnapshot.class);
         when(snapshot.getValue(Boolean.class)).thenReturn(false);
@@ -108,14 +106,13 @@ public class VotesDataSourceTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnNullWhenUserDidNotVoteBefore() {
         // Given
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
 
         // Mock database
         DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
-        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef);
+        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
 
         final DataSnapshot snapshot = mock(DataSnapshot.class);
         when(snapshot.getValue(Boolean.class)).thenReturn(null);
@@ -138,4 +135,126 @@ public class VotesDataSourceTest {
         testSubscriber.assertCompleted();
         testSubscriber.assertValue(null);
     }
+
+    @Test
+    public void shouldReturnTrueWhenUserVoteForPersisted() {
+        // Given
+        TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
+
+        // Mock database
+        DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
+        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
+        doNothing().when(mockDatabaseRef).setValue(anyBoolean());
+
+        when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
+
+        // When
+        votesDataSource.voteMessage(messageId, userId, true).subscribe(testSubscriber);
+
+        // Then
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertValue(true);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenUserVoteAgainstPersisted() {
+        // Given
+        TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
+
+        // Mock database
+        DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
+        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
+        doNothing().when(mockDatabaseRef).setValue(anyBoolean());
+
+        when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
+
+        // When
+        votesDataSource.voteMessage(messageId, userId, false).subscribe(testSubscriber);
+
+        // Then
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertValue(true);
+    }
+
+    @Test
+    public void shouldReturnZeroVotesWhenMessageWasNotVoted() {
+
+        // Given
+        TestSubscriber<MessageVotes> testSubscriber = new TestSubscriber<>();
+        // Mock database
+        DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
+        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
+        doNothing().when(mockDatabaseRef).setValue(anyBoolean());
+
+        final DataSnapshot snapshot = mock(DataSnapshot.class);
+        when(snapshot.getChildrenCount()).thenReturn(0L);
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] arguments = invocation.getArguments();
+                ((ValueEventListener) arguments[0]).onDataChange(snapshot);
+                return new Object();
+            }
+        }).when(mockDatabaseRef).addListenerForSingleValueEvent(any(ValueEventListener.class));
+
+        when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
+
+        // When
+        votesDataSource.fetchMessageVotes(messageId).subscribe(testSubscriber);
+
+        // Then
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertValue(new MessageVotes(0, 0));
+    }
+
+    @Test
+    public void shouldReturnZeroVotesWhenMessageWasVoted() {
+
+        // Given
+        TestSubscriber<MessageVotes> testSubscriber = new TestSubscriber<>();
+        // Mock database
+        DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
+        when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
+        doNothing().when(mockDatabaseRef).setValue(anyBoolean());
+
+        DataSnapshot resultsItemSnapshot = mock(DataSnapshot.class);
+        when(resultsItemSnapshot.getValue(Boolean.class)).thenReturn(true).thenReturn(false).thenReturn(true);
+
+        ArrayList<DataSnapshot> results = new ArrayList<>();
+        results.add(resultsItemSnapshot);
+        results.add(resultsItemSnapshot);
+        results.add(resultsItemSnapshot);
+
+        final DataSnapshot snapshot = mock(DataSnapshot.class);
+        when(snapshot.getChildrenCount()).thenReturn(3L);
+        when(snapshot.getChildren()).thenReturn(results);
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] arguments = invocation.getArguments();
+                ((ValueEventListener) arguments[0]).onDataChange(snapshot);
+                return new Object();
+            }
+        }).when(mockDatabaseRef).addListenerForSingleValueEvent(any(ValueEventListener.class));
+
+        when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
+
+        // When
+        votesDataSource.fetchMessageVotes(messageId).subscribe(testSubscriber);
+
+        // Then
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertValue(new MessageVotes(2, 1));
+    }
+
 }

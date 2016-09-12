@@ -17,14 +17,17 @@ import rx.Subscriber;
  */
 public class SignInPresenter implements View.OnClickListener {
 
-    @Inject
-    Router router;
-
-    @Inject
-    SignInInteractor signInInteractor;
+    private final Router router;
+    private final SignInInteractor signInInteractor;
 
     private SignInView mSignInView;
     private Subscriber<Boolean> mSignInSubscriber;
+
+    @Inject
+    public SignInPresenter(Router router, SignInInteractor signInInteractor) {
+        this.router = router;
+        this.signInInteractor = signInInteractor;
+    }
 
     public void setView(SignInView signInView) {
         this.mSignInView = signInView;

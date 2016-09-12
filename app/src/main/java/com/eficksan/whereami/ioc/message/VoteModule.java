@@ -5,7 +5,6 @@ import com.eficksan.whereami.data.votes.VotesRepository;
 import com.eficksan.whereami.domain.votes.DidUserVoteInteractor;
 import com.eficksan.whereami.domain.votes.FetchingVotesCountInteractor;
 import com.eficksan.whereami.domain.votes.VotingInteractor;
-import com.google.firebase.auth.FirebaseAuth;
 
 import javax.inject.Named;
 
@@ -21,13 +20,13 @@ import rx.Scheduler;
 public class VoteModule {
 
     @Provides
-    public DidUserVoteInteractor provideDidUserVoteInteractor(VotesDataSource votesDataSource, FirebaseAuth firebaseAuth) {
-        return new DidUserVoteInteractor(votesDataSource, firebaseAuth);
+    public DidUserVoteInteractor provideDidUserVoteInteractor(VotesDataSource votesDataSource, @Named("currentUserId") String userId, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+        return new DidUserVoteInteractor(votesDataSource, userId, jobScheduler, uiScheduler);
     }
 
     @Provides
-    public VotingInteractor provideVotingInteractor(VotesRepository votesRepository, @Named("job")Scheduler jobScheduler,@Named("ui")Scheduler uiScheduler) {
-        return new VotingInteractor(votesRepository, jobScheduler, uiScheduler);
+    public VotingInteractor provideVotingInteractor(VotesDataSource votesRepository, @Named("currentUserId") String userId, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+        return new VotingInteractor(votesRepository, userId, jobScheduler, uiScheduler);
     }
 
     @Provides

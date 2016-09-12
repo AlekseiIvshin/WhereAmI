@@ -1,36 +1,28 @@
 package com.eficksan.whereami.domain.votes;
 
 import com.eficksan.whereami.data.votes.Vote;
-import com.eficksan.whereami.data.votes.VotesRepository;
+import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.eficksan.whereami.domain.BaseInteractor;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Provides methods for voting message.
  */
-public class VotingInteractor extends BaseInteractor<Vote, Boolean>{
+public class VotingInteractor extends BaseInteractor<Vote, Boolean> {
 
-    private final VotesRepository votesRepository;
+    private final VotesDataSource votesRepository;
+    private final String userId;
 
-    public VotingInteractor(VotesRepository votesRepository, Scheduler jobScheduler, Scheduler uiScheduler) {
+    public VotingInteractor(VotesDataSource votesRepository, String userId, Scheduler jobScheduler, Scheduler uiScheduler) {
         super(jobScheduler, uiScheduler);
         this.votesRepository = votesRepository;
+        this.userId = userId;
     }
 
     @Override
-    protected Observable<Boolean> buildObservable(final Vote parameter) {
-        return Observable.just(parameter)
-                .subscribeOn(jobScheduler)
-                .map(new Func1<Vote, Boolean>() {
-                    @Override
-                    public Boolean call(Vote vote) {
-                        return votesRepository.voteMessage(parameter.messageId, parameter.isVotedFor);
-                    }
-                });
+    protected Observable<Boolean> buildObservable(final Vote vote) {
+        return votesRepository.voteMessage(userId, vote.messageId, vote.isVotedFor);
     }
 }

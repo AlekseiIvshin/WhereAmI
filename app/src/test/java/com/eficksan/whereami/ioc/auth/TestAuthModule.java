@@ -13,74 +13,66 @@ import com.eficksan.whereami.presentation.auth.signin.SignInView;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.google.firebase.auth.FirebaseAuth;
 
-import javax.inject.Named;
+import org.mockito.Mockito;
 
 import dagger.Module;
-import dagger.Provides;
+
+import static org.mockito.Mockito.mock;
 
 /**
- * Created by Aleksei Ivshin
- * on 28.08.2016.
+ * Created by Aleksei_Ivshin on 9/12/16.
  */
 @Module
-public class AuthModule {
+@FragmentScope
+public class TestAuthModule  extends AuthModule{
 
-    @Provides
+    @Override
     public EmailValidator provideEmailValidator() {
-        return new EmailValidator();
+        return mock(EmailValidator.class);
     }
 
-    @Provides
+    @Override
     public PasswordValidator providePasswordValidator() {
-        return new PasswordValidator();
+        return mock(PasswordValidator.class);
     }
 
-    @Provides
+    @Override
     public UserNameValidator provideUserNameValidator() {
-        return new UserNameValidator();
+        return mock(UserNameValidator.class);
     }
 
-    @Provides
-    @FragmentScope
+    @Override
     public SignInPresenter provideSignInPresenter(Router router, SignInInteractor signInInteractor) {
-        return new SignInPresenter(router, signInInteractor);
+        return mock(SignInPresenter.class);
     }
 
-    @Provides
+    @Override
     public SignInView provideSignInView() {
-        return new SignInView();
+        return mock(SignInView.class);
     }
 
-    @Provides
-    @FragmentScope
+    @Override
     public SignInInteractor provideSignInInteractor(FirebaseAuth firebaseAuth) {
-        return new SignInInteractor(firebaseAuth);
+        return mock(SignInInteractor.class);
     }
 
-    @Provides
-    @FragmentScope
+    @Override
     public SignUpInteractor provideSignUpInteractor(FirebaseAuth firebaseAuth, UsersRepository usersRepository) {
-        return new SignUpInteractor(firebaseAuth, usersRepository);
+        return mock(SignUpInteractor.class);
     }
 
-    @Provides
-    @FragmentScope
-    @Named("email")
+    @Override
     public ValidatingInteractor provideEmailValidatingInteractor() {
-        return new ValidatingInteractor(new EmailValidator());
+        return mock(ValidatingInteractor.class);
     }
 
-    @Provides
-    @FragmentScope
-    @Named("username")
+    @Override
     public ValidatingInteractor provideUserNameValidatingInteractor() {
-        return new ValidatingInteractor(new UserNameValidator());
+        return mock(ValidatingInteractor.class);
     }
 
-    @Provides
-    @FragmentScope
-    @Named("password")
+    @Override
     public ValidatingInteractor providePasswordValidatingInteractor() {
-        return new ValidatingInteractor(new PasswordValidator());
+        return mock(ValidatingInteractor.class);
     }
 }

@@ -4,6 +4,7 @@ import com.eficksan.whereami.App;
 import com.eficksan.whereami.BuildConfig;
 import com.eficksan.whereami.data.votes.FirebaseDatabaseVotesRepository;
 import com.eficksan.whereami.data.votes.Vote;
+import com.eficksan.whereami.data.votes.VotesDataSource;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,6 +15,8 @@ import org.mockito.Mockito;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import rx.Observable;
+import rx.Subscriber;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 
@@ -31,13 +34,13 @@ import static org.mockito.Mockito.when;
 public class VotingInteractorTest {
 
     VotingInteractor votingInteractor;
-    FirebaseDatabaseVotesRepository mockVotesRepository;
+    VotesDataSource mockVotesRepository;
 
     @Before
     public void setUp() {
         TestScheduler scheduler = new TestScheduler();
-        mockVotesRepository = Mockito.mock(FirebaseDatabaseVotesRepository.class);
-        votingInteractor = new VotingInteractor(mockVotesRepository,scheduler,scheduler);
+        mockVotesRepository = Mockito.mock(VotesDataSource.class);
+        votingInteractor = new VotingInteractor(mockVotesRepository,"UserId", scheduler,scheduler);
     }
 
     @After
@@ -48,14 +51,19 @@ public class VotingInteractorTest {
     }
 
     @Test
-    @Ignore
-    public void shouldReturnTrueWhenUserSuccessfullyVoteForMessage() {
+    public void shouldReturnTrueWhenUserSuccessfullyVoteMessage() {
         // Given
         final Vote vote = new Vote();
         vote.isVotedFor = true;
         vote.messageId = "messageId";
 
-        when(mockVotesRepository.voteMessage(vote.messageId, vote.isVotedFor)).thenReturn(true);
+        when(mockVotesRepository.voteMessage(anyString(), anyString(), anyBoolean())).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                subscriber.onNext(true);
+                subscriber.onCompleted();
+            }
+        }));
 
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
 
@@ -70,36 +78,19 @@ public class VotingInteractorTest {
     }
 
     @Test
-    @Ignore
-    public void shouldReturnTrueWhenUserSuccessfullyVoteAgainstMessage() {
-        // Given
-        final Vote vote = new Vote();
-        vote.isVotedFor = false;
-        vote.messageId = "messageId";
-
-        when(mockVotesRepository.voteMessage(vote.messageId, vote.isVotedFor)).thenReturn(true);
-
-        TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
-
-        // When
-        votingInteractor.execute(vote, testSubscriber);
-
-        // Then
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertCompleted();
-        testSubscriber.assertValue(true);
-    }
-
-    @Test
-    @Ignore
     public void shouldReturnFalseWhenUserVotingWasFailed() {
         // Given
         final Vote vote = new Vote();
         vote.isVotedFor = false;
         vote.messageId = "messageId";
 
-        when(mockVotesRepository.voteMessage(anyString(), anyBoolean())).thenReturn(false);
+        when(mockVotesRepository.voteMessage(anyString(), anyString(), anyBoolean())).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                subscriber.onNext(false);
+                subscriber.onCompleted();
+            }
+        }));
 
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
 

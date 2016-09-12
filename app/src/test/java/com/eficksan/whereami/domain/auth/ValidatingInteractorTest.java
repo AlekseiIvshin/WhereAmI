@@ -14,10 +14,6 @@ import org.mockito.Mockito;
 import rx.Subscriber;
 import rx.subjects.PublishSubject;
 
-/**
- * Created by Aleksei Ivshin
- * on 06.09.2016.
- */
 @RunWith(JUnit4.class)
 public class ValidatingInteractorTest {
 
@@ -58,6 +54,7 @@ public class ValidatingInteractorTest {
         // When
         textChannel.onNext("test");
     }
+
     @Test
     public void shouldReturnFalseWhenValidatorReturnsFalse() {
         // Given

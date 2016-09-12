@@ -36,6 +36,9 @@ public interface ActivityComponent {
 
     FirebaseDatabase firebaseDatabase();
 
+    @Named("currentUserId")
+    String currentUserId();
+
     MessagesRepository messagesRepository();
 
     UsersRepository usersRepository();
