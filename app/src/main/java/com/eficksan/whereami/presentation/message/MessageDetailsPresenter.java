@@ -9,7 +9,6 @@ import com.eficksan.whereami.domain.users.FindUserInteractor;
 import com.eficksan.whereami.domain.votes.DidUserVoteInteractor;
 import com.eficksan.whereami.domain.votes.FetchingVotesCountInteractor;
 import com.eficksan.whereami.domain.votes.VotingInteractor;
-import com.jakewharton.rxbinding.view.RxView;
 
 import javax.inject.Inject;
 
@@ -142,27 +141,25 @@ public class MessageDetailsPresenter {
 
     public void onCreate(final String messageId) {
         mMessageId = messageId;
-        RxView.clicks(mDetailsView.voteFor)
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        Vote vote = new Vote();
-                        vote.messageId = messageId;
-                        vote.isVotedFor = true;
-                        votingInteractor.execute(vote, voteResultSubscriber);
-                    }
-                });
+        mDetailsView.subscribeOnVotingForClick(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                Vote vote = new Vote();
+                vote.messageId = messageId;
+                vote.isVotedFor = true;
+                votingInteractor.execute(vote, voteResultSubscriber);
+            }
+        });
 
-        RxView.clicks(mDetailsView.voteAgainst)
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        Vote vote = new Vote();
-                        vote.messageId = messageId;
-                        vote.isVotedFor = false;
-                        votingInteractor.execute(vote, voteResultSubscriber);
-                    }
-                });
+        mDetailsView.subscribeOnVotingAgainstClick(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                Vote vote = new Vote();
+                vote.messageId = messageId;
+                vote.isVotedFor = false;
+                votingInteractor.execute(vote, voteResultSubscriber);
+            }
+        });
 
         // TODO: check on user authenticated before
         findMessageInteractor.execute(messageId, placingMessageSubscriber);
@@ -175,5 +172,7 @@ public class MessageDetailsPresenter {
         didUserVoteInteractor.unsubscribe();
         findMessageInteractor.unsubscribe();
         findUserInteractor.unsubscribe();
+
+        mDetailsView.destroy();
     }
 }

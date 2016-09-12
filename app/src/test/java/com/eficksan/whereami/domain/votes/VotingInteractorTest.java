@@ -1,7 +1,5 @@
 package com.eficksan.whereami.domain.votes;
 
-import com.eficksan.whereami.App;
-import com.eficksan.whereami.BuildConfig;
 import com.eficksan.whereami.data.votes.Vote;
 import com.eficksan.whereami.data.votes.VotesDataSource;
 
@@ -9,9 +7,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
 
 import rx.Observable;
 import rx.Scheduler;
@@ -27,9 +24,7 @@ import static org.mockito.Mockito.when;
  * Created by Aleksei Ivshin
  * on 10.09.2016.
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class,
-        application = App.class)
+@RunWith(JUnit4.class)
 public class VotingInteractorTest {
 
     VotingInteractor votingInteractor;

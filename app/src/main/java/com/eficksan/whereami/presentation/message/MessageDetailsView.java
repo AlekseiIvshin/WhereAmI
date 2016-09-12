@@ -7,11 +7,14 @@ import android.widget.TextView;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.auth.User;
 import com.eficksan.whereami.data.messages.PlacingMessage;
+import com.jakewharton.rxbinding.view.RxView;
 
 import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Message details view.
@@ -39,8 +42,15 @@ public class MessageDetailsView {
     @Bind(R.id.message_vote_against_count)
     TextView voteAgainstCount;
 
+    CompositeSubscription compositeSubscription = new CompositeSubscription();
+
     public void takeView(View view) {
         ButterKnife.bind(this, view);
+    }
+
+    public void destroy() {
+        compositeSubscription.unsubscribe();
+        compositeSubscription.clear();
     }
 
     public void showMessage(PlacingMessage placingMessage) {
@@ -89,6 +99,14 @@ public class MessageDetailsView {
 
         voteForCount.setText(String.valueOf(countVotesFor));
         voteAgainstCount.setText(String.valueOf(countVotesAgainst));
+    }
+
+    public void subscribeOnVotingForClick(Action1<Void> voidSubscriber) {
+        compositeSubscription.add(RxView.clicks(voteFor).subscribe(voidSubscriber));
+    }
+
+    public void subscribeOnVotingAgainstClick(Action1<Void> voidSubscriber) {
+        compositeSubscription.add(RxView.clicks(voteAgainst).subscribe(voidSubscriber));
     }
 
 }

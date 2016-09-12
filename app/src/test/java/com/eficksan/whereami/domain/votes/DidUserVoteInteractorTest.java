@@ -1,15 +1,12 @@
 package com.eficksan.whereami.domain.votes;
 
-import com.eficksan.whereami.App;
-import com.eficksan.whereami.BuildConfig;
 import com.eficksan.whereami.data.votes.VotesDataSource;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
+import org.junit.runners.JUnit4;
 
 import rx.Observable;
 import rx.Scheduler;
@@ -23,9 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class,
-        application = App.class)
+@RunWith(JUnit4.class)
 public class DidUserVoteInteractorTest {
 
     static String messageId = "messageId";
