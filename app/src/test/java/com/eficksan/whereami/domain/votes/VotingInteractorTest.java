@@ -7,7 +7,6 @@ import com.eficksan.whereami.data.votes.VotesDataSource;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -15,9 +14,10 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import rx.Observable;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.observers.TestSubscriber;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.Schedulers;
 
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class,
         application = App.class)
-@Ignore
 public class VotingInteractorTest {
 
     VotingInteractor votingInteractor;
@@ -38,7 +37,7 @@ public class VotingInteractorTest {
 
     @Before
     public void setUp() {
-        TestScheduler scheduler = new TestScheduler();
+        Scheduler scheduler = Schedulers.immediate();
         mockVotesRepository = Mockito.mock(VotesDataSource.class);
         votingInteractor = new VotingInteractor(mockVotesRepository, "UserId", scheduler, scheduler);
     }

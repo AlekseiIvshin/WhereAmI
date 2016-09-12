@@ -34,7 +34,7 @@ public class FetchingVotesCountInteractorTest {
     VotesDataSource mockVotesDataSource;
 
     FetchingVotesCountInteractor interactor;
-    Scheduler scheduler = Schedulers.computation();
+    Scheduler scheduler = Schedulers.immediate();
 
     @Before
     public void setUp() {

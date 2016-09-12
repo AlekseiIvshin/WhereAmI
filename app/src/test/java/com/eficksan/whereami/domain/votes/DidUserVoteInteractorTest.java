@@ -33,7 +33,7 @@ public class DidUserVoteInteractorTest {
     VotesDataSource mockVotesDataSource;
 
     DidUserVoteInteractor interactor;
-    Scheduler scheduler = Schedulers.computation();
+    Scheduler scheduler = Schedulers.immediate();
 
     @Before
     public void setUp() {
