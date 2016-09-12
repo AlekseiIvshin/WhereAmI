@@ -1,7 +1,6 @@
 package com.eficksan.whereami.ioc.message;
 
 import com.eficksan.whereami.data.votes.VotesDataSource;
-import com.eficksan.whereami.data.votes.VotesRepository;
 import com.eficksan.whereami.domain.votes.DidUserVoteInteractor;
 import com.eficksan.whereami.domain.votes.FetchingVotesCountInteractor;
 import com.eficksan.whereami.domain.votes.VotingInteractor;
@@ -30,7 +29,7 @@ public class VoteModule {
     }
 
     @Provides
-    public FetchingVotesCountInteractor provideFetchingVotesCountInteractor(VotesRepository votesRepository) {
-        return new FetchingVotesCountInteractor(votesRepository);
+    public FetchingVotesCountInteractor provideFetchingVotesCountInteractor(VotesDataSource votesDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+        return new FetchingVotesCountInteractor(votesDataSource, jobScheduler, uiScheduler);
     }
 }

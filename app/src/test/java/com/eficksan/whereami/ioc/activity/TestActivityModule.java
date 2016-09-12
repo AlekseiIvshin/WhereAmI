@@ -2,18 +2,12 @@ package com.eficksan.whereami.ioc.activity;
 
 import android.app.Activity;
 
-import com.eficksan.whereami.data.auth.FirebaseDatabaseUsersRepository;
 import com.eficksan.whereami.data.auth.UsersRepository;
-import com.eficksan.whereami.data.messages.FirebaseDatabaseMessagesRepository;
 import com.eficksan.whereami.data.messages.MessagesRepository;
-import com.eficksan.whereami.data.votes.FirebaseDatabaseVotesRepository;
 import com.eficksan.whereami.data.votes.VotesDataSource;
-import com.eficksan.whereami.data.votes.VotesRepository;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-
-import org.mockito.Mockito;
 
 import dagger.Module;
 import dagger.Provides;
@@ -53,16 +47,6 @@ public class TestActivityModule extends ActivityModule {
     @Provides
     public UsersRepository provideUsersRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
         return mock(UsersRepository.class);
-    }
-
-    @Provides
-    public VotesRepository provideVotesRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
-        return mock(VotesRepository.class);
-    }
-
-    @Provides
-    public FirebaseDatabaseVotesRepository provideFirebaseVotesRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
-        return mock(FirebaseDatabaseVotesRepository.class);
     }
 
     @Provides

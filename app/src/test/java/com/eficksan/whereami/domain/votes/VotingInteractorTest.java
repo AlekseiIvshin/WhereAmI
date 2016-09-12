@@ -2,7 +2,6 @@ package com.eficksan.whereami.domain.votes;
 
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.BuildConfig;
-import com.eficksan.whereami.data.votes.FirebaseDatabaseVotesRepository;
 import com.eficksan.whereami.data.votes.Vote;
 import com.eficksan.whereami.data.votes.VotesDataSource;
 
@@ -41,7 +40,7 @@ public class VotingInteractorTest {
     public void setUp() {
         TestScheduler scheduler = new TestScheduler();
         mockVotesRepository = Mockito.mock(VotesDataSource.class);
-        votingInteractor = new VotingInteractor(mockVotesRepository,"UserId", scheduler,scheduler);
+        votingInteractor = new VotingInteractor(mockVotesRepository, "UserId", scheduler, scheduler);
     }
 
     @After

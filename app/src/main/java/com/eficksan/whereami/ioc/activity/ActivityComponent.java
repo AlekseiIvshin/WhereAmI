@@ -5,11 +5,8 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.eficksan.whereami.data.auth.UsersRepository;
-import com.eficksan.whereami.data.messages.FirebaseDatabaseMessagesRepository;
 import com.eficksan.whereami.data.messages.MessagesRepository;
-import com.eficksan.whereami.data.votes.FirebaseDatabaseVotesRepository;
 import com.eficksan.whereami.data.votes.VotesDataSource;
-import com.eficksan.whereami.data.votes.VotesRepository;
 import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.presentation.MainActivity;
 import com.eficksan.whereami.presentation.routing.Router;
@@ -42,10 +39,6 @@ public interface ActivityComponent {
     MessagesRepository messagesRepository();
 
     UsersRepository usersRepository();
-
-    VotesRepository votesRepository();
-
-    FirebaseDatabaseVotesRepository votesRepositoryFirebase();
 
     VotesDataSource votesDataSource();
 
