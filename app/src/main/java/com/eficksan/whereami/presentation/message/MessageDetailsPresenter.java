@@ -164,6 +164,7 @@ public class MessageDetailsPresenter {
                     }
                 });
 
+        // TODO: check on user authenticated before
         findMessageInteractor.execute(messageId, placingMessageSubscriber);
         didUserVoteInteractor.execute(messageId, voteAvailabilitySubscriber);
     }

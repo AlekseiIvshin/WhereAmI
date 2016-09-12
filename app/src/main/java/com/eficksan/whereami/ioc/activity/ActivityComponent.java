@@ -8,6 +8,7 @@ import com.eficksan.whereami.data.auth.UsersRepository;
 import com.eficksan.whereami.data.messages.FirebaseDatabaseMessagesRepository;
 import com.eficksan.whereami.data.messages.MessagesRepository;
 import com.eficksan.whereami.data.votes.FirebaseDatabaseVotesRepository;
+import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.eficksan.whereami.data.votes.VotesRepository;
 import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.presentation.MainActivity;
@@ -16,7 +17,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import javax.inject.Named;
+
 import dagger.Component;
+import rx.Scheduler;
 
 /**
  * Created by Aleksei Ivshin
@@ -39,6 +43,14 @@ public interface ActivityComponent {
     VotesRepository votesRepository();
 
     FirebaseDatabaseVotesRepository votesRepositoryFirebase();
+
+    VotesDataSource votesDataSource();
+
+    @Named("job")
+    Scheduler jobScheduler();
+
+    @Named("ui")
+    Scheduler uiScheduler();
 
     @Nullable
     FirebaseUser currentUser();

@@ -5,6 +5,7 @@ import com.eficksan.whereami.data.votes.VotesRepository;
 import com.eficksan.whereami.domain.BaseInteractor;
 
 import rx.Observable;
+import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -16,8 +17,8 @@ public class VotingInteractor extends BaseInteractor<Vote, Boolean>{
 
     private final VotesRepository votesRepository;
 
-    public VotingInteractor(VotesRepository votesRepository) {
-        super(Schedulers.computation(), AndroidSchedulers.mainThread());
+    public VotingInteractor(VotesRepository votesRepository, Scheduler jobScheduler, Scheduler uiScheduler) {
+        super(jobScheduler, uiScheduler);
         this.votesRepository = votesRepository;
     }
 

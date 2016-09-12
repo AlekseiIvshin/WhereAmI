@@ -7,10 +7,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Aleksei Ivshin
@@ -47,6 +51,18 @@ public class AppModule {
     @Nullable
     public FirebaseUser provideCurrentUser(FirebaseAuth firebaseAuth) {
         return firebaseAuth.getCurrentUser();
+    }
+
+    @Provides
+    @Named("job")
+    public Scheduler provideJobScheduler() {
+        return Schedulers.computation();
+    }
+
+    @Provides
+    @Named("ui")
+    public Scheduler provideUiScheduler() {
+        return AndroidSchedulers.mainThread();
     }
 
 }
