@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class,
         application = App.class)
+@Ignore
 public class VotingInteractorTest {
 
     VotingInteractor votingInteractor;

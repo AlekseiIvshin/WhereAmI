@@ -12,12 +12,15 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import rx.Observable;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.observers.TestSubscriber;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.Schedulers;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -30,10 +33,10 @@ public class DidUserVoteInteractorTest {
     VotesDataSource mockVotesDataSource;
 
     DidUserVoteInteractor interactor;
+    Scheduler scheduler = Schedulers.computation();
 
     @Before
     public void setUp() {
-        TestScheduler scheduler = new TestScheduler();
         mockVotesDataSource = mock(VotesDataSource.class);
         interactor = new DidUserVoteInteractor(mockVotesDataSource, "UserId", scheduler, scheduler);
     }
@@ -49,20 +52,24 @@ public class DidUserVoteInteractorTest {
         final Boolean userVote = true;
 
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
-        when(mockVotesDataSource.fetchUserMessageVote(anyString(), anyString())).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
+        Observable<Boolean> stubChannel = Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
                 subscriber.onNext(userVote);
                 subscriber.onCompleted();
             }
-        }));
+        });
+
+        when(mockVotesDataSource.fetchUserMessageVote(anyString(), anyString()))
+                .thenReturn(stubChannel);
 
         // When
         interactor.execute(messageId, testSubscriber);
 
         // Then
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.onCompleted();
+        verify(mockVotesDataSource, times(1)).fetchUserMessageVote(anyString(), anyString());
+        testSubscriber.assertCompleted();
         testSubscriber.assertValue(true);
     }
 
@@ -85,7 +92,8 @@ public class DidUserVoteInteractorTest {
 
         // Then
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.onCompleted();
+        verify(mockVotesDataSource, times(1)).fetchUserMessageVote(anyString(), anyString());
+        testSubscriber.assertCompleted();
         testSubscriber.assertValue(true);
     }
 
@@ -108,7 +116,8 @@ public class DidUserVoteInteractorTest {
 
         // Then
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.onCompleted();
+        verify(mockVotesDataSource, times(1)).fetchUserMessageVote(anyString(), anyString());
+        testSubscriber.assertCompleted();
         testSubscriber.assertValue(false);
     }
 }

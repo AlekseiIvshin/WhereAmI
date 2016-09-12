@@ -7,7 +7,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -17,6 +19,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 
+import rx.Subscription;
 import rx.observers.TestSubscriber;
 
 import static org.mockito.Matchers.any;
@@ -36,11 +39,20 @@ public class VotesDataSourceTest {
     static String userId = "userId";
     VotesDataSource votesDataSource;
     FirebaseDatabase mockDatabase;
+    Subscription subscription;
 
     @Before
     public void setUp() {
         mockDatabase = mock(FirebaseDatabase.class);
         votesDataSource = new VotesDataSource(mockDatabase);
+        subscription = null;
+    }
+
+    @After
+    public void tearDown() {
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
     }
 
     @Test
@@ -65,7 +77,7 @@ public class VotesDataSourceTest {
         when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
 
         // When
-        votesDataSource.fetchUserMessageVote(messageId, userId).subscribe(testSubscriber);
+        subscription = votesDataSource.fetchUserMessageVote(messageId, userId).subscribe(testSubscriber);
 
         // Then
         testSubscriber.awaitTerminalEvent();
@@ -96,7 +108,7 @@ public class VotesDataSourceTest {
         when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
 
         // When
-        votesDataSource.fetchUserMessageVote(messageId, userId).subscribe(testSubscriber);
+        subscription = votesDataSource.fetchUserMessageVote(messageId, userId).subscribe(testSubscriber);
 
         // Then
         testSubscriber.awaitTerminalEvent();
@@ -127,7 +139,7 @@ public class VotesDataSourceTest {
         when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
 
         // When
-        votesDataSource.fetchUserMessageVote(messageId, userId).subscribe(testSubscriber);
+        subscription = votesDataSource.fetchUserMessageVote(messageId, userId).subscribe(testSubscriber);
 
         // Then
         testSubscriber.awaitTerminalEvent();
@@ -144,12 +156,12 @@ public class VotesDataSourceTest {
         // Mock database
         DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
         when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
-        doNothing().when(mockDatabaseRef).setValue(anyBoolean());
+        when(mockDatabaseRef.setValue(anyBoolean())).thenReturn(null);
 
         when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
 
         // When
-        votesDataSource.voteMessage(messageId, userId, true).subscribe(testSubscriber);
+        subscription = votesDataSource.voteMessage(messageId, userId, true).subscribe(testSubscriber);
 
         // Then
         testSubscriber.awaitTerminalEvent();
@@ -166,12 +178,12 @@ public class VotesDataSourceTest {
         // Mock database
         DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
         when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
-        doNothing().when(mockDatabaseRef).setValue(anyBoolean());
+        when(mockDatabaseRef.setValue(anyBoolean())).thenReturn(null);
 
         when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
 
         // When
-        votesDataSource.voteMessage(messageId, userId, false).subscribe(testSubscriber);
+        subscription = votesDataSource.voteMessage(messageId, userId, false).subscribe(testSubscriber);
 
         // Then
         testSubscriber.awaitTerminalEvent();
@@ -188,7 +200,7 @@ public class VotesDataSourceTest {
         // Mock database
         DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
         when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
-        doNothing().when(mockDatabaseRef).setValue(anyBoolean());
+        when(mockDatabaseRef.setValue(anyBoolean())).thenReturn(null);
 
         final DataSnapshot snapshot = mock(DataSnapshot.class);
         when(snapshot.getChildrenCount()).thenReturn(0L);
@@ -205,7 +217,7 @@ public class VotesDataSourceTest {
         when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
 
         // When
-        votesDataSource.fetchMessageVotes(messageId).subscribe(testSubscriber);
+        subscription = votesDataSource.fetchMessageVotes(messageId).subscribe(testSubscriber);
 
         // Then
         testSubscriber.awaitTerminalEvent();
@@ -222,7 +234,7 @@ public class VotesDataSourceTest {
         // Mock database
         DatabaseReference mockDatabaseRef = mock(DatabaseReference.class);
         when(mockDatabaseRef.child(anyString())).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef).thenReturn(mockDatabaseRef);
-        doNothing().when(mockDatabaseRef).setValue(anyBoolean());
+        when(mockDatabaseRef.setValue(anyBoolean())).thenReturn(null);
 
         DataSnapshot resultsItemSnapshot = mock(DataSnapshot.class);
         when(resultsItemSnapshot.getValue(Boolean.class)).thenReturn(true).thenReturn(false).thenReturn(true);
@@ -248,7 +260,7 @@ public class VotesDataSourceTest {
         when(mockDatabase.getReference()).thenReturn(mockDatabaseRef);
 
         // When
-        votesDataSource.fetchMessageVotes(messageId).subscribe(testSubscriber);
+        subscription = votesDataSource.fetchMessageVotes(messageId).subscribe(testSubscriber);
 
         // Then
         testSubscriber.awaitTerminalEvent();
