@@ -1,66 +1,30 @@
 package com.eficksan.whereami.domain.messages;
 
-import android.location.Location;
-import android.util.Log;
-
-import com.eficksan.whereami.data.messages.MessagesRepository;
+import com.eficksan.whereami.data.messages.MessagesDataSource;
 import com.eficksan.whereami.data.messages.PlacingMessage;
+import com.eficksan.whereami.domain.BaseInteractor;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
 import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 
 /**
  * Provides methods for async loading messages.
  */
-public class MessagesFetchingInteractor {
+public class MessagesFetchingInteractor extends BaseInteractor<LatLng, List<PlacingMessage>> {
 
-    private static final String TAG = MessagesFetchingInteractor.class.getSimpleName();
+    private final MessagesDataSource messagesDataSource;
 
-    private Subscription subscription;
-    private final Scheduler jobScheduler;
-    private final Scheduler uiScheduler;
-    private PublishSubject<Location> locationChannel;
-
-    private final MessagesRepository messagesRepository;
-
-    public MessagesFetchingInteractor(MessagesRepository messagesRepository) {
-        this.messagesRepository = messagesRepository;
-        this.jobScheduler = Schedulers.computation();
-        this.uiScheduler = AndroidSchedulers.mainThread();
+    public MessagesFetchingInteractor(MessagesDataSource messagesDataSource, Scheduler jobScheduler, Scheduler uiScheduler) {
+        super(jobScheduler,uiScheduler);
+        this.messagesDataSource = messagesDataSource;
     }
 
-    public void subscribe(final Subscriber<List<PlacingMessage>> subscriber) {
-        locationChannel = PublishSubject.create();
-        subscription = locationChannel
-                .subscribeOn(jobScheduler)
-                .doOnNext(new Action1<Location>() {
-                    @Override
-                    public void call(Location location) {
-                        Log.v(TAG, "Before fetching messages for "+location.toString() );
-                        messagesRepository.fetchMessages(new LatLng(location.getLatitude(), location.getLongitude()), subscriber);
-                    }
-                })
-                .observeOn(uiScheduler)
-                .subscribe();
-    }
-
-    public void execute(Location location) {
-        locationChannel.onNext(location);
-    }
-
-    public void unsubscribe() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
+    @Override
+    protected Observable<List<PlacingMessage>> buildObservable(LatLng coordinates) {
+        return messagesDataSource.fetchMessages(coordinates);
     }
 
 }

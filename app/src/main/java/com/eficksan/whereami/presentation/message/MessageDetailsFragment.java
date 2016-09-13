@@ -14,6 +14,8 @@ import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.message.MessageComponent;
 
+import javax.inject.Inject;
+
 /**
  * Provides view of message details.
  */
@@ -23,7 +25,9 @@ public class MessageDetailsFragment extends DialogFragment {
     public static final String TAG = MessageDetailsFragment.class.getSimpleName();
 
     MessageComponent messageComponent;
-    private MessageDetailsPresenter mPresenter;
+
+    @Inject
+    MessageDetailsPresenter mPresenter;
 
     public MessageDetailsFragment() {
         // Required empty public constructor
@@ -62,7 +66,6 @@ public class MessageDetailsFragment extends DialogFragment {
         MessageDetailsView detailsView = new MessageDetailsView();
         detailsView.takeView(view);
 
-        mPresenter = new MessageDetailsPresenter();
         messageComponent.inject(mPresenter);
         mPresenter.setView(detailsView);
 

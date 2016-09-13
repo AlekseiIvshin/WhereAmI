@@ -5,7 +5,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.eficksan.whereami.data.auth.UsersRepository;
-import com.eficksan.whereami.data.messages.MessagesRepository;
+import com.eficksan.whereami.data.messages.MessagesDataSource;
 import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.presentation.MainActivity;
@@ -33,10 +33,10 @@ public interface ActivityComponent {
 
     FirebaseDatabase firebaseDatabase();
 
+    MessagesDataSource messageDataSource();
+
     @Named("currentUserId")
     String currentUserId();
-
-    MessagesRepository messagesRepository();
 
     UsersRepository usersRepository();
 

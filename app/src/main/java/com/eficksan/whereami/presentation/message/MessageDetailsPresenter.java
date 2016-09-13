@@ -20,20 +20,15 @@ import rx.functions.Action1;
  */
 public class MessageDetailsPresenter {
 
-    @Inject
-    FindUserInteractor findUserInteractor;
+    final FindUserInteractor findUserInteractor;
 
-    @Inject
-    FindMessageInteractor findMessageInteractor;
+    final FindMessageInteractor findMessageInteractor;
 
-    @Inject
-    DidUserVoteInteractor didUserVoteInteractor;
+    final DidUserVoteInteractor didUserVoteInteractor;
 
-    @Inject
-    VotingInteractor votingInteractor;
+    final VotingInteractor votingInteractor;
 
-    @Inject
-    FetchingVotesCountInteractor votesCountInteractor;
+    final FetchingVotesCountInteractor votesCountInteractor;
 
     private String mMessageId;
 
@@ -134,6 +129,15 @@ public class MessageDetailsPresenter {
             }
         }
     };
+
+    @Inject
+    public MessageDetailsPresenter(FindUserInteractor findUserInteractor, FindMessageInteractor findMessageInteractor, DidUserVoteInteractor didUserVoteInteractor, VotingInteractor votingInteractor, FetchingVotesCountInteractor votesCountInteractor) {
+        this.findUserInteractor = findUserInteractor;
+        this.findMessageInteractor = findMessageInteractor;
+        this.didUserVoteInteractor = didUserVoteInteractor;
+        this.votingInteractor = votingInteractor;
+        this.votesCountInteractor = votesCountInteractor;
+    }
 
     public void setView(MessageDetailsView detailsView) {
         this.mDetailsView = detailsView;

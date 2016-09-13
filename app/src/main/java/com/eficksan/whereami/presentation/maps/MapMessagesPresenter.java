@@ -53,19 +53,20 @@ public class MapMessagesPresenter implements MapMessagesView.MapMessageClickList
         @Override
         public void onNext(Location location) {
             mMapMessagesView.moveMapTo(location);
-            messagesFetchingInteractor.execute(location);
+            messagesFetchingInteractor.execute(new LatLng(location.getLatitude(), location.getLongitude()), messagesSubscriber);
         }
     };
 
     private Subscriber<List<PlacingMessage>> messagesSubscriber = new Subscriber<List<PlacingMessage>>() {
         @Override
         public void onCompleted() {
-
+            messagesFetchingInteractor.unsubscribe();
         }
 
         @Override
         public void onError(Throwable e) {
             mMapMessagesView.showError(R.string.error_maps_fetching_messages);
+            messagesFetchingInteractor.unsubscribe();
         }
 
         @Override
@@ -80,7 +81,6 @@ public class MapMessagesPresenter implements MapMessagesView.MapMessageClickList
     }
 
     public void onStart() {
-        messagesFetchingInteractor.subscribe(messagesSubscriber);
         locationListeningInteractor.execute(LocationRequestDelegate.createDisplacementRequest(LocationRequestDelegate.LOCATION_REQUEST_FASTEST_INTERVAL), locationSubscriber);
     }
 

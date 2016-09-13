@@ -4,6 +4,7 @@ import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.eficksan.whereami.domain.votes.DidUserVoteInteractor;
 import com.eficksan.whereami.domain.votes.FetchingVotesCountInteractor;
 import com.eficksan.whereami.domain.votes.VotingInteractor;
+import com.eficksan.whereami.ioc.fragments.FragmentScope;
 
 import javax.inject.Named;
 
@@ -16,6 +17,7 @@ import rx.Scheduler;
  * on 28.08.2016.
  */
 @Module
+@FragmentScope
 public class VoteModule {
 
     @Provides

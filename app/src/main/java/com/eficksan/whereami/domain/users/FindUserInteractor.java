@@ -2,8 +2,6 @@ package com.eficksan.whereami.domain.users;
 
 import com.eficksan.whereami.data.auth.User;
 import com.eficksan.whereami.data.auth.UsersRepository;
-import com.eficksan.whereami.data.messages.MessagesRepository;
-import com.eficksan.whereami.data.messages.PlacingMessage;
 
 import rx.Observable;
 import rx.Scheduler;

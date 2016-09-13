@@ -4,8 +4,7 @@ import android.app.Activity;
 
 import com.eficksan.whereami.data.auth.FirebaseDatabaseUsersRepository;
 import com.eficksan.whereami.data.auth.UsersRepository;
-import com.eficksan.whereami.data.messages.FirebaseDatabaseMessagesRepository;
-import com.eficksan.whereami.data.messages.MessagesRepository;
+import com.eficksan.whereami.data.messages.MessagesDataSource;
 import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,8 +42,8 @@ public class ActivityModule {
     }
 
     @Provides
-    public MessagesRepository provideMessagesRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
-        return new FirebaseDatabaseMessagesRepository(firebaseDatabase, firebaseAuth);
+    public MessagesDataSource provideMessagesDataSource(FirebaseDatabase firebaseDatabase) {
+        return new MessagesDataSource(firebaseDatabase);
     }
 
     @Provides
