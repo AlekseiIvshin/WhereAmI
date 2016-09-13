@@ -61,6 +61,11 @@ public class App extends Application {
     }
 
     public void removeActivityComponent() {
+        removeAuthComponent();
+        removeLocationComponent();
+        removeMapsComponent();
+        removeMessageDetailsComponent();
+        removeMessagingComponent();
         activityComponent = null;
     }
 

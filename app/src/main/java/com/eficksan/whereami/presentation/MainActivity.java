@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
@@ -262,11 +263,15 @@ public class MainActivity extends AppCompatActivity implements Router {
                 break;
             }
             case Screens.MAPS_SCREEN: {
-                replaceFragment(MapMessagesFragment.newInstance(), MapMessagesFragment.TAG, true);
+                if (!getSupportFragmentManager().popBackStackImmediate(MapMessagesFragment.TAG, 0)) {
+                    replaceFragment(MapMessagesFragment.newInstance(), MapMessagesFragment.TAG, true);
+                }
                 break;
             }
             case Screens.LOCATION_SCREEN:
-                replaceFragment(WhereAmIFragment.newInstance(), WhereAmIFragment.TAG, false);
+                if (!getSupportFragmentManager().popBackStackImmediate(WhereAmIFragment.TAG, 0)) {
+                    replaceFragment(WhereAmIFragment.newInstance(), WhereAmIFragment.TAG, true);
+                }
                 break;
             case Screens.SIGN_IN_SCREEN:
                 replaceFragment(SignInFragment.newInstance(), SignInFragment.TAG, false);
