@@ -30,7 +30,7 @@ public abstract class BaseInteractor<ParameterType, ResultType> implements Inter
     }
 
     public void unsubscribe() {
-        if (!subscription.isUnsubscribed()) {
+        if (subscription != null && !subscription.isUnsubscribed()) {
             subscription.unsubscribe();
         }
     }

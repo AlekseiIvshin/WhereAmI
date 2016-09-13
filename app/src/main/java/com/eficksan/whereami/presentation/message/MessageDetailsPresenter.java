@@ -85,8 +85,8 @@ public class MessageDetailsPresenter {
         }
 
         @Override
-        public void onNext(Boolean aBoolean) {
-            if (aBoolean) {
+        public void onNext(Boolean wasUserVotedAlready) {
+            if (!wasUserVotedAlready) {
                 mDetailsView.showVoting();
             } else {
                 mDetailsView.hideVoting();
