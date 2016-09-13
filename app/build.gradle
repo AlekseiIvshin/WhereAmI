@@ -64,6 +64,7 @@ dependencies {
     compile "com.google.firebase:firebase-core:${playServicesVersion}"
     compile "com.google.firebase:firebase-auth:${playServicesVersion}"
     compile "com.google.firebase:firebase-database:${playServicesVersion}"
+    compile "com.google.firebase:firebase-core:${playServicesVersion}"
     compile 'com.google.dagger:dagger:2.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'io.reactivex:rxandroid:1.2.1'

@@ -35,6 +35,7 @@ import com.eficksan.whereami.presentation.messaging.PlacingMessageFragment;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.google.android.gms.common.api.Status;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 
 import javax.inject.Inject;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     private FirebaseAuth.AuthStateListener mAuthListener;
     private boolean mIsDestroyBySystem;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     /**
      * Creates pending intent for show location screen.
@@ -144,6 +146,9 @@ public class MainActivity extends AppCompatActivity implements Router {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         ActivityComponent activityComponent = ((App) getApplication()).plusActivityComponent(this);
         activityComponent.inject(this);
 
@@ -169,9 +174,11 @@ public class MainActivity extends AppCompatActivity implements Router {
                 } else {
                     Log.v(TAG, "User signed IN");
                     showScreen(Screens.LOCATION_SCREEN);
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, Bundle.EMPTY);
                 }
             }
         };
+
 
     }
 
@@ -245,6 +252,9 @@ public class MainActivity extends AppCompatActivity implements Router {
         if (Screens.MESSAGE_DETAILS != nextScreenKey) {
             mCurrentScreenKey = nextScreenKey;
         }
+        Bundle analyticsBundle = new Bundle();
+        analyticsBundle.putInt(FirebaseAnalytics.Param.LOCATION, nextScreenKey);
+        mFirebaseAnalytics.logEvent("show_screen", analyticsBundle);
         switch (nextScreenKey) {
             case Screens.MESSAGING_SCREEN: {
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
