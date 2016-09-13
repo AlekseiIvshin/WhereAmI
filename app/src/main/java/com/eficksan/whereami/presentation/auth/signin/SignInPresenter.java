@@ -5,7 +5,7 @@ import android.view.View;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.auth.SignInData;
 import com.eficksan.whereami.domain.auth.SignInInteractor;
-import com.eficksan.whereami.presentation.routing.Router;
+import com.eficksan.whereami.presentation.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
 
 import javax.inject.Inject;
@@ -15,17 +15,15 @@ import rx.Subscriber;
 /**
  * Controls sign in flow.
  */
-public class SignInPresenter implements View.OnClickListener {
+public class SignInPresenter extends BasePresenter implements View.OnClickListener {
 
-    private final Router router;
     private final SignInInteractor signInInteractor;
 
     private SignInView mSignInView;
     private Subscriber<Boolean> mSignInSubscriber;
 
     @Inject
-    public SignInPresenter(Router router, SignInInteractor signInInteractor) {
-        this.router = router;
+    public SignInPresenter(SignInInteractor signInInteractor) {
         this.signInInteractor = signInInteractor;
     }
 

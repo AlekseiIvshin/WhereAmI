@@ -3,6 +3,9 @@ package com.eficksan.whereami.ioc.app;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.eficksan.whereami.data.auth.UsersDataSource;
+import com.eficksan.whereami.data.messages.MessagesDataSource;
+import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -63,6 +66,31 @@ public class AppModule {
     @Named("ui")
     public Scheduler provideUiScheduler() {
         return AndroidSchedulers.mainThread();
+    }
+
+    @Provides
+    public MessagesDataSource provideMessagesDataSource(FirebaseDatabase firebaseDatabase) {
+        return new MessagesDataSource(firebaseDatabase);
+    }
+
+    @Provides
+    public UsersDataSource provideUsersDataSource(FirebaseDatabase firebaseDatabase) {
+        return new UsersDataSource(firebaseDatabase);
+    }
+
+    @Provides
+    public VotesDataSource provideVotesDataSource(FirebaseDatabase firebaseDatabase) {
+        return new VotesDataSource(firebaseDatabase);
+    }
+
+    @Provides
+    @Named("currentUserId")
+    public String provideCurrentUserId(FirebaseAuth firebaseAuth) {
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null) {
+            return currentUser.getUid();
+        }
+        return null;
     }
 
 }

@@ -31,12 +31,10 @@ public interface ActivityComponent {
 
     FirebaseAuth firebaseAuth();
 
-    FirebaseDatabase firebaseDatabase();
-
-    MessagesDataSource messageDataSource();
-
     @Named("currentUserId")
     String currentUserId();
+
+    MessagesDataSource messageDataSource();
 
     UsersDataSource userDataSource();
 
@@ -52,8 +50,6 @@ public interface ActivityComponent {
     FirebaseUser currentUser();
 
     Router router();
-
-    Activity activity();
 
     void inject(MainActivity mainActivity);
 }

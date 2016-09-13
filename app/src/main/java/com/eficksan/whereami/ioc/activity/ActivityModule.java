@@ -30,38 +30,8 @@ public class ActivityModule {
 
     @Provides
     @ActivityScope
-    public Activity provideActivity() {
-        return activity;
-    }
-
-    @Provides
-    @ActivityScope
     public Router provideRouter() {
         return (Router) activity;
     }
 
-    @Provides
-    public MessagesDataSource provideMessagesDataSource(FirebaseDatabase firebaseDatabase) {
-        return new MessagesDataSource(firebaseDatabase);
-    }
-
-    @Provides
-    public UsersDataSource provideUsersDataSource(FirebaseDatabase firebaseDatabase) {
-        return new UsersDataSource(firebaseDatabase);
-    }
-
-    @Provides
-    public VotesDataSource provideVotesDataSource(FirebaseDatabase firebaseDatabase) {
-        return new VotesDataSource(firebaseDatabase);
-    }
-
-    @Provides
-    @Named("currentUserId")
-    public String provideCurrentUserId(FirebaseAuth firebaseAuth) {
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        if (currentUser != null) {
-            return currentUser.getUid();
-        }
-        return null;
-    }
 }

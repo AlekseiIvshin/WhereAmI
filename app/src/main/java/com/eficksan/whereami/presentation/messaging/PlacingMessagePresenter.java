@@ -9,7 +9,7 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.messages.PlacingMessage;
 import com.eficksan.whereami.domain.messages.PlaceMessageValidator;
 import com.eficksan.whereami.domain.messages.PlacingMessageInteractor;
-import com.eficksan.whereami.presentation.routing.Router;
+import com.eficksan.whereami.presentation.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
@@ -25,10 +25,7 @@ import rx.functions.Action1;
  * Created by Aleksei Ivshin
  * on 24.08.2016.
  */
-public class PlacingMessagePresenter implements View.OnClickListener {
-
-    @Inject
-    Router router;
+public class PlacingMessagePresenter extends BasePresenter implements View.OnClickListener {
 
     @Inject
     PlacingMessageInteractor placingMessageInteractor;

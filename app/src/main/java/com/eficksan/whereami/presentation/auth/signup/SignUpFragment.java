@@ -14,6 +14,7 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.auth.AuthComponent;
 import com.eficksan.whereami.presentation.auth.signin.SignInPresenter;
 import com.eficksan.whereami.presentation.auth.signin.SignInView;
+import com.eficksan.whereami.presentation.routing.Router;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,6 +65,7 @@ public class SignUpFragment extends Fragment {
         mAuthComponent.inject(signUpView);
 
         mPresenter = new SignUpPresenter();
+        mPresenter.takeRouter((Router)getActivity());
         mPresenter.setView(signUpView);
         mAuthComponent.inject(mPresenter);
     }
@@ -82,6 +84,7 @@ public class SignUpFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        mPresenter.releaseRouter();
         ((App)getActivity().getApplication()).removeAuthComponent();
         super.onDetach();
     }

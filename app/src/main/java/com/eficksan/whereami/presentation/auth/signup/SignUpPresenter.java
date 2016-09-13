@@ -7,6 +7,7 @@ import com.eficksan.whereami.data.auth.SignUpData;
 import com.eficksan.whereami.domain.auth.EmailValidator;
 import com.eficksan.whereami.domain.auth.SignUpInteractor;
 import com.eficksan.whereami.domain.auth.UserNameValidator;
+import com.eficksan.whereami.presentation.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -21,10 +22,7 @@ import rx.functions.Action1;
 /**
  * Controls sign in flow.
  */
-public class SignUpPresenter implements View.OnClickListener {
-
-    @Inject
-    Router router;
+public class SignUpPresenter extends BasePresenter implements View.OnClickListener {
 
     @Inject
     SignUpInteractor signUpInteractor;

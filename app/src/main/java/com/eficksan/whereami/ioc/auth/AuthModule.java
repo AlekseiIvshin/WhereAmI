@@ -10,7 +10,6 @@ import com.eficksan.whereami.domain.auth.ValidatingInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 import com.eficksan.whereami.presentation.auth.signin.SignInPresenter;
 import com.eficksan.whereami.presentation.auth.signin.SignInView;
-import com.eficksan.whereami.presentation.routing.Router;
 import com.google.firebase.auth.FirebaseAuth;
 
 import javax.inject.Named;
@@ -43,8 +42,8 @@ public class AuthModule {
 
     @Provides
     @FragmentScope
-    public SignInPresenter provideSignInPresenter(Router router, SignInInteractor signInInteractor) {
-        return new SignInPresenter(router, signInInteractor);
+    public SignInPresenter provideSignInPresenter(SignInInteractor signInInteractor) {
+        return new SignInPresenter(signInInteractor);
     }
 
     @Provides

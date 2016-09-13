@@ -1,11 +1,7 @@
 package com.eficksan.whereami;
 
-import android.app.Activity;
 import android.app.Application;
 
-import com.eficksan.whereami.ioc.activity.ActivityComponent;
-import com.eficksan.whereami.ioc.activity.ActivityModule;
-import com.eficksan.whereami.ioc.activity.DaggerActivityComponent;
 import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.ioc.app.AppModule;
 import com.eficksan.whereami.ioc.app.DaggerAppComponent;
@@ -31,7 +27,6 @@ import com.eficksan.whereami.ioc.messaging.MessagingModule;
  */
 public class App extends Application {
     protected AppComponent appComponent;
-    protected ActivityComponent activityComponent;
     protected LocationComponent locationComponent;
     protected MessagingComponent messagingComponent;
     protected MapsComponent mapsComponent;
@@ -50,29 +45,10 @@ public class App extends Application {
         return appComponent;
     }
 
-    public ActivityComponent plusActivityComponent(Activity activity) {
-        if (activityComponent == null) {
-            activityComponent = DaggerActivityComponent.builder()
-                    .appComponent(appComponent)
-                    .activityModule(new ActivityModule(activity))
-                    .build();
-        }
-        return activityComponent;
-    }
-
-    public void removeActivityComponent() {
-        removeAuthComponent();
-        removeLocationComponent();
-        removeMapsComponent();
-        removeMessageDetailsComponent();
-        removeMessagingComponent();
-        activityComponent = null;
-    }
-
     public LocationComponent plusLocationComponent() {
         if (locationComponent == null) {
             locationComponent = DaggerLocationComponent.builder()
-                    .activityComponent(activityComponent)
+                    .appComponent(appComponent)
                     .locationModule(new LocationModule())
                     .build();
         }
@@ -86,7 +62,7 @@ public class App extends Application {
     public MessagingComponent plusMessagingComponent() {
         if (messagingComponent == null) {
             messagingComponent = DaggerMessagingComponent.builder()
-                    .activityComponent(activityComponent)
+                    .appComponent(appComponent)
                     .messagingModule(new MessagingModule())
                     .build();
         }
@@ -100,7 +76,7 @@ public class App extends Application {
     public MapsComponent plusMapsComponent() {
         if (mapsComponent == null) {
             mapsComponent = DaggerMapsComponent.builder()
-                    .activityComponent(activityComponent)
+                    .appComponent(appComponent)
                     .mapsModule(new MapsModule())
                     .build();
         }
@@ -114,7 +90,7 @@ public class App extends Application {
     public AuthComponent plusAuthComponent() {
         if (authComponent == null) {
             authComponent = DaggerAuthComponent.builder()
-                    .activityComponent(activityComponent)
+                    .appComponent(appComponent)
                     .authModule(new AuthModule())
                     .build();
         }
@@ -122,14 +98,14 @@ public class App extends Application {
     }
 
     public void removeAuthComponent() {
-        activityComponent = null;
+        authComponent = null;
     }
 
 
     public MessageComponent plusMessageDetailsComponent() {
         if (messageComponent == null) {
             messageComponent = DaggerMessageComponent.builder()
-                    .activityComponent(activityComponent)
+                    .appComponent(appComponent)
                     .messageModule(new MessageModule())
                     .build();
         }

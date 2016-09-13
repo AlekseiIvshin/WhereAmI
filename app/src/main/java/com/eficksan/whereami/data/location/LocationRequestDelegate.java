@@ -180,7 +180,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
         Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
-        Log.v(TAG, "Last location is " + lastLocation.toString());
+        Log.v(TAG, "Last location is " + lastLocation);
 
         onLocationChanged(lastLocation);
     }

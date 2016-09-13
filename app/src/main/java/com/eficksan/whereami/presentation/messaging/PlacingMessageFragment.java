@@ -12,6 +12,7 @@ import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.ioc.messaging.MessagingComponent;
+import com.eficksan.whereami.presentation.routing.Router;
 
 /**
  */
@@ -56,6 +57,7 @@ public class PlacingMessageFragment extends Fragment {
         mMessagingComponent.inject(placingMessageView);
         mMessagingComponent.inject(mPresenter);
         mPresenter.setView(placingMessageView);
+        mPresenter.takeRouter((Router) getActivity());
     }
 
     @Override
@@ -73,6 +75,7 @@ public class PlacingMessageFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        mPresenter.releaseRouter();
         mMessagingComponent = null;
         ((App)getActivity().getApplication()).removeMessagingComponent();
         super.onDestroy();

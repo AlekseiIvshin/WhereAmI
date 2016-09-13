@@ -11,6 +11,7 @@ import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.AddressFetchingInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
+import com.eficksan.whereami.presentation.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
@@ -25,11 +26,9 @@ import rx.functions.Action1;
  * Created by Aleksei Ivshin
  * on 20.08.2016.
  */
-public class WhereAmIPresenter {
+public class WhereAmIPresenter extends BasePresenter {
 
     private WhereAmIView mView;
-
-    final Router mRouter;
 
     final ForegroundServiceInteractor foregroundServiceInteractor;
 
@@ -84,8 +83,7 @@ public class WhereAmIPresenter {
     private Location lastLocation = null;
     private Subscription mCreateMessageListener;
 
-    public WhereAmIPresenter(Router mRouter, ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
-        this.mRouter = mRouter;
+    public WhereAmIPresenter(ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
         this.foregroundServiceInteractor = foregroundServiceInteractor;
         this.locationListeningInteractor = locationListeningInteractor;
         this.addressFetchingInteractor = addressFetchingInteractor;
@@ -123,7 +121,7 @@ public class WhereAmIPresenter {
                         if (lastLocation != null) {
                             Bundle args = new Bundle();
                             args.putParcelable(Constants.EXTRA_LOCATION_DATA, lastLocation);
-                            mRouter.showScreen(Screens.MESSAGING_SCREEN, args);
+                            router.showScreen(Screens.MESSAGING_SCREEN, args);
                         } else {
                             mView.showError(R.string.location_not_available);
                         }

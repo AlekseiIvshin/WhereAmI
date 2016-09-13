@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.location.LocationComponent;
+import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
 
@@ -59,6 +60,7 @@ public class WhereAmIFragment extends Fragment {
 
         whereAmIView.takeView(view);
         mPresenter.setView(whereAmIView);
+        mPresenter.takeRouter((Router) getActivity());
     }
 
     @Override
@@ -88,6 +90,7 @@ public class WhereAmIFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        mPresenter.releaseRouter();
         whereAmIView.releaseView();
         mLocationComponent = null;
         if (!mIsDestroyBySystem) {

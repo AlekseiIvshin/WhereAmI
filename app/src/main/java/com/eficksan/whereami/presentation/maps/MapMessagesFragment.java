@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.maps.MapsComponent;
+import com.eficksan.whereami.presentation.routing.Router;
 
 /**
  * Fragments provides map for showing near messages.
@@ -51,6 +52,7 @@ public class MapMessagesFragment extends Fragment {
         mMapMessagesPresenter = new MapMessagesPresenter();
         mapsComponent.inject(mMapMessagesPresenter);
         mMapMessagesPresenter.setView(mMapMessagesView);
+        mMapMessagesPresenter.takeRouter((Router) getActivity());
     }
 
     @Override
@@ -85,6 +87,7 @@ public class MapMessagesFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        mMapMessagesPresenter.releaseRouter();
         mMapMessagesView.onDestroy();
         ((App)getActivity().getApplication()).removeMapsComponent();
         super.onDestroyView();

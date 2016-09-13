@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.auth.AuthComponent;
+import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
 
@@ -69,6 +70,7 @@ public class SignInFragment extends Fragment {
 
         signInView.takeView(view);
         mPresenter.setView(signInView);
+        mPresenter.takeRouter((Router) getActivity());
     }
 
     @Override
@@ -85,6 +87,7 @@ public class SignInFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        mPresenter.releaseRouter();
         ((App)getActivity().getApplication()).removeAuthComponent();
         super.onDetach();
     }

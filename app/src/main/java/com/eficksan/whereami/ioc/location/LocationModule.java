@@ -1,6 +1,5 @@
 package com.eficksan.whereami.ioc.location;
 
-import android.app.Activity;
 import android.content.Context;
 import android.location.Geocoder;
 
@@ -10,7 +9,6 @@ import com.eficksan.whereami.domain.location.LocationListeningInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 import com.eficksan.whereami.presentation.location.WhereAmIPresenter;
 import com.eficksan.whereami.presentation.location.WhereAmIView;
-import com.eficksan.whereami.presentation.routing.Router;
 
 import java.util.Locale;
 
@@ -26,8 +24,8 @@ import dagger.Provides;
 public class LocationModule {
 
     @Provides
-    public ForegroundServiceInteractor provideForegroundServiceInteractor(Activity activity) {
-        return new ForegroundServiceInteractor(activity);
+    public ForegroundServiceInteractor provideForegroundServiceInteractor(Context context) {
+        return new ForegroundServiceInteractor(context);
     }
 
     @Provides
@@ -42,8 +40,8 @@ public class LocationModule {
     }
 
     @Provides
-    public WhereAmIPresenter provideWhereAmIPresenter(Router router, ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
-        return new WhereAmIPresenter(router, foregroundServiceInteractor, locationListeningInteractor, addressFetchingInteractor);
+    public WhereAmIPresenter provideWhereAmIPresenter(ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
+        return new WhereAmIPresenter(foregroundServiceInteractor, locationListeningInteractor, addressFetchingInteractor);
     }
 
     @Provides

@@ -3,6 +3,10 @@ package com.eficksan.whereami.ioc.app;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.eficksan.whereami.data.auth.UsersDataSource;
+import com.eficksan.whereami.data.messages.MessagesDataSource;
+import com.eficksan.whereami.data.votes.VotesDataSource;
+import com.eficksan.whereami.presentation.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,4 +38,15 @@ public interface AppComponent {
 
     @Nullable
     FirebaseUser currentUser();
+
+    @Named("currentUserId")
+    String currentUserId();
+
+    MessagesDataSource messageDataSource();
+
+    UsersDataSource userDataSource();
+
+    VotesDataSource votesDataSource();
+
+    void inject(MainActivity mainActivity);
 }

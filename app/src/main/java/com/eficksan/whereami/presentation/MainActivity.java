@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
@@ -26,7 +25,7 @@ import android.widget.Toast;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
-import com.eficksan.whereami.ioc.activity.ActivityComponent;
+import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.presentation.auth.signin.SignInFragment;
 import com.eficksan.whereami.presentation.auth.signup.SignUpFragment;
 import com.eficksan.whereami.presentation.location.WhereAmIFragment;
@@ -145,20 +144,20 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppComponent appComponent = ((App) getApplication()).getAppComponent();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        ActivityComponent activityComponent = ((App) getApplication()).plusActivityComponent(this);
-        activityComponent.inject(this);
+        appComponent.inject(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         initNavigationView();
 
         if (savedInstanceState == null && mCurrentScreenKey == Screens.NONE) {
-            if (activityComponent.currentUser() == null) {
+            if (appComponent.currentUser() == null) {
                 showScreen(Screens.SIGN_IN_SCREEN);
             } else {
                 showScreen(Screens.LOCATION_SCREEN);
@@ -207,14 +206,6 @@ public class MainActivity extends AppCompatActivity implements Router {
         if (mAuthListener != null) {
             firebaseAuth.removeAuthStateListener(mAuthListener);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (!mIsDestroyBySystem) {
-            ((App) getApplication()).removeActivityComponent();
-        }
-        super.onDestroy();
     }
 
     public void replaceFragment(Fragment fragment, String tag, boolean addToBackStack) {
