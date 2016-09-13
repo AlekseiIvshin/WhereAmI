@@ -12,6 +12,8 @@ import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.location.LocationComponent;
 
+import javax.inject.Inject;
+
 /**
  * Fragment shows current user location.
  */
@@ -20,10 +22,13 @@ public class WhereAmIFragment extends Fragment {
 
     LocationComponent mLocationComponent;
 
-    /**
-     * Presenter for location requesting.
-     */
+    @Inject
     WhereAmIPresenter mPresenter;
+
+    @Inject
+    WhereAmIView whereAmIView;
+
+    private boolean mIsDestroyBySystem;
 
     /**
      * New instance factory method.
@@ -38,6 +43,7 @@ public class WhereAmIFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLocationComponent = ((App)getActivity().getApplication()).plusLocationComponent();
+        mLocationComponent.inject(this);
     }
 
     @Override
@@ -51,11 +57,7 @@ public class WhereAmIFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        WhereAmIView whereAmIView = new WhereAmIView();
         whereAmIView.takeView(view);
-        mPresenter = new WhereAmIPresenter();
-        mLocationComponent.inject(whereAmIView);
-        mLocationComponent.inject(mPresenter);
         mPresenter.setView(whereAmIView);
     }
 
@@ -66,6 +68,19 @@ public class WhereAmIFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mIsDestroyBySystem = false;
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mIsDestroyBySystem = true;
+    }
+
+    @Override
     public void onStop() {
         mPresenter.onStop();
         super.onStop();
@@ -73,8 +88,11 @@ public class WhereAmIFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        whereAmIView.releaseView();
         mLocationComponent = null;
-        ((App)getActivity().getApplication()).removeLocationComponent();
+        if (!mIsDestroyBySystem) {
+            ((App) getActivity().getApplication()).removeLocationComponent();
+        }
         super.onDestroy();
     }
 }

@@ -29,17 +29,13 @@ public class WhereAmIPresenter {
 
     private WhereAmIView mView;
 
-    @Inject
-    Router mRouter;
+    final Router mRouter;
 
-    @Inject
-    ForegroundServiceInteractor foregroundServiceInteractor;
+    final ForegroundServiceInteractor foregroundServiceInteractor;
 
-    @Inject
-    LocationListeningInteractor locationListeningInteractor;
+    final LocationListeningInteractor locationListeningInteractor;
 
-    @Inject
-    AddressFetchingInteractor addressFetchingInteractor;
+    final AddressFetchingInteractor addressFetchingInteractor;
 
     /**
      * Listens address changes.
@@ -87,6 +83,13 @@ public class WhereAmIPresenter {
 
     private Location lastLocation = null;
     private Subscription mCreateMessageListener;
+
+    public WhereAmIPresenter(Router mRouter, ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
+        this.mRouter = mRouter;
+        this.foregroundServiceInteractor = foregroundServiceInteractor;
+        this.locationListeningInteractor = locationListeningInteractor;
+        this.addressFetchingInteractor = addressFetchingInteractor;
+    }
 
     public void onStart() {
         foregroundServiceInteractor.onStart();

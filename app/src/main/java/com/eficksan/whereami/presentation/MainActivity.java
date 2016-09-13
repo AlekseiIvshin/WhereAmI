@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     FirebaseAuth firebaseAuth;
 
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private boolean mIsDestroyBySystem;
 
     /**
      * Creates pending intent for show location screen.
@@ -181,6 +182,18 @@ public class MainActivity extends AppCompatActivity implements Router {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mIsDestroyBySystem = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mIsDestroyBySystem = true;
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         if (mAuthListener != null) {
@@ -190,7 +203,9 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     protected void onDestroy() {
-        ((App) getApplication()).removeActivityComponent();
+        if (!mIsDestroyBySystem) {
+            ((App) getApplication()).removeActivityComponent();
+        }
         super.onDestroy();
     }
 
@@ -237,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements Router {
                 break;
             }
             case Screens.MAPS_SCREEN: {
-                addFragment(MapMessagesFragment.newInstance(), MapMessagesFragment.TAG, true);
+                replaceFragment(MapMessagesFragment.newInstance(), MapMessagesFragment.TAG, true);
                 break;
             }
             case Screens.LOCATION_SCREEN:

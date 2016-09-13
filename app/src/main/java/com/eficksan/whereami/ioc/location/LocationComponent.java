@@ -2,6 +2,7 @@ package com.eficksan.whereami.ioc.location;
 
 import com.eficksan.whereami.ioc.activity.ActivityComponent;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
+import com.eficksan.whereami.presentation.location.WhereAmIFragment;
 import com.eficksan.whereami.presentation.location.WhereAmIPresenter;
 import com.eficksan.whereami.presentation.location.WhereAmIView;
 
@@ -18,4 +19,6 @@ public interface LocationComponent {
     void inject(WhereAmIView whereAmIView);
 
     void inject(WhereAmIPresenter whereAmIPresenter);
+
+    void inject(WhereAmIFragment whereAmIFragment);
 }

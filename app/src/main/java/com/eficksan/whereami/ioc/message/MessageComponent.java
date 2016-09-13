@@ -20,4 +20,5 @@ public interface MessageComponent {
 
     void inject(MessageDetailsPresenter mPresenter);
 
+    void inject(MessageDetailsFragment messageDetailsFragment);
 }

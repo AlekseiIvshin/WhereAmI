@@ -38,8 +38,11 @@ public class WhereAmIView {
     @Bind(R.id.create_message)
     public FloatingActionButton createMessage;
 
-    @Inject
-    Context context;
+    final Context context;
+
+    public WhereAmIView(Context context) {
+        this.context = context;
+    }
 
     /**
      * Take view of component.
@@ -48,6 +51,14 @@ public class WhereAmIView {
      */
     public void takeView(View view) {
         ButterKnife.bind(this, view);
+    }
+
+
+    public void releaseView() {
+        locationAddresses = null;
+        locationCoordinates = null;
+        switchRequestLocation = null;
+        createMessage = null;
     }
 
     /**

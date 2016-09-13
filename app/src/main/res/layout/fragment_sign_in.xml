@@ -30,17 +30,17 @@
         android:layout_marginTop="@dimen/activity_horizontal_margin">
 
         <EditText
-            android:id="@+id/input_email"
+            android:id="@+id/sign_in_input_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/hint.auth.email"
             android:inputType="textEmailAddress" />
 
         <EditText
-            android:id="@+id/input_password"
+            android:id="@+id/sign_in_input_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/input_email"
+            android:layout_below="@id/sign_in_input_email"
             android:hint="@string/hint.auth.password"
             android:inputType="textPassword" />
 
@@ -48,7 +48,7 @@
             android:id="@+id/sign_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/input_password"
+            android:layout_below="@id/sign_in_input_password"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/label.auth.sign_up" />
 
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_below="@id/input_password"
+            android:layout_below="@id/sign_in_input_password"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/label.auth.sign_in" />
     </RelativeLayout>

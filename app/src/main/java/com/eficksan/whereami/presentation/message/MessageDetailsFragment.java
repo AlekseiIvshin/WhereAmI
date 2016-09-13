@@ -52,6 +52,7 @@ public class MessageDetailsFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         messageComponent = ((App) getActivity().getApplication()).plusMessageDetailsComponent();
+        messageComponent.inject(this);
     }
 
     @Override
@@ -66,7 +67,6 @@ public class MessageDetailsFragment extends DialogFragment {
         MessageDetailsView detailsView = new MessageDetailsView();
         detailsView.takeView(view);
 
-        messageComponent.inject(mPresenter);
         mPresenter.setView(detailsView);
 
         mPresenter.onCreate(getArguments().getString(ARGS_MESSAGE_ID));

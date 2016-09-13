@@ -8,6 +8,9 @@ import com.eficksan.whereami.domain.location.AddressFetchingInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
+import com.eficksan.whereami.presentation.location.WhereAmIPresenter;
+import com.eficksan.whereami.presentation.location.WhereAmIView;
+import com.eficksan.whereami.presentation.routing.Router;
 
 import java.util.Locale;
 
@@ -36,5 +39,15 @@ public class LocationModule {
     public AddressFetchingInteractor provideAddressFetchingInteractor(Context context) {
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         return new AddressFetchingInteractor(geocoder);
+    }
+
+    @Provides
+    public WhereAmIPresenter provideWhereAmIPresenter(Router router, ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
+        return new WhereAmIPresenter(router, foregroundServiceInteractor, locationListeningInteractor, addressFetchingInteractor);
+    }
+
+    @Provides
+    public WhereAmIView provideWhereAmIView(Context context) {
+        return new WhereAmIView(context);
     }
 }

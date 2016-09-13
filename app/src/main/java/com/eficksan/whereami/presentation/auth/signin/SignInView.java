@@ -17,10 +17,10 @@ import butterknife.ButterKnife;
  */
 public class SignInView {
 
-    @Bind(R.id.input_email)
+    @Bind(R.id.sign_in_input_email)
     EditText emailInput;
 
-    @Bind(R.id.input_password)
+    @Bind(R.id.sign_in_input_password)
     EditText passwordInput;
 
     @Bind(R.id.sign_in)
