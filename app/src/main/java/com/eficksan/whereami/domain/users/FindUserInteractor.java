@@ -1,50 +1,27 @@
 package com.eficksan.whereami.domain.users;
 
 import com.eficksan.whereami.data.auth.User;
-import com.eficksan.whereami.data.auth.UsersRepository;
+import com.eficksan.whereami.data.auth.UsersDataSource;
+import com.eficksan.whereami.domain.BaseInteractor;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * Provides methods for async loading messages.
  */
-public class FindUserInteractor {
+public class FindUserInteractor extends BaseInteractor<String, User> {
 
-    private Subscription subscription;
-    private final Scheduler jobScheduler;
-    private final Scheduler uiScheduler;
-    private final UsersRepository usersRepository;
+    private final UsersDataSource usersDataSource;
 
-    public FindUserInteractor( UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
-        this.jobScheduler = Schedulers.computation();
-        this.uiScheduler = AndroidSchedulers.mainThread();
+    public FindUserInteractor(UsersDataSource usersDataSource, Scheduler jobScheduler, Scheduler uiScheduler) {
+        super(jobScheduler,uiScheduler);
+        this.usersDataSource = usersDataSource;
     }
 
-    public void execute(String userId, final Subscriber<User> subscriber) {
-        subscription = Observable.just(userId)
-                .subscribeOn(jobScheduler)
-                .doOnNext(new Action1<String>() {
-                    @Override
-                    public void call(String messId) {
-                        usersRepository.findUserById(messId, subscriber);
-                    }
-                })
-                .observeOn(uiScheduler)
-                .subscribe();
+    @Override
+    protected Observable<User> buildObservable(String userId) {
+        return usersDataSource.findUserById(userId);
     }
-
-    public void unsubscribe() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
-    }
-
 
 }

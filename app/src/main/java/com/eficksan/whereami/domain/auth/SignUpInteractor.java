@@ -1,7 +1,7 @@
 package com.eficksan.whereami.domain.auth;
 
 import com.eficksan.whereami.data.auth.SignUpData;
-import com.eficksan.whereami.data.auth.UsersRepository;
+import com.eficksan.whereami.data.auth.UsersDataSource;
 import com.eficksan.whereami.domain.BaseInteractor;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -15,10 +15,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import rx.Scheduler;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Sing up interactor provides method for creating new user.
@@ -26,12 +24,12 @@ import rx.schedulers.Schedulers;
 public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
 
     private final FirebaseAuth mFirebaseAuth;
-    private final UsersRepository mUsersRepository;
+    private final UsersDataSource usersDataSource;
 
-    public SignUpInteractor(FirebaseAuth mFirebaseAuth, UsersRepository mUsersRepository) {
-        super(Schedulers.computation(), AndroidSchedulers.mainThread());
+    public SignUpInteractor(FirebaseAuth mFirebaseAuth, UsersDataSource usersDataSource, Scheduler jobScheduler, Scheduler uiScheduler) {
+        super(jobScheduler,uiScheduler);
         this.mFirebaseAuth = mFirebaseAuth;
-        this.mUsersRepository = mUsersRepository;
+        this.usersDataSource = usersDataSource;
     }
 
     @Override
@@ -56,9 +54,9 @@ public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
                         }
                     }
                 })
-                .doOnNext(new Action1<Boolean>() {
+                .flatMap(new Func1<Boolean, Observable<Boolean>>() {
                     @Override
-                    public void call(Boolean isSucceed) {
+                    public Observable<Boolean> call(Boolean isSucceed) {
                         if (isSucceed) {
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
@@ -66,8 +64,9 @@ public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
                                     .build();
                             assert user != null;
                             user.updateProfile(profileUpdates);
-                            mUsersRepository.setCurrentUserName(parameter.userName);
+                            return usersDataSource.setCurrentUserName(user.getUid(), parameter.userName);
                         }
+                        return Observable.just(false);
                     }
                 });
     }

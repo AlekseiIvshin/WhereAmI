@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.eficksan.whereami.data.auth.UsersRepository;
+import com.eficksan.whereami.data.auth.UsersDataSource;
 import com.eficksan.whereami.data.messages.MessagesDataSource;
 import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.eficksan.whereami.ioc.app.AppComponent;
@@ -38,7 +38,7 @@ public interface ActivityComponent {
     @Named("currentUserId")
     String currentUserId();
 
-    UsersRepository usersRepository();
+    UsersDataSource userDataSource();
 
     VotesDataSource votesDataSource();
 

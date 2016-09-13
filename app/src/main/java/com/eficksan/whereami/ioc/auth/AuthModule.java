@@ -1,6 +1,6 @@
 package com.eficksan.whereami.ioc.auth;
 
-import com.eficksan.whereami.data.auth.UsersRepository;
+import com.eficksan.whereami.data.auth.UsersDataSource;
 import com.eficksan.whereami.domain.auth.EmailValidator;
 import com.eficksan.whereami.domain.auth.PasswordValidator;
 import com.eficksan.whereami.domain.auth.SignInInteractor;
@@ -17,6 +17,7 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.Scheduler;
 
 /**
  * Created by Aleksei Ivshin
@@ -59,8 +60,8 @@ public class AuthModule {
 
     @Provides
     @FragmentScope
-    public SignUpInteractor provideSignUpInteractor(FirebaseAuth firebaseAuth, UsersRepository usersRepository) {
-        return new SignUpInteractor(firebaseAuth, usersRepository);
+    public SignUpInteractor provideSignUpInteractor(FirebaseAuth firebaseAuth, UsersDataSource usersDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+        return new SignUpInteractor(firebaseAuth, usersDataSource, jobScheduler, uiScheduler);
     }
 
     @Provides

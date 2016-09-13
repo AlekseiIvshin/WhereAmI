@@ -2,8 +2,7 @@ package com.eficksan.whereami.ioc.activity;
 
 import android.app.Activity;
 
-import com.eficksan.whereami.data.auth.FirebaseDatabaseUsersRepository;
-import com.eficksan.whereami.data.auth.UsersRepository;
+import com.eficksan.whereami.data.auth.UsersDataSource;
 import com.eficksan.whereami.data.messages.MessagesDataSource;
 import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.eficksan.whereami.presentation.routing.Router;
@@ -47,8 +46,8 @@ public class ActivityModule {
     }
 
     @Provides
-    public UsersRepository provideUsersRepository(FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
-        return new FirebaseDatabaseUsersRepository(firebaseDatabase, firebaseAuth);
+    public UsersDataSource provideUsersDataSource(FirebaseDatabase firebaseDatabase) {
+        return new UsersDataSource(firebaseDatabase);
     }
 
     @Provides

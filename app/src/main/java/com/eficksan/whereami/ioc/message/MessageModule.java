@@ -1,6 +1,6 @@
 package com.eficksan.whereami.ioc.message;
 
-import com.eficksan.whereami.data.auth.UsersRepository;
+import com.eficksan.whereami.data.auth.UsersDataSource;
 import com.eficksan.whereami.data.messages.MessagesDataSource;
 import com.eficksan.whereami.domain.messages.FindMessageInteractor;
 import com.eficksan.whereami.domain.users.FindUserInteractor;
@@ -35,7 +35,7 @@ public class MessageModule {
     }
 
     @Provides
-    public FindUserInteractor provideFindUserInteractor(UsersRepository usersRepository) {
-        return new FindUserInteractor(usersRepository);
+    public FindUserInteractor provideFindUserInteractor(UsersDataSource usersDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+        return new FindUserInteractor(usersDataSource, jobScheduler,uiScheduler);
     }
 }
