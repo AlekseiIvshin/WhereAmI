@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
@@ -42,16 +43,11 @@ public class MessageDetailsView {
     @Bind(R.id.message_vote_against_count)
     TextView voteAgainstCount;
 
-    CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     public void takeView(View view) {
         ButterKnife.bind(this, view);
     }
 
-    public void destroy() {
-        compositeSubscription.unsubscribe();
-        compositeSubscription.clear();
-    }
 
     public void showMessage(PlacingMessage placingMessage) {
         location.setText(String.format(Locale.getDefault(), "%fx%f", placingMessage.latitude, placingMessage.longitude));
@@ -101,12 +97,12 @@ public class MessageDetailsView {
         voteAgainstCount.setText(String.valueOf(countVotesAgainst));
     }
 
-    public void subscribeOnVotingForClick(Action1<Void> voidSubscriber) {
-        compositeSubscription.add(RxView.clicks(voteFor).subscribe(voidSubscriber));
+    public Observable<Void> getVotingForClickEvents() {
+        return RxView.clicks(voteFor);
     }
 
-    public void subscribeOnVotingAgainstClick(Action1<Void> voidSubscriber) {
-        compositeSubscription.add(RxView.clicks(voteAgainst).subscribe(voidSubscriber));
+    public Observable<Void> getVotingAgainstClickEvents() {
+        return RxView.clicks(voteAgainst);
     }
 
 }

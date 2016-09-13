@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import rx.Subscriber;
 import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Message details presenter.
@@ -31,6 +32,8 @@ public class MessageDetailsPresenter {
     final FetchingVotesCountInteractor votesCountInteractor;
 
     private String mMessageId;
+
+    protected CompositeSubscription eventsSubcription;
 
     private Subscriber<User> userSubscriber = new Subscriber<User>() {
         @Override
@@ -137,6 +140,7 @@ public class MessageDetailsPresenter {
         this.didUserVoteInteractor = didUserVoteInteractor;
         this.votingInteractor = votingInteractor;
         this.votesCountInteractor = votesCountInteractor;
+        eventsSubcription = new CompositeSubscription();
     }
 
     public void setView(MessageDetailsView detailsView) {
@@ -145,7 +149,8 @@ public class MessageDetailsPresenter {
 
     public void onCreate(final String messageId) {
         mMessageId = messageId;
-        mDetailsView.subscribeOnVotingForClick(new Action1<Void>() {
+
+        eventsSubcription.add(mDetailsView.getVotingForClickEvents().subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
                 Vote vote = new Vote();
@@ -153,9 +158,9 @@ public class MessageDetailsPresenter {
                 vote.isVotedFor = true;
                 votingInteractor.execute(vote, voteResultSubscriber);
             }
-        });
+        }));
 
-        mDetailsView.subscribeOnVotingAgainstClick(new Action1<Void>() {
+        eventsSubcription.add(mDetailsView.getVotingAgainstClickEvents().subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
                 Vote vote = new Vote();
@@ -163,7 +168,7 @@ public class MessageDetailsPresenter {
                 vote.isVotedFor = false;
                 votingInteractor.execute(vote, voteResultSubscriber);
             }
-        });
+        }));
 
         // TODO: check on user authenticated before
         findMessageInteractor.execute(messageId, placingMessageSubscriber);
@@ -177,6 +182,7 @@ public class MessageDetailsPresenter {
         findMessageInteractor.unsubscribe();
         findUserInteractor.unsubscribe();
 
-        mDetailsView.destroy();
+        eventsSubcription.unsubscribe();
+        eventsSubcription.clear();
     }
 }
