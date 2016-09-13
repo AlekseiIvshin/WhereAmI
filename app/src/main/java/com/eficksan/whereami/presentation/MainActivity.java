@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private boolean mIsDestroyBySystem;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
 
     /**
      * Creates pending intent for show location screen.
@@ -152,8 +155,6 @@ public class MainActivity extends AppCompatActivity implements Router {
 
         appComponent.inject(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
-        setSupportActionBar(toolbar);
         initNavigationView();
 
         if (savedInstanceState == null && mCurrentScreenKey == Screens.NONE) {
@@ -206,6 +207,27 @@ public class MainActivity extends AppCompatActivity implements Router {
         if (mAuthListener != null) {
             firebaseAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        actionBarDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void replaceFragment(Fragment fragment, String tag, boolean addToBackStack) {
@@ -340,6 +362,9 @@ public class MainActivity extends AppCompatActivity implements Router {
     }
 
     private void initNavigationView() {
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
         //Initializing NavigationView
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         if (navigationView == null) {
@@ -376,5 +401,10 @@ public class MainActivity extends AppCompatActivity implements Router {
                 return true;
             }
         });
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
+        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 }
