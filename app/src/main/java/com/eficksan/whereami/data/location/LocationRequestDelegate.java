@@ -193,7 +193,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.v(TAG, "Location changed to " + location.toString());
+        Log.v(TAG, "Location changed to " + location);
         mLocationChannel.onNext(location);
     }
 

@@ -12,11 +12,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -78,6 +78,7 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
         Marker marker;
         for (PlacingMessage message : messages) {
             marker = mGoogleMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_message))
                     .position(new LatLng(message.latitude, message.longitude))
                     .title(message.message));
             marker.setTag(message.messageId);
