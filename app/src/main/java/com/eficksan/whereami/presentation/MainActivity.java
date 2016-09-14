@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private static final int REQUEST_CHECK_SETTINGS = 2;
+    private static final String KEY_CURRENT_SCREEN_KEY = "KEY_CURRENT_SCREEN_KEY";
+    private static final String KEY_CURRENT_SCREEN_ARGS = "KEY_CURRENT_SCREEN_ARGS";
     private int mCurrentScreenKey = Screens.NONE;
     private DrawerLayout mDrawerLayout;
 
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements Router {
     private boolean mIsDestroyBySystem;
     private FirebaseAnalytics mFirebaseAnalytics;
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    private Bundle mCurrentScreenArgs;
 
     /**
      * Creates pending intent for show location screen.
@@ -158,12 +161,18 @@ public class MainActivity extends AppCompatActivity implements Router {
         initNavigationView();
 
         if (savedInstanceState == null && mCurrentScreenKey == Screens.NONE) {
+            int nextScreenKey;
             if (appComponent.currentUser() == null) {
-                showScreen(Screens.SIGN_IN_SCREEN);
+                nextScreenKey = Screens.SIGN_IN_SCREEN;
             } else {
-                showScreen(Screens.LOCATION_SCREEN);
+                nextScreenKey = Screens.LOCATION_SCREEN;
             }
+            showScreen(nextScreenKey);
+        } else {
+            mCurrentScreenArgs = savedInstanceState.getBundle(KEY_CURRENT_SCREEN_ARGS);
+            mCurrentScreenKey = savedInstanceState.getInt(KEY_CURRENT_SCREEN_KEY);
         }
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
 
@@ -174,19 +183,16 @@ public class MainActivity extends AppCompatActivity implements Router {
                     showScreen(Screens.SIGN_IN_SCREEN);
                 } else {
                     Log.v(TAG, "User signed IN");
-                    showScreen(Screens.LOCATION_SCREEN);
+                    if (Screens.SIGN_IN_SCREEN == mCurrentScreenKey || Screens.SIGN_UP_SCREEN == mCurrentScreenKey) {
+                        showScreen(Screens.LOCATION_SCREEN);
+                    }
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, Bundle.EMPTY);
                 }
             }
         };
-
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         firebaseAuth.addAuthStateListener(mAuthListener);
+
+
     }
 
     @Override
@@ -198,15 +204,9 @@ public class MainActivity extends AppCompatActivity implements Router {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_SCREEN_KEY, mCurrentScreenKey);
+        outState.putBundle(KEY_CURRENT_SCREEN_ARGS, mCurrentScreenArgs);
         mIsDestroyBySystem = true;
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            firebaseAuth.removeAuthStateListener(mAuthListener);
-        }
     }
 
     @Override
@@ -214,6 +214,14 @@ public class MainActivity extends AppCompatActivity implements Router {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         actionBarDrawerToggle.syncState();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mAuthListener != null) {
+            firebaseAuth.removeAuthStateListener(mAuthListener);
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -265,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         }
         if (Screens.MESSAGE_DETAILS != nextScreenKey) {
             mCurrentScreenKey = nextScreenKey;
+            mCurrentScreenArgs = args;
         }
         Bundle analyticsBundle = new Bundle();
         analyticsBundle.putInt(FirebaseAnalytics.Param.LOCATION, nextScreenKey);
