@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "com.eficksan.whereami"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 8
         versionName '0.7.1'
