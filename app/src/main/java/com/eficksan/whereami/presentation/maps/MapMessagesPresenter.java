@@ -2,6 +2,7 @@ package com.eficksan.whereami.presentation.maps;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.messages.PlacingMessage;
@@ -23,6 +24,7 @@ import rx.Subscriber;
  */
 public class MapMessagesPresenter extends BasePresenter implements MapMessagesView.MapMessageClickListener {
 
+    private static final String TAG = MapMessagesPresenter.class.getSimpleName();
     @Inject
     LocationListeningInteractor locationListeningInteractor;
 
@@ -61,13 +63,16 @@ public class MapMessagesPresenter extends BasePresenter implements MapMessagesVi
 
         @Override
         public void onError(Throwable e) {
+            Log.e(TAG, e.getMessage(), e);
             locationListeningInteractor.unsubscribe();
         }
 
         @Override
         public void onNext(Location location) {
-            mMapMessagesView.moveMapTo(location);
-            messagesFetchingInteractor.execute(new LatLng(location.getLatitude(), location.getLongitude()), new MessagesSubscriber());
+            if (location != null) {
+                mMapMessagesView.moveMapTo(location);
+                messagesFetchingInteractor.execute(new LatLng(location.getLatitude(), location.getLongitude()), new MessagesSubscriber());
+            }
         }
     }
 
