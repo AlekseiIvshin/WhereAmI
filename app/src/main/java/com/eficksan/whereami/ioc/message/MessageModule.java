@@ -21,20 +21,22 @@ import rx.Scheduler;
  * on 28.08.2016.
  */
 @Module
-@FragmentScope
 public class MessageModule {
 
     @Provides
+    @FragmentScope
     public MessageDetailsPresenter provideMessageDetailsPresenter(FindUserInteractor findUserInteractor, FindMessageInteractor findMessageInteractor, DidUserVoteInteractor didUserVoteInteractor, VotingInteractor votingInteractor, FetchingVotesCountInteractor votesCountInteractor) {
         return new MessageDetailsPresenter(findUserInteractor, findMessageInteractor, didUserVoteInteractor, votingInteractor, votesCountInteractor);
     }
 
     @Provides
+    @FragmentScope
     public FindMessageInteractor provideFindMessageInteractor(MessagesDataSource messagesDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new FindMessageInteractor(messagesDataSource, jobScheduler, uiScheduler);
     }
 
     @Provides
+    @FragmentScope
     public FindUserInteractor provideFindUserInteractor(UsersDataSource usersDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new FindUserInteractor(usersDataSource, jobScheduler,uiScheduler);
     }

@@ -26,16 +26,19 @@ import rx.Scheduler;
 public class AuthModule {
 
     @Provides
+    @FragmentScope
     public EmailValidator provideEmailValidator() {
         return new EmailValidator();
     }
 
     @Provides
+    @FragmentScope
     public PasswordValidator providePasswordValidator() {
         return new PasswordValidator();
     }
 
     @Provides
+    @FragmentScope
     public UserNameValidator provideUserNameValidator() {
         return new UserNameValidator();
     }
@@ -47,6 +50,7 @@ public class AuthModule {
     }
 
     @Provides
+    @FragmentScope
     public SignInView provideSignInView() {
         return new SignInView();
     }

@@ -16,15 +16,16 @@ import rx.Scheduler;
  * on 28.08.2016.
  */
 @Module
-@FragmentScope
 public class MessagingModule {
 
     @Provides
+    @FragmentScope
     public PlaceMessageValidator providePlaceMessageValidator() {
         return new PlaceMessageValidator();
     }
 
     @Provides
+    @FragmentScope
     public PlacingMessageInteractor providePlacingMessageInteractor(MessagesDataSource messagesDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new PlacingMessageInteractor(messagesDataSource, jobScheduler, uiScheduler);
     }

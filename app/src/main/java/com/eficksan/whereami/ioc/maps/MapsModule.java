@@ -18,15 +18,16 @@ import rx.Scheduler;
  * on 28.08.2016.
  */
 @Module
-@FragmentScope
 public class MapsModule {
 
     @Provides
+    @FragmentScope
     public LocationListeningInteractor provideLocationListeningInteractor(Context context) {
         return new LocationListeningInteractor(context);
     }
 
     @Provides
+    @FragmentScope
     public MessagesFetchingInteractor provideMessagesFetchingInteractor(MessagesDataSource messagesDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler){
         return new MessagesFetchingInteractor(messagesDataSource, jobScheduler, uiScheduler);
     }

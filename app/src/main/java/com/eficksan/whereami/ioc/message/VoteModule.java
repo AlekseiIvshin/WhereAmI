@@ -17,20 +17,22 @@ import rx.Scheduler;
  * on 28.08.2016.
  */
 @Module
-@FragmentScope
 public class VoteModule {
 
     @Provides
+    @FragmentScope
     public DidUserVoteInteractor provideDidUserVoteInteractor(VotesDataSource votesDataSource, @Named("currentUserId") String userId, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new DidUserVoteInteractor(votesDataSource, userId, jobScheduler, uiScheduler);
     }
 
     @Provides
+    @FragmentScope
     public VotingInteractor provideVotingInteractor(VotesDataSource votesRepository, @Named("currentUserId") String userId, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new VotingInteractor(votesRepository, userId, jobScheduler, uiScheduler);
     }
 
     @Provides
+    @FragmentScope
     public FetchingVotesCountInteractor provideFetchingVotesCountInteractor(VotesDataSource votesDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new FetchingVotesCountInteractor(votesDataSource, jobScheduler, uiScheduler);
     }
