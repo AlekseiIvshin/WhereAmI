@@ -18,7 +18,7 @@
     <string name="auto_request">Auto request</string>
     <string name="geofence_transition_invalid_type">Geofence transition invalid type: %d</string>
     <string name="permission_was_not_granted">Permission was not granted!</string>
-    <string name="permission_granted_try_again">Permission granted! Please, try again do operation</string>
+    <string name="permission_granted">Permission granted!</string>
     <string name="title_activity_maps">Map</string>
     <string name="api_connection_lost">Google API connection lost</string>
     <string name="last_knows_location">Last known location</string>

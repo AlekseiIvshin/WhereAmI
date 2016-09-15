@@ -57,11 +57,12 @@ public class MainActivity extends AppCompatActivity implements Router {
     private static final String EXTRA_REQUESTED_PERMISSIONS = "EXTRA_REQUESTED_PERMISSIONS";
     private static final String EXTRA_SCREEN_KEY = "EXTRA_SCREEN_KEY";
     private static final String EXTRA_SETTINGS_STATUS = "EXTRA_SETTINGS_STATUS";
+    private static final String EXTRA_NOTIFICATION_ACTION = "EXTRA_NOTIFICATION_ACTION";
 
     private static final int ACTION_SHOW_LOCATION_SCREEN_CODE = 1;
     private static final int ACTION_REQUEST_PERMISSION_CODE = 2;
-    private static final int ACTION_REQUEST_SETTINGS_CODE = 3;
 
+    private static final int ACTION_REQUEST_SETTINGS_CODE = 3;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private static final int REQUEST_CHECK_SETTINGS = 2;
     private static final String KEY_CURRENT_SCREEN_KEY = "KEY_CURRENT_SCREEN_KEY";
@@ -99,11 +100,12 @@ public class MainActivity extends AppCompatActivity implements Router {
      * @param permissions required permissions
      * @return pending intent
      */
-    public static PendingIntent requestPermissions(Context context, String[] permissions) {
+    public static PendingIntent requestPermissions(Context context, String[] permissions, String notificationAction) {
         Log.v(TAG, "Request permissions: " + TextUtils.join(", ", permissions));
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_PERMISSIONS);
         intent.putExtra(EXTRA_REQUESTED_PERMISSIONS, permissions);
+        intent.putExtra(EXTRA_NOTIFICATION_ACTION, notificationAction);
         return PendingIntent.getActivities(context, ACTION_REQUEST_PERMISSION_CODE, new Intent[]{intent}, 0);
     }
 
@@ -114,11 +116,12 @@ public class MainActivity extends AppCompatActivity implements Router {
      * @param status  settings status
      * @return pending intent
      */
-    public static PendingIntent requestSettings(Context context, Status status) {
+    public static PendingIntent requestSettings(Context context, Status status, String notificationAction) {
         Log.v(TAG, "Request settings: status = " + status.toString());
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_REQUEST_SETTINGS);
         intent.putExtra(EXTRA_SETTINGS_STATUS, status);
+        intent.putExtra(EXTRA_NOTIFICATION_ACTION, notificationAction);
         return PendingIntent.getActivities(context, ACTION_REQUEST_SETTINGS_CODE, new Intent[]{intent}, 0);
     }
 
@@ -334,8 +337,8 @@ public class MainActivity extends AppCompatActivity implements Router {
             case REQUEST_LOCATION_PERMISSION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, R.string.permission_granted_try_again, Toast.LENGTH_SHORT).show();
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getIntent().getAction()));
+                    Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getIntent().getStringExtra(EXTRA_NOTIFICATION_ACTION)));
                 } else {
                     Toast.makeText(this, R.string.permission_was_not_granted, Toast.LENGTH_SHORT).show();
                 }
@@ -351,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements Router {
             switch (resultCode) {
                 case RESULT_OK:
                     Toast.makeText(this, R.string.settings_satisfied, Toast.LENGTH_SHORT).show();
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getIntent().getAction()));
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getIntent().getStringExtra(EXTRA_NOTIFICATION_ACTION)));
                     break;
                 case RESULT_CANCELED:
                     Toast.makeText(this, R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();

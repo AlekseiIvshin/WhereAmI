@@ -123,9 +123,9 @@ public class LocationListeningService extends Service implements LocationDataSou
     @Override
     public void onPermissionsRequired(String[] permissions) {
         try {
-            MainActivity.requestPermissions(this, permissions).send();
+            MainActivity.requestPermissions(this, permissions, Constants.ACTION_PERMISSIONS_REQUEST_RESULT).send();
         } catch (PendingIntent.CanceledException e) {
-            Log.e(TAG, e.getMessage(),e);
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -133,9 +133,9 @@ public class LocationListeningService extends Service implements LocationDataSou
     public void onSettingsResolutionRequired(LocationSettingsResult result) {
         Toast.makeText(this, R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();
         try {
-            MainActivity.requestSettings(this, result.getStatus()).send();
+            MainActivity.requestSettings(this, result.getStatus(), Constants.ACTION_SETTINGS_REQUEST_RESULT).send();
         } catch (PendingIntent.CanceledException e) {
-            Log.e(TAG, e.getMessage(),e);
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
