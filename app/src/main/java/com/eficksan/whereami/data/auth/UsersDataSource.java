@@ -33,19 +33,21 @@ public class UsersDataSource {
         return Observable.create(new Observable.OnSubscribe<User>() {
             @Override
             public void call(final Subscriber<? super User> subscriber) {
-                mDatabase.getReference().child(DB_USERS).child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.v(TAG, "Found user with id = " + userId);
-                        subscriber.onNext(dataSnapshot.getValue(User.class));
-                        subscriber.onCompleted();
-                    }
+                if (!subscriber.isUnsubscribed()) {
+                    mDatabase.getReference().child(DB_USERS).child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.v(TAG, "Found user with id = " + userId);
+                            subscriber.onNext(dataSnapshot.getValue(User.class));
+                            subscriber.onCompleted();
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        subscriber.onError(databaseError.toException());
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            subscriber.onError(databaseError.toException());
+                        }
+                    });
+                }
             }
         });
     }
@@ -61,13 +63,15 @@ public class UsersDataSource {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                User user = new User();
-                user.id = userId;
-                user.name = userName;
+                if (!subscriber.isUnsubscribed()) {
+                    User user = new User();
+                    user.id = userId;
+                    user.name = userName;
 
-                mDatabase.getReference().child(DB_USERS).child(userId).setValue(user);
-                subscriber.onNext(true);
-                subscriber.onCompleted();
+                    mDatabase.getReference().child(DB_USERS).child(userId).setValue(user);
+                    subscriber.onNext(true);
+                    subscriber.onCompleted();
+                }
             }
         });
     }

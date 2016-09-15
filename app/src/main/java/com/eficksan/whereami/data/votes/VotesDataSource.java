@@ -36,19 +36,25 @@ public class VotesDataSource {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(final Subscriber<? super Boolean> subscriber) {
-                mDatabase.getReference().child(DB_VOTES).child(messageId).child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Boolean isVotedBefore = dataSnapshot.getValue(Boolean.class);
-                        subscriber.onNext(isVotedBefore);
-                        subscriber.onCompleted();
-                    }
+                if (!subscriber.isUnsubscribed()) {
+                    mDatabase.getReference().child(DB_VOTES).child(messageId).child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!subscriber.isUnsubscribed()) {
+                                Boolean isVotedBefore = dataSnapshot.getValue(Boolean.class);
+                                subscriber.onNext(isVotedBefore);
+                                subscriber.onCompleted();
+                            }
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        subscriber.onError(databaseError.toException());
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            if (!subscriber.isUnsubscribed()) {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        }
+                    });
+                }
             }
         });
 
@@ -66,10 +72,12 @@ public class VotesDataSource {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(final Subscriber<? super Boolean> subscriber) {
-                DatabaseReference database = mDatabase.getReference();
-                database.child(DB_VOTES).child(messageId).child(userId).setValue(isVotedFor);
-                subscriber.onNext(true);
-                subscriber.onCompleted();
+                if (!subscriber.isUnsubscribed()) {
+                    DatabaseReference database = mDatabase.getReference();
+                    database.child(DB_VOTES).child(messageId).child(userId).setValue(isVotedFor);
+                    subscriber.onNext(true);
+                    subscriber.onCompleted();
+                }
             }
         });
     }
@@ -84,37 +92,43 @@ public class VotesDataSource {
         return Observable.create(new Observable.OnSubscribe<MessageVotes>() {
             @Override
             public void call(final Subscriber<? super MessageVotes> subscriber) {
-                mDatabase.getReference().child(DB_VOTES).child(messageId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        MessageVotes messageVotes;
-                        if (dataSnapshot.getChildrenCount() == 0) {
-                            messageVotes = new MessageVotes(0, 0);
-                        } else {
-                            Iterable<DataSnapshot> votesIterable = dataSnapshot.getChildren();
-                            int votesFor = 0;
-                            int votesAgainst = 0;
-
-                            DataSnapshot voteSnapshot;
-                            for (DataSnapshot aVoteIterator : votesIterable) {
-                                voteSnapshot = aVoteIterator;
-                                if (voteSnapshot.getValue(Boolean.class)) {
-                                    votesFor++;
+                if (!subscriber.isUnsubscribed()) {
+                    mDatabase.getReference().child(DB_VOTES).child(messageId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!subscriber.isUnsubscribed()) {
+                                MessageVotes messageVotes;
+                                if (dataSnapshot.getChildrenCount() == 0) {
+                                    messageVotes = new MessageVotes(0, 0);
                                 } else {
-                                    votesAgainst++;
-                                }
-                            }
-                            messageVotes = new MessageVotes(votesFor, votesAgainst);
-                        }
-                        subscriber.onNext(messageVotes);
-                        subscriber.onCompleted();
-                    }
+                                    Iterable<DataSnapshot> votesIterable = dataSnapshot.getChildren();
+                                    int votesFor = 0;
+                                    int votesAgainst = 0;
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        subscriber.onError(databaseError.toException());
-                    }
-                });
+                                    DataSnapshot voteSnapshot;
+                                    for (DataSnapshot aVoteIterator : votesIterable) {
+                                        voteSnapshot = aVoteIterator;
+                                        if (voteSnapshot.getValue(Boolean.class)) {
+                                            votesFor++;
+                                        } else {
+                                            votesAgainst++;
+                                        }
+                                    }
+                                    messageVotes = new MessageVotes(votesFor, votesAgainst);
+                                }
+                                subscriber.onNext(messageVotes);
+                                subscriber.onCompleted();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            if (!subscriber.isUnsubscribed()) {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        }
+                    });
+                }
             }
         });
     }

@@ -35,10 +35,12 @@ public class MessagesDataSource {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(final Subscriber<? super Boolean> subscriber) {
-                DatabaseReference database = mDatabase.getReference();
-                database.child(DB_MESSAGES).push().setValue(placingMessage);
-                subscriber.onNext(true);
-                subscriber.onCompleted();
+                if (!subscriber.isUnsubscribed()) {
+                    DatabaseReference database = mDatabase.getReference();
+                    database.child(DB_MESSAGES).push().setValue(placingMessage);
+                    subscriber.onNext(true);
+                    subscriber.onCompleted();
+                }
             }
         });
     }
@@ -51,27 +53,33 @@ public class MessagesDataSource {
         return Observable.create(new Observable.OnSubscribe<List<PlacingMessage>>() {
             @Override
             public void call(final Subscriber<? super List<PlacingMessage>> subscriber) {
-                mDatabase.getReference().child(DB_MESSAGES).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterable<DataSnapshot> messagesIterator = dataSnapshot.getChildren();
-                        List<PlacingMessage> placingMessages = new LinkedList<>();
-                        PlacingMessage placingMessage;
-                        DataSnapshot snapshot;
-                        for (DataSnapshot aMessagesIterator : messagesIterator) {
-                            snapshot = aMessagesIterator;
-                            placingMessage = snapshot.getValue(PlacingMessage.class);
-                            placingMessage.messageId = snapshot.getKey();
-                            placingMessages.add(placingMessage);
+                if (!subscriber.isUnsubscribed()) {
+                    mDatabase.getReference().child(DB_MESSAGES).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!subscriber.isUnsubscribed()) {
+                                Iterable<DataSnapshot> messagesIterator = dataSnapshot.getChildren();
+                                List<PlacingMessage> placingMessages = new LinkedList<>();
+                                PlacingMessage placingMessage;
+                                DataSnapshot snapshot;
+                                for (DataSnapshot aMessagesIterator : messagesIterator) {
+                                    snapshot = aMessagesIterator;
+                                    placingMessage = snapshot.getValue(PlacingMessage.class);
+                                    placingMessage.messageId = snapshot.getKey();
+                                    placingMessages.add(placingMessage);
+                                }
+                                subscriber.onNext(placingMessages);
+                            }
                         }
-                        subscriber.onNext(placingMessages);
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        subscriber.onError(databaseError.toException());
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            if (!subscriber.isUnsubscribed()) {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        }
+                    });
+                }
             }
         });
     }
@@ -84,18 +92,24 @@ public class MessagesDataSource {
         return Observable.create(new Observable.OnSubscribe<PlacingMessage>() {
             @Override
             public void call(final Subscriber<? super PlacingMessage> subscriber) {
-                mDatabase.getReference().child(DB_MESSAGES).child(messageId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        subscriber.onNext(dataSnapshot.getValue(PlacingMessage.class));
-                        subscriber.onCompleted();
-                    }
+                if (!subscriber.isUnsubscribed()) {
+                    mDatabase.getReference().child(DB_MESSAGES).child(messageId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!subscriber.isUnsubscribed()) {
+                                subscriber.onNext(dataSnapshot.getValue(PlacingMessage.class));
+                                subscriber.onCompleted();
+                            }
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        subscriber.onError(databaseError.toException());
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            if (!subscriber.isUnsubscribed()) {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        }
+                    });
+                }
             }
         });
     }
