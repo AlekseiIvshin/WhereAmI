@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements Router {
         switch (nextScreenKey) {
             case Screens.MESSAGING_SCREEN: {
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
-                addFragment(PlacingMessageFragment.newInstance(location), PlacingMessageFragment.TAG, true);
+                replaceFragment(PlacingMessageFragment.newInstance(location), PlacingMessageFragment.TAG, true);
                 break;
             }
             case Screens.MAPS_SCREEN: {
@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements Router {
             case Screens.MAPS_SCREEN:
             case Screens.MESSAGING_SCREEN:
             default:
-                getSupportFragmentManager().popBackStack();
+                showScreen(Screens.LOCATION_SCREEN);
                 break;
         }
     }
@@ -365,7 +365,6 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {

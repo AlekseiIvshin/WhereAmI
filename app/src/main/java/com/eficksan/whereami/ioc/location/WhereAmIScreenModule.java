@@ -20,26 +20,7 @@ import dagger.Provides;
  * on 28.08.2016.
  */
 @Module
-public class LocationModule {
-
-    @Provides
-    @FragmentScope
-    public ForegroundServiceInteractor provideForegroundServiceInteractor(Context context) {
-        return new ForegroundServiceInteractor(context);
-    }
-
-    @Provides
-    @FragmentScope
-    public LocationListeningInteractor provideLocationListeningInteractor(Context context) {
-        return new LocationListeningInteractor(context);
-    }
-
-    @Provides
-    @FragmentScope
-    public AddressFetchingInteractor provideAddressFetchingInteractor(Context context) {
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        return new AddressFetchingInteractor(geocoder);
-    }
+public class WhereAmIScreenModule {
 
     @Provides
     @FragmentScope

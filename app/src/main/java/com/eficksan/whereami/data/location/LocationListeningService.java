@@ -18,12 +18,17 @@ import android.widget.Toast;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.presentation.MainActivity;
-import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationSettingsResult;
 
+import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.observables.ConnectableObservable;
+import rx.subjects.PublishSubject;
 
-public class LocationListeningService extends Service implements LocationDataSource, LocationRequestDelegate.DelegateCallback {
+public class LocationListeningService extends Service implements LocationDataSource, LocationRequestingDelegate.DelegateCallback, LocationListener {
     private static final String TAG = LocationListeningService.class.getSimpleName();
 
     private BroadcastReceiver mRequirementsReceiver = new BroadcastReceiver() {
@@ -46,7 +51,11 @@ public class LocationListeningService extends Service implements LocationDataSou
     private static final String ACTION_START_TRACK_LOCATION = "ACTION_START_TRACK_LOCATION";
 
     private final LocalBinder binder = new LocalBinder();
-    private LocationRequestDelegate mLocationRequestDelegate;
+
+    private LocationRequestingDelegate mLocationRequestDelegate;
+    private PublishSubject<Location> locationPublishSubject;
+    private ConnectableObservable<Location> locationChannel;
+    private int mSubscriptionsCount;
 
     /**
      * Creates intent for commanding service to work in foreground.
@@ -96,12 +105,17 @@ public class LocationListeningService extends Service implements LocationDataSou
     public void onCreate() {
         super.onCreate();
 
+        mLocationRequestDelegate = new LocationRequestingDelegate(getApplicationContext(), LocationRequestingDelegate.createIntervalLocationRequest(), this, this);
+
+        locationPublishSubject = PublishSubject.create();
+        locationChannel = locationPublishSubject.publish();
+        locationChannel.connect();
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_PERMISSIONS_REQUEST_RESULT);
         intentFilter.addAction(Constants.ACTION_SETTINGS_REQUEST_RESULT);
         LocalBroadcastManager.getInstance(this).registerReceiver(mRequirementsReceiver, intentFilter);
 
-        mLocationRequestDelegate = new LocationRequestDelegate(getApplicationContext(), this);
         mLocationRequestDelegate.connect();
     }
 
@@ -114,7 +128,7 @@ public class LocationListeningService extends Service implements LocationDataSou
 
     @Override
     public void onDestroy() {
-        unsubscribe();
+        locationChannel.refCount();
         mLocationRequestDelegate.disconnect();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequirementsReceiver);
         super.onDestroy();
@@ -145,14 +159,27 @@ public class LocationListeningService extends Service implements LocationDataSou
     }
 
     @Override
-    public void subscribe(LocationRequest locationRequest, Subscriber<Location> locationSubscriber) {
-        mLocationRequestDelegate.prepareNewRequest(locationRequest, locationSubscriber);
+    public void subscribe(Subscriber<Location> subscriber) {
+        locationChannel.subscribe(subscriber);
+        mSubscriptionsCount++;
+        Log.v(TAG, "New location subscriber. Current count = " + mSubscriptionsCount);
         mLocationRequestDelegate.startLocationRequest();
     }
 
     @Override
-    public void unsubscribe() {
-        mLocationRequestDelegate.stopLocationRequest();
+    public void unsubscribe(Subscriber<Location> subscriber) {
+        subscriber.unsubscribe();
+        mSubscriptionsCount--;
+        Log.v(TAG, "Unsubscribed. Current count = " + mSubscriptionsCount);
+        if (mSubscriptionsCount == 0) {
+            Log.v(TAG, "Subscribers count is 0. Stop location requesting");
+            mLocationRequestDelegate.stopLocationRequest();
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        locationPublishSubject.onNext(location);
     }
 
     public class LocalBinder extends Binder {

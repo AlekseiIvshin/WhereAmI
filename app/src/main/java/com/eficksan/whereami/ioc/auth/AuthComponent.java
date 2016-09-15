@@ -1,6 +1,7 @@
 package com.eficksan.whereami.ioc.auth;
 
 import com.eficksan.whereami.ioc.app.AppComponent;
+import com.eficksan.whereami.ioc.common.AuthModule;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 import com.eficksan.whereami.presentation.auth.signin.SignInFragment;
 import com.eficksan.whereami.presentation.auth.signin.SignInPresenter;
@@ -14,7 +15,7 @@ import dagger.Component;
  * on 28.08.2016.
  */
 @FragmentScope
-@Component(dependencies = AppComponent.class, modules = AuthModule.class)
+@Component(dependencies = AppComponent.class, modules = {AuthScreensModule.class, AuthModule.class})
 public interface AuthComponent {
 
     void inject(SignInPresenter mPresenter);

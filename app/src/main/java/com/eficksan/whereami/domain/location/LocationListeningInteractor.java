@@ -10,8 +10,6 @@ import android.util.Log;
 
 import com.eficksan.whereami.data.location.LocationDataSource;
 import com.eficksan.whereami.data.location.LocationListeningService;
-import com.eficksan.whereami.domain.Interactor;
-import com.google.android.gms.location.LocationRequest;
 
 import rx.Subscriber;
 
@@ -21,7 +19,7 @@ import rx.Subscriber;
  * Created by Aleksei Ivshin
  * on 22.08.2016.
  */
-public class LocationListeningInteractor implements Interactor<LocationRequest, Location> {
+public class LocationListeningInteractor {
 
     private static final String TAG = LocationListeningInteractor.class.getSimpleName();
 
@@ -31,7 +29,6 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
     private boolean mIsNeedRequestLocation =true;
 
     private LocationDataSource locationDataSource;
-    private LocationRequest mLocationRequest;
     private Subscriber<Location> mLocationSubscriber;
     private ServiceConnection mLocationServiceConnection = new ServiceConnection() {
 
@@ -41,7 +38,7 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
 
             if (mIsNeedRequestLocation) {
                 locationDataSource = ((LocationListeningService.LocalBinder) iBinder).getDataSource();
-                locationDataSource.subscribe(mLocationRequest, mLocationSubscriber);
+                locationDataSource.subscribe(mLocationSubscriber);
             }
         }
 
@@ -49,7 +46,7 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
         public void onServiceDisconnected(ComponentName componentName) {
             Log.v(TAG, "Location service was disconnected");
             mIsServiceConnected = false;
-            locationDataSource.unsubscribe();
+            locationDataSource.unsubscribe(mLocationSubscriber);
             locationDataSource = null;
         }
     };
@@ -58,26 +55,23 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
         mContext = context;
     }
 
-    @Override
-    public void execute(@NonNull LocationRequest parameter, @NonNull Subscriber<Location> subscriber) {
-        mLocationRequest = parameter;
+    public void execute(@NonNull Subscriber<Location> subscriber) {
         mLocationSubscriber = subscriber;
-        startLocationRequest();
+        bindLocationRequestingService();
     }
 
-    @Override
     public void unsubscribe() {
-        if (locationDataSource != null) {
-            locationDataSource.unsubscribe();
+        if (locationDataSource != null && !mLocationSubscriber.isUnsubscribed()) {
+            locationDataSource.unsubscribe(mLocationSubscriber);
         }
-        stopLocationRequest();
+        unbindLocationRequestingService();
     }
 
     /**
      * Starts listen location. Bind service and add listener on service connected.
      */
-    private void startLocationRequest() {
-        Log.v(TAG, "startLocationRequest");
+    private void bindLocationRequestingService() {
+        Log.v(TAG, "bindLocationRequestingService");
         mIsNeedRequestLocation = true;
         mContext.bindService(LocationListeningService.startTrackLocation(mContext), mLocationServiceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -85,8 +79,8 @@ public class LocationListeningInteractor implements Interactor<LocationRequest, 
     /**
      * Stops listen location changes. Remove all listeners.
      */
-    private void stopLocationRequest() {
-        Log.v(TAG, "stopLocationRequest");
+    private void unbindLocationRequestingService() {
+        Log.v(TAG, "unbindLocationRequestingService");
         mIsNeedRequestLocation = false;
         if (mIsServiceConnected) {
             mContext.unbindService(mLocationServiceConnection);

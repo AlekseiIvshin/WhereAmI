@@ -6,20 +6,24 @@ import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.ioc.app.AppModule;
 import com.eficksan.whereami.ioc.app.DaggerAppComponent;
 import com.eficksan.whereami.ioc.auth.AuthComponent;
-import com.eficksan.whereami.ioc.auth.AuthModule;
+import com.eficksan.whereami.ioc.auth.AuthScreensModule;
 import com.eficksan.whereami.ioc.auth.DaggerAuthComponent;
+import com.eficksan.whereami.ioc.common.AuthModule;
+import com.eficksan.whereami.ioc.common.LocationModule;
+import com.eficksan.whereami.ioc.common.MessagesModule;
+import com.eficksan.whereami.ioc.common.UsersModule;
+import com.eficksan.whereami.ioc.common.VoteModule;
 import com.eficksan.whereami.ioc.location.DaggerLocationComponent;
 import com.eficksan.whereami.ioc.location.LocationComponent;
-import com.eficksan.whereami.ioc.location.LocationModule;
+import com.eficksan.whereami.ioc.location.WhereAmIScreenModule;
 import com.eficksan.whereami.ioc.maps.DaggerMapsComponent;
 import com.eficksan.whereami.ioc.maps.MapsComponent;
-import com.eficksan.whereami.ioc.maps.MapsModule;
+import com.eficksan.whereami.ioc.maps.MapsScreenModule;
 import com.eficksan.whereami.ioc.message.DaggerMessageComponent;
 import com.eficksan.whereami.ioc.message.MessageComponent;
-import com.eficksan.whereami.ioc.message.MessageModule;
+import com.eficksan.whereami.ioc.message.MessageScreenModule;
 import com.eficksan.whereami.ioc.messaging.DaggerMessagingComponent;
 import com.eficksan.whereami.ioc.messaging.MessagingComponent;
-import com.eficksan.whereami.ioc.messaging.MessagingModule;
 
 /**
  * Created by Aleksei Ivshin
@@ -50,6 +54,7 @@ public class App extends Application {
             locationComponent = DaggerLocationComponent.builder()
                     .appComponent(appComponent)
                     .locationModule(new LocationModule())
+                    .whereAmIScreenModule(new WhereAmIScreenModule())
                     .build();
         }
         return locationComponent;
@@ -63,7 +68,7 @@ public class App extends Application {
         if (messagingComponent == null) {
             messagingComponent = DaggerMessagingComponent.builder()
                     .appComponent(appComponent)
-                    .messagingModule(new MessagingModule())
+                    .messagesModule(new MessagesModule())
                     .build();
         }
         return messagingComponent;
@@ -77,7 +82,8 @@ public class App extends Application {
         if (mapsComponent == null) {
             mapsComponent = DaggerMapsComponent.builder()
                     .appComponent(appComponent)
-                    .mapsModule(new MapsModule())
+                    .locationModule(new LocationModule())
+                    .mapsScreenModule(new MapsScreenModule())
                     .build();
         }
         return mapsComponent;
@@ -91,6 +97,7 @@ public class App extends Application {
         if (authComponent == null) {
             authComponent = DaggerAuthComponent.builder()
                     .appComponent(appComponent)
+                    .authScreensModule(new AuthScreensModule())
                     .authModule(new AuthModule())
                     .build();
         }
@@ -106,7 +113,10 @@ public class App extends Application {
         if (messageComponent == null) {
             messageComponent = DaggerMessageComponent.builder()
                     .appComponent(appComponent)
-                    .messageModule(new MessageModule())
+                    .messageScreenModule(new MessageScreenModule())
+                    .usersModule(new UsersModule())
+                    .voteModule(new VoteModule())
+                    .messagesModule(new MessagesModule())
                     .build();
         }
         return messageComponent;

@@ -1,6 +1,7 @@
 package com.eficksan.whereami.ioc.messaging;
 
 import com.eficksan.whereami.ioc.app.AppComponent;
+import com.eficksan.whereami.ioc.common.MessagesModule;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 import com.eficksan.whereami.presentation.messaging.PlacingMessagePresenter;
 import com.eficksan.whereami.presentation.messaging.PlacingMessageView;
@@ -12,7 +13,7 @@ import dagger.Component;
  * on 28.08.2016.
  */
 @FragmentScope
-@Component(dependencies = AppComponent.class, modules = MessagingModule.class)
+@Component(dependencies = AppComponent.class, modules = MessagesModule.class)
 public interface MessagingComponent {
 
     void inject(PlacingMessageView placingMessageView);

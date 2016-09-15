@@ -15,14 +15,13 @@ public interface LocationDataSource {
 
     /**
      * Subscribe on location changes.
-     * @param locationRequest location request
      * @param subscriber subscriber
      */
-    void subscribe(LocationRequest locationRequest, Subscriber<Location> subscriber);
+    void subscribe(Subscriber<Location> subscriber);
 
     /**
      * Unsubscribe from location changes.
      */
-    void unsubscribe();
+    void unsubscribe(Subscriber<Location> subscriber);
 
 }

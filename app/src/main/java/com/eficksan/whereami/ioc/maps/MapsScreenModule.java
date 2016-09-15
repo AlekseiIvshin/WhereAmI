@@ -18,13 +18,8 @@ import rx.Scheduler;
  * on 28.08.2016.
  */
 @Module
-public class MapsModule {
+public class MapsScreenModule {
 
-    @Provides
-    @FragmentScope
-    public LocationListeningInteractor provideLocationListeningInteractor(Context context) {
-        return new LocationListeningInteractor(context);
-    }
 
     @Provides
     @FragmentScope

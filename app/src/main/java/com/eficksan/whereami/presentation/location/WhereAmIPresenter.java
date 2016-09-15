@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.eficksan.whereami.R;
-import com.eficksan.whereami.data.location.LocationRequestDelegate;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.AddressFetchingInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
@@ -27,68 +26,24 @@ public class WhereAmIPresenter extends BasePresenter {
 
     private WhereAmIView mView;
 
-    final ForegroundServiceInteractor foregroundServiceInteractor;
+    final ForegroundServiceInteractor mForegroundServiceInteractor;
 
-    final LocationListeningInteractor locationListeningInteractor;
+    final LocationListeningInteractor mLocationListeningInteractor;
 
-    final AddressFetchingInteractor addressFetchingInteractor;
+    final AddressFetchingInteractor mAddressFetchingInteractor;
 
-    /**
-     * Listens address changes.
-     */
-    private Subscriber<Address> addressSubscriber = new Subscriber<Address> (){
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-
-        }
-
-        @Override
-        public void onNext(Address address) {
-            mView.onAddressChanged(address);
-            addressFetchingInteractor.unsubscribe();
-        }
-    };
-
-    /**
-     * Listens location changes.
-     */
-    private Subscriber<Location> locationSubscriber = new Subscriber<Location> (){
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-
-        }
-
-        @Override
-        public void onNext(Location location) {
-            lastLocation = location;
-            mView.onLocationChanged(location);
-            updateAvailabilityToCreateMessage(location);
-            addressFetchingInteractor.execute(location, addressSubscriber);
-        }
-    };
-
-    private Location lastLocation = null;
+    private Location mLastLocation = null;
     private Subscription mCreateMessageListener;
     private boolean mIsLocationRequesting = false;
 
     public WhereAmIPresenter(ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
-        this.foregroundServiceInteractor = foregroundServiceInteractor;
-        this.locationListeningInteractor = locationListeningInteractor;
-        this.addressFetchingInteractor = addressFetchingInteractor;
+        this.mForegroundServiceInteractor = foregroundServiceInteractor;
+        this.mLocationListeningInteractor = locationListeningInteractor;
+        this.mAddressFetchingInteractor = addressFetchingInteractor;
     }
 
     public void onStart() {
-        foregroundServiceInteractor.onStart();
+        mForegroundServiceInteractor.onStart();
 
         handleSwitchLocationListening(mView.switchRequestLocation.isChecked());
 
@@ -97,8 +52,8 @@ public class WhereAmIPresenter extends BasePresenter {
 
     public void onStop() {
         removeListeners();
-        foregroundServiceInteractor.onStop();
-        locationListeningInteractor.unsubscribe();
+        mForegroundServiceInteractor.onStop();
+        mLocationListeningInteractor.unsubscribe();
     }
 
     /**
@@ -116,9 +71,9 @@ public class WhereAmIPresenter extends BasePresenter {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        if (lastLocation != null) {
+                        if (mLastLocation != null) {
                             Bundle args = new Bundle();
-                            args.putParcelable(Constants.EXTRA_LOCATION_DATA, lastLocation);
+                            args.putParcelable(Constants.EXTRA_LOCATION_DATA, mLastLocation);
                             router.showScreen(Screens.MESSAGING_SCREEN, args);
                         } else {
                             mView.showError(R.string.location_not_available);
@@ -146,15 +101,15 @@ public class WhereAmIPresenter extends BasePresenter {
             return;
         }
         mView.disableMessageCreating();
-        foregroundServiceInteractor.turnLocationRequesting(isNeedToListenLocation);
+        mForegroundServiceInteractor.turnLocationRequesting(isNeedToListenLocation);
         if (isNeedToListenLocation) {
             mView.onGeoDataTurnOn();
-            locationListeningInteractor.execute(LocationRequestDelegate.createIntervalLocationRequest(), locationSubscriber);
+            mLocationListeningInteractor.execute(new LocationSubscriber());
             mIsLocationRequesting = true;
         } else {
             mView.onGeoDataTurnOff();
-            lastLocation = null;
-            locationListeningInteractor.unsubscribe();
+            mLastLocation = null;
+            mLocationListeningInteractor.unsubscribe();
             mIsLocationRequesting = false;
         }
     }
@@ -168,6 +123,50 @@ public class WhereAmIPresenter extends BasePresenter {
             mView.disableMessageCreating();
         } else {
             mView.enableMessageCreating();
+        }
+    }
+
+    /**
+     * Listens location changes.
+     */
+    private class LocationSubscriber extends Subscriber<Location> {
+        @Override
+        public void onCompleted() {
+            mLocationListeningInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mLocationListeningInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onNext(Location location) {
+            mLastLocation = location;
+            mView.onLocationChanged(location);
+            updateAvailabilityToCreateMessage(location);
+            mAddressFetchingInteractor.execute(location, new AddressSubscriber());
+        }
+    }
+
+    /**
+     * Listens address changes.
+     */
+    private class AddressSubscriber extends Subscriber<Address>{
+        @Override
+        public void onCompleted() {
+            mAddressFetchingInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mAddressFetchingInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onNext(Address address) {
+            mView.onAddressChanged(address);
+            mAddressFetchingInteractor.unsubscribe();
         }
     }
 }

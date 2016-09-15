@@ -30,9 +30,9 @@ import rx.subjects.PublishSubject;
  * Created by Aleksei Ivshin
  * on 04.09.2016.
  */
-public class LocationRequestDelegate implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
+public class LocationRequestingDelegate implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
 
-    private static final String TAG = LocationRequestDelegate.class.getSimpleName();
+    private static final String TAG = LocationRequestingDelegate.class.getSimpleName();
 
     public static final int LOCATION_REQUEST_INTERVAL = 10000;
     public static final int LOCATION_REQUEST_FASTEST_INTERVAL = 5000;
@@ -40,36 +40,28 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
 
     private final Context context;
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+    private final LocationRequest mLocationRequest;
     private final DelegateCallback delegateCallback;
-    private PublishSubject<Location> mLocationChannel;
-    private Subscription mLocationSubscription;
     private boolean mIsRequestLocationOnStart = false;
+
+    private final LocationListener mLocationListener;
+    private boolean mIsRequesting = false;
 
     public static LocationRequest createIntervalLocationRequest() {
         LocationRequest request = new LocationRequest();
         request.setInterval(LOCATION_REQUEST_INTERVAL);
-        request.setSmallestDisplacement(5f);
+        request.setSmallestDisplacement(LOCATION_REQUEST_SMALLEST_DISPLACEMENT);
         request.setFastestInterval(LOCATION_REQUEST_FASTEST_INTERVAL);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         Log.v(TAG, "Creates request oriented on interval: " + request.toString());
         return request;
     }
 
-    public static LocationRequest createDisplacementRequest(float meters) {
-        LocationRequest request = new LocationRequest();
-        request.setSmallestDisplacement(meters);
-        request.setInterval(LOCATION_REQUEST_INTERVAL);
-        request.setFastestInterval(LOCATION_REQUEST_FASTEST_INTERVAL);
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        Log.v(TAG, "Creates request oriented on displacement: " + request.toString());
-        return request;
-    }
-
-    public LocationRequestDelegate(Context context, DelegateCallback delegateCallback) {
+    public LocationRequestingDelegate(Context context, LocationRequest mLocationRequest, DelegateCallback delegateCallback, LocationListener locationListener) {
         this.context = context;
+        this.mLocationRequest = mLocationRequest;
         this.delegateCallback = delegateCallback;
-        mLocationChannel = PublishSubject.create();
+        this.mLocationListener = locationListener;
     }
 
     public void connect() {
@@ -84,13 +76,11 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
         mGoogleApiClient.disconnect();
     }
 
-    public void prepareNewRequest(LocationRequest locationRequest, Subscriber<Location> locationSubscriber) {
-        stopLocationRequest();
-        mLocationSubscription = mLocationChannel.subscribe(locationSubscriber);
-        mLocationRequest = locationRequest;
-    }
-
     public void startLocationRequest() {
+        if (mIsRequesting) {
+            return;
+        }
+        mIsRequesting = true;
         Log.v(TAG, "Start location request");
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             Log.v(TAG, "Google client is connected");
@@ -106,11 +96,11 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
      * Stops requesting location.
      */
     public void stopLocationRequest() {
+        mIsRequesting = false;
         Log.v(TAG, "Stop location request");
-        unsubscribeLocationListener();
         if (mGoogleApiClient.isConnected()) {
             Log.v(TAG, "Location request stopped");
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mLocationListener);
         }
     }
 
@@ -137,7 +127,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
                     return;
                 }
                 LocationServices.FusedLocationApi
-                        .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+                        .requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener);
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 Log.v(TAG, "Location settings require resolution");
@@ -182,20 +172,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
                 mGoogleApiClient);
 
         Log.v(TAG, "Last location is " + lastLocation);
-
-        onLocationChanged(lastLocation);
-    }
-
-    private void unsubscribeLocationListener() {
-        if (mLocationSubscription != null && !mLocationSubscription.isUnsubscribed()) {
-            mLocationSubscription.isUnsubscribed();
-        }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.v(TAG, "Location changed to " + location);
-        mLocationChannel.onNext(location);
+        mLocationListener.onLocationChanged(lastLocation);
     }
 
     public interface DelegateCallback {
