@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.auth.AuthComponent;
-import com.eficksan.whereami.presentation.auth.signin.SignInPresenter;
-import com.eficksan.whereami.presentation.auth.signin.SignInView;
 import com.eficksan.whereami.presentation.routing.Router;
 
 /**

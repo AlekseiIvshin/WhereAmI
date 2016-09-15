@@ -2,7 +2,6 @@ package com.eficksan.whereami.domain.auth;
 
 import com.eficksan.whereami.data.auth.SignInData;
 import com.eficksan.whereami.domain.BaseInteractor;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;

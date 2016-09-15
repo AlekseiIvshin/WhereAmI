@@ -12,11 +12,8 @@ import com.eficksan.whereami.domain.location.AddressFetchingInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
 import com.eficksan.whereami.presentation.BasePresenter;
-import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
-
-import javax.inject.Inject;
 
 import rx.Subscriber;
 import rx.Subscription;

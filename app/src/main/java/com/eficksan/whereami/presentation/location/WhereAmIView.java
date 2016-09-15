@@ -14,8 +14,6 @@ import com.eficksan.whereami.R;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 

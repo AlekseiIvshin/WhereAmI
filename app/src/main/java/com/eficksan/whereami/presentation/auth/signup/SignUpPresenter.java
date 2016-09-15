@@ -8,7 +8,6 @@ import com.eficksan.whereami.domain.auth.EmailValidator;
 import com.eficksan.whereami.domain.auth.SignUpInteractor;
 import com.eficksan.whereami.domain.auth.UserNameValidator;
 import com.eficksan.whereami.presentation.BasePresenter;
-import com.eficksan.whereami.presentation.routing.Router;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.widget.RxTextView;
 

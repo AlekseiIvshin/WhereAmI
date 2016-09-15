@@ -1,9 +1,6 @@
 package com.eficksan.whereami.domain;
 
-import rx.Observable;
-import rx.Scheduler;
 import rx.Subscriber;
-import rx.Subscription;
 
 /**
  * Created by Aleksei Ivshin

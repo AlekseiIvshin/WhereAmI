@@ -1,6 +1,5 @@
 package com.eficksan.whereami.ioc.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
@@ -12,7 +11,6 @@ import com.eficksan.whereami.presentation.MainActivity;
 import com.eficksan.whereami.presentation.routing.Router;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 
 import javax.inject.Named;
 
