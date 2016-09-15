@@ -34,7 +34,6 @@ public class WhereAmIPresenter extends BasePresenter {
 
     private Location mLastLocation = null;
     private Subscription mCreateMessageListener;
-    private boolean mIsLocationRequesting = false;
 
     public WhereAmIPresenter(ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
         this.mForegroundServiceInteractor = foregroundServiceInteractor;
@@ -97,20 +96,15 @@ public class WhereAmIPresenter extends BasePresenter {
      * @param isNeedToListenLocation flag for starting location listening
      */
     private void handleSwitchLocationListening(boolean isNeedToListenLocation) {
-        if (mIsLocationRequesting == isNeedToListenLocation) {
-            return;
-        }
         mView.disableMessageCreating();
         mForegroundServiceInteractor.turnLocationRequesting(isNeedToListenLocation);
         if (isNeedToListenLocation) {
             mView.onGeoDataTurnOn();
             mLocationListeningInteractor.execute(new LocationSubscriber());
-            mIsLocationRequesting = true;
         } else {
             mView.onGeoDataTurnOff();
             mLastLocation = null;
             mLocationListeningInteractor.unsubscribe();
-            mIsLocationRequesting = false;
         }
     }
 

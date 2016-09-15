@@ -80,6 +80,7 @@ public class LocationRequestingDelegate implements GoogleApiClient.ConnectionCal
         if (mIsRequesting) {
             return;
         }
+        getLastLocationRequest();
         mIsRequesting = true;
         Log.v(TAG, "Start location request");
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
