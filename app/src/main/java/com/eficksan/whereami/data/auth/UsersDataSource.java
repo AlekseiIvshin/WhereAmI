@@ -8,8 +8,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-
 import rx.Observable;
 import rx.Subscriber;
 
@@ -64,15 +62,11 @@ public class UsersDataSource {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                DatabaseReference database = mDatabase.getReference();
-
                 User user = new User();
                 user.id = userId;
                 user.name = userName;
 
-                HashMap<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(String.format("/%s/%s", DB_USERS, userId), user);
-                database.updateChildren(childUpdates);
+                mDatabase.getReference().child(DB_USERS).child(userId).setValue(user);
                 subscriber.onNext(true);
                 subscriber.onCompleted();
             }
