@@ -36,7 +36,7 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
 
     public static final int LOCATION_REQUEST_INTERVAL = 10000;
     public static final int LOCATION_REQUEST_FASTEST_INTERVAL = 5000;
-    public static final float LOCATION_REQUEST_SMALLEST_DISPLACEMENT = 100f;
+    public static final float LOCATION_REQUEST_SMALLEST_DISPLACEMENT = 10f;
 
     private final Context context;
     private GoogleApiClient mGoogleApiClient;
@@ -59,8 +59,9 @@ public class LocationRequestDelegate implements LocationListener, GoogleApiClien
     public static LocationRequest createDisplacementRequest(float meters) {
         LocationRequest request = new LocationRequest();
         request.setSmallestDisplacement(meters);
+        request.setInterval(LOCATION_REQUEST_INTERVAL);
         request.setFastestInterval(LOCATION_REQUEST_FASTEST_INTERVAL);
-        request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         Log.v(TAG, "Creates request oriented on displacement: " + request.toString());
         return request;
     }

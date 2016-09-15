@@ -74,7 +74,7 @@ public class MapMessagesPresenter extends BasePresenter implements MapMessagesVi
     }
 
     public void onStart() {
-        locationListeningInteractor.execute(LocationRequestDelegate.createDisplacementRequest(LocationRequestDelegate.LOCATION_REQUEST_FASTEST_INTERVAL), locationSubscriber);
+        locationListeningInteractor.execute(LocationRequestDelegate.createDisplacementRequest(LocationRequestDelegate.LOCATION_REQUEST_SMALLEST_DISPLACEMENT), locationSubscriber);
     }
 
     public void onStop() {
