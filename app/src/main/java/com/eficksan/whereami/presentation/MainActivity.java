@@ -278,33 +278,36 @@ public class MainActivity extends AppCompatActivity implements Router {
             mCurrentScreenKey = nextScreenKey;
             mCurrentScreenArgs = args;
         }
-        Bundle analyticsBundle = new Bundle();
-        analyticsBundle.putInt(FirebaseAnalytics.Param.LOCATION, nextScreenKey);
-        mFirebaseAnalytics.logEvent("show_screen", analyticsBundle);
         switch (nextScreenKey) {
             case Screens.MESSAGING_SCREEN: {
+                mFirebaseAnalytics.logEvent("show_screen_messaging", Bundle.EMPTY);
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
                 replaceFragment(PlacingMessageFragment.newInstance(location), PlacingMessageFragment.TAG, true);
                 break;
             }
             case Screens.MAPS_SCREEN: {
+                mFirebaseAnalytics.logEvent("show_screen_maps", Bundle.EMPTY);
                 if (!getSupportFragmentManager().popBackStackImmediate(MapMessagesFragment.TAG, 0)) {
                     replaceFragment(MapMessagesFragment.newInstance(), MapMessagesFragment.TAG, true);
                 }
                 break;
             }
             case Screens.LOCATION_SCREEN:
+                mFirebaseAnalytics.logEvent("show_screen_where_am_i", Bundle.EMPTY);
                 if (!getSupportFragmentManager().popBackStackImmediate(WhereAmIFragment.TAG, 0)) {
                     replaceFragment(WhereAmIFragment.newInstance(), WhereAmIFragment.TAG, true);
                 }
                 break;
             case Screens.SIGN_IN_SCREEN:
+                mFirebaseAnalytics.logEvent("show_screen_sign_in", Bundle.EMPTY);
                 replaceFragment(SignInFragment.newInstance(), SignInFragment.TAG, false);
                 break;
             case Screens.SIGN_UP_SCREEN:
+                mFirebaseAnalytics.logEvent("show_screen_sign_up", Bundle.EMPTY);
                 replaceFragment(SignUpFragment.newInstance(), SignUpFragment.TAG, false);
                 break;
             case Screens.MESSAGE_DETAILS: {
+                mFirebaseAnalytics.logEvent("show_screen_message_details", Bundle.EMPTY);
                 String messageId = args.getString(Constants.EXTRA_MESSAGE_ID);
                 MessageDetailsFragment fragment = MessageDetailsFragment.newInstance(messageId);
                 fragment.show(getSupportFragmentManager(), MessageDetailsFragment.TAG);
