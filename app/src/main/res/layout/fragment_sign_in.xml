@@ -74,17 +74,6 @@
             android:layout_height="wrap_content"
             android:visibility="invisible" />
 
-        <Button
-            android:id="@+id/reset_password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/progress_bar"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:visibility="gone"
-            tools:visibility="visible"
-            android:text="@string/label.auth.reset_password" />
-
     </RelativeLayout>
 
 </LinearLayout>

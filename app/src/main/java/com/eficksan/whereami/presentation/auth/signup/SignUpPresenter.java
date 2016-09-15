@@ -36,7 +36,6 @@ public class SignUpPresenter extends BasePresenter implements View.OnClickListen
     UserNameValidator passwordValidator;
 
     private SignUpView mView;
-    private Subscriber<Boolean> mSignUpSubscriber;
 
     private boolean mIsEmailValid = false;
     private boolean mIsUserNameValid = false;
@@ -48,28 +47,6 @@ public class SignUpPresenter extends BasePresenter implements View.OnClickListen
     }
 
     public void onStart() {
-        mSignUpSubscriber = new Subscriber<Boolean>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Boolean isSucceed) {
-                if (isSucceed) {
-                    mView.hideSignUpError();
-                    router.showScreen(Screens.SIGN_IN_SCREEN);
-
-                } else {
-                    mView.showSignUpError(R.string.error_auth_sign_up);
-                }
-            }
-        };
         mView.setSignUpEnabled(mIsEmailValid && mIsUserNameValid && mIsPasswordValid && mIsPasswordConfirmationSame);
         mView.signUp.setOnClickListener(this);
         RxTextView.textChanges(mView.emailInput)
@@ -155,12 +132,35 @@ public class SignUpPresenter extends BasePresenter implements View.OnClickListen
                 mView.hideSignUpError();
                 signUpInteractor.execute(
                         new SignUpData(email, userName, password),
-                        mSignUpSubscriber);
+                        new SignUpSubscriber());
                 break;
         }
     }
 
     private void updateSignUpEnable() {
         mView.setSignUpEnabled(mIsEmailValid && mIsUserNameValid && mIsPasswordValid && mIsPasswordConfirmationSame);
+    }
+
+    private class SignUpSubscriber extends Subscriber<Boolean> {
+        @Override
+        public void onCompleted() {
+            signUpInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            signUpInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onNext(Boolean isSucceed) {
+            if (isSucceed) {
+                mView.hideSignUpError();
+                router.showScreen(Screens.SIGN_IN_SCREEN);
+
+            } else {
+                mView.showSignUpError(R.string.error_auth_sign_up);
+            }
+        }
     }
 }

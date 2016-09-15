@@ -1,6 +1,8 @@
 package com.eficksan.whereami.presentation.auth.signin;
 
+import android.content.Context;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.auth.SignInData;
@@ -17,13 +19,14 @@ import rx.Subscriber;
  */
 public class SignInPresenter extends BasePresenter implements View.OnClickListener {
 
+    private final Context context;
     private final SignInInteractor signInInteractor;
 
     private SignInView mSignInView;
-    private Subscriber<Boolean> mSignInSubscriber;
 
     @Inject
-    public SignInPresenter(SignInInteractor signInInteractor) {
+    public SignInPresenter(Context context, SignInInteractor signInInteractor) {
+        this.context = context;
         this.signInInteractor = signInInteractor;
     }
 
@@ -32,37 +35,13 @@ public class SignInPresenter extends BasePresenter implements View.OnClickListen
     }
 
     public void onStart() {
-        mSignInSubscriber = new Subscriber<Boolean>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Boolean isSucceed) {
-                mSignInView.hideProgress();
-                if (isSucceed) {
-                    mSignInView.hideSignInError();
-                } else {
-                    mSignInView.showSignInError(R.string.error_auth_sign_in);
-                    mSignInView.showResetPassword();
-                }
-            }
-        };
         mSignInView.signIn.setOnClickListener(this);
         mSignInView.signUp.setOnClickListener(this);
-        mSignInView.resetPassword.setOnClickListener(this);
     }
 
     public void onStop() {
         mSignInView.signIn.setOnClickListener(null);
         mSignInView.signUp.setOnClickListener(null);
-        mSignInView.resetPassword.setOnClickListener(null);
         signInInteractor.unsubscribe();
     }
 
@@ -79,17 +58,40 @@ public class SignInPresenter extends BasePresenter implements View.OnClickListen
                 } else {
                     mSignInView.showProgress();
                     mSignInView.hideSignInError();
+                    InputMethodManager keyboard = (InputMethodManager)
+                            context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    keyboard.hideSoftInputFromWindow(mSignInView.emailInput.getWindowToken(), 0);
+
                     signInInteractor.execute(
                             new SignInData(email, password),
-                            mSignInSubscriber);
+                            new SignInSubscriber());
                 }
                 break;
             case R.id.sign_up:
                 router.showScreen(Screens.SIGN_UP_SCREEN);
                 break;
-            case R.id.reset_password:
-                router.showScreen(Screens.RESET_PASSWORD_SCREEN);
-                break;
+        }
+    }
+
+    private class SignInSubscriber extends Subscriber<Boolean> {
+        @Override
+        public void onCompleted() {
+            signInInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            signInInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onNext(Boolean isSucceed) {
+            mSignInView.hideProgress();
+            if (isSucceed) {
+                mSignInView.hideSignInError();
+            } else {
+                mSignInView.showSignInError(R.string.error_auth_sign_in);
+            }
         }
     }
 }

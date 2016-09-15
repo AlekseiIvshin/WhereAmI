@@ -29,9 +29,6 @@ public class SignInView {
     @Bind(R.id.sign_up)
     Button signUp;
 
-    @Bind(R.id.reset_password)
-    Button resetPassword;
-
     @Bind(R.id.auth_results)
     TextView signInResults;
 
@@ -82,20 +79,13 @@ public class SignInView {
     }
 
     private void blockControls() {
-        signUp.setClickable(true);
-        signIn.setClickable(true);
-        resetPassword.setClickable(true);
+        signUp.setClickable(false);
+        signIn.setClickable(false);
     }
 
     private void unblockControls() {
-        signUp.setClickable(false);
-        signIn.setClickable(false);
-        resetPassword.setClickable(false);
+        signUp.setClickable(true);
+        signIn.setClickable(true);
     }
 
-    public void showResetPassword() {
-        if (View.VISIBLE != resetPassword.getVisibility()) {
-            resetPassword.setVisibility(View.VISIBLE);
-        }
-    }
 }
