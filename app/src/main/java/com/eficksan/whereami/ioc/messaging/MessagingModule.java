@@ -27,7 +27,7 @@ public class MessagingModule {
     @Provides
     @FragmentScope
     public PlacingMessageInteractor providePlacingMessageInteractor(MessagesDataSource messagesDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
-        return new PlacingMessageInteractor(messagesDataSource, jobScheduler, uiScheduler);
+        return new PlacingMessageInteractor(messagesDataSource, firebaseAuth, uiScheduler, jobScheduler);
     }
 
 }

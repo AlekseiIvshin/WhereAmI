@@ -28,16 +28,17 @@ public class MessagesDataSource {
 
     /**
      * Add message for location.
+     *
      * @param placingMessage messgae
      * @return true - message adding is applied, false - otherwise
      */
-    public Observable<Boolean> addMessage(final PlacingMessage placingMessage){
+    public Observable<Boolean> addMessage(final PlacingMessage placingMessage, final String userId) {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(final Subscriber<? super Boolean> subscriber) {
                 if (!subscriber.isUnsubscribed()) {
                     DatabaseReference database = mDatabase.getReference();
-                    database.child(DB_MESSAGES).push().setValue(placingMessage);
+                    database.child(DB_MESSAGES).push().setValue(new PlacingMessage(placingMessage, userId));
                     subscriber.onNext(true);
                     subscriber.onCompleted();
                 }
@@ -47,6 +48,7 @@ public class MessagesDataSource {
 
     /**
      * Fetching messages for location.
+     *
      * @param latLng coordinates
      */
     public Observable<List<PlacingMessage>> fetchMessages(LatLng latLng) {
@@ -86,9 +88,10 @@ public class MessagesDataSource {
 
     /**
      * Find message by id.
+     *
      * @param messageId message id
      */
-    public Observable<PlacingMessage> findMessageById(final String messageId){
+    public Observable<PlacingMessage> findMessageById(final String messageId) {
         return Observable.create(new Observable.OnSubscribe<PlacingMessage>() {
             @Override
             public void call(final Subscriber<? super PlacingMessage> subscriber) {

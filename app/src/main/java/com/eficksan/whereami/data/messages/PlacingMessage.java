@@ -22,4 +22,11 @@ public class PlacingMessage {
         this.message = message;
     }
 
+    public PlacingMessage(PlacingMessage message, String userId) {
+        this.latitude = message.latitude;
+        this.longitude = message.longitude;
+        this.message = message.message;
+        this.userId = userId;
+    }
+
 }
