@@ -187,7 +187,9 @@ public class MainActivity extends AppCompatActivity implements Router {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseAuth.getCurrentUser() == null) {
                     Log.v(TAG, "User signed OUT");
-                    showScreen(Screens.SIGN_IN_SCREEN);
+                    if (Screens.SIGN_UP_SCREEN != mCurrentScreenKey) {
+                        showScreen(Screens.SIGN_IN_SCREEN);
+                    }
                 } else {
                     Log.v(TAG, "User signed IN");
                     if (Screens.SIGN_IN_SCREEN == mCurrentScreenKey || Screens.SIGN_UP_SCREEN == mCurrentScreenKey) {
@@ -308,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements Router {
                 break;
             case Screens.SIGN_UP_SCREEN:
                 mFirebaseAnalytics.logEvent("show_screen_sign_up", Bundle.EMPTY);
-                replaceFragment(SignUpFragment.newInstance(), SignUpFragment.TAG, false);
+                replaceFragment(SignUpFragment.newInstance(), SignUpFragment.TAG, true);
                 break;
             case Screens.MESSAGE_DETAILS:
                 mFirebaseAnalytics.logEvent("show_screen_message_details", Bundle.EMPTY);

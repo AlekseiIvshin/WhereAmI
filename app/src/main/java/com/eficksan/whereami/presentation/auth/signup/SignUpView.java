@@ -9,20 +9,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.eficksan.whereami.R;
-
-import javax.inject.Inject;
+import com.eficksan.whereami.presentation.IView;
+import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding.widget.RxTextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * Signing up view.
  * Provides fields for registration user in system.
  */
-public class SignUpView {
+public class SignUpView implements IView {
 
-    @Inject
-    Context context;
+    public final Context context;
 
     @Bind(R.id.input_layout_email)
     TextInputLayout emailInputLayout;
@@ -50,6 +52,10 @@ public class SignUpView {
     @Bind(R.id.auth_results)
     TextView signUpResults;
 
+    public SignUpView(Context context) {
+        this.context = context;
+    }
+
     /**
      * Shows validation error of input field.
      *
@@ -70,8 +76,14 @@ public class SignUpView {
         inputLayout.setError(null);
     }
 
+    @Override
     public void takeView(View view) {
         ButterKnife.bind(this, view);
+    }
+
+    @Override
+    public void releaseView() {
+
     }
 
     /**
@@ -130,5 +142,57 @@ public class SignUpView {
 
     public void setSignUpEnabled(boolean signUpEnabled) {
         signUp.setClickable(signUpEnabled);
+    }
+
+    public Observable<String> getEmailValueChannel() {
+        return RxTextView.textChanges(emailInput)
+                .map(new Func1<CharSequence, String>() {
+                    @Override
+                    public String call(CharSequence value) {
+                        return value == null
+                                ? ""
+                                : value.toString();
+                    }
+                });
+    }
+
+    public Observable<String> getUserNameValueChannel() {
+        return RxTextView.textChanges(usernameInput)
+                .map(new Func1<CharSequence, String>() {
+                    @Override
+                    public String call(CharSequence value) {
+                        return value == null
+                                ? ""
+                                : value.toString();
+                    }
+                });
+    }
+
+    public Observable<String> getPasswordValueChannel() {
+        return RxTextView.textChanges(passwordInput)
+                .map(new Func1<CharSequence, String>() {
+                    @Override
+                    public String call(CharSequence value) {
+                        return value == null
+                                ? ""
+                                : value.toString();
+                    }
+                });
+    }
+
+    public Observable<String> getPasswordConfirmValueChannel() {
+        return RxTextView.textChanges(passwordConfirmInput)
+                .map(new Func1<CharSequence, String>() {
+                    @Override
+                    public String call(CharSequence value) {
+                        return value == null
+                                ? ""
+                                : value.toString();
+                    }
+                });
+    }
+
+    public Observable<Void> getSignUpClicksChannel() {
+        return RxView.clicks(signUp);
     }
 }

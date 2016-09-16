@@ -5,6 +5,7 @@ import com.eficksan.whereami.ioc.common.AuthModule;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 import com.eficksan.whereami.presentation.auth.signin.SignInFragment;
 import com.eficksan.whereami.presentation.auth.signin.SignInPresenter;
+import com.eficksan.whereami.presentation.auth.signup.SignUpFragment;
 import com.eficksan.whereami.presentation.auth.signup.SignUpPresenter;
 import com.eficksan.whereami.presentation.auth.signup.SignUpView;
 
@@ -25,4 +26,6 @@ public interface AuthComponent {
     void inject(SignUpView signUpView);
 
     void inject(SignInFragment signInFragment);
+
+    void inject(SignUpFragment signUpFragment);
 }

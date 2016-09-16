@@ -1,15 +1,15 @@
 package com.eficksan.whereami.presentation.auth.signup;
 
-import android.view.View;
+import android.os.Bundle;
 
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.auth.SignUpData;
 import com.eficksan.whereami.domain.auth.EmailValidator;
+import com.eficksan.whereami.domain.auth.PasswordValidator;
 import com.eficksan.whereami.domain.auth.SignUpInteractor;
 import com.eficksan.whereami.domain.auth.UserNameValidator;
-import com.eficksan.whereami.presentation.RoutedPresenter;
+import com.eficksan.whereami.presentation.common.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
-import com.jakewharton.rxbinding.widget.RxTextView;
 
 import java.util.Objects;
 
@@ -17,130 +17,164 @@ import javax.inject.Inject;
 
 import rx.Subscriber;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Controls sign in flow.
  */
-public class SignUpPresenter extends RoutedPresenter implements View.OnClickListener {
+public class SignUpPresenter extends BasePresenter<SignUpView> {
 
-    @Inject
-    SignUpInteractor signUpInteractor;
+    private final SignUpInteractor signUpInteractor;
 
-    @Inject
-    EmailValidator emailValidator;
+    private final EmailValidator emailValidator;
 
-    @Inject
-    UserNameValidator userNameValidator;
+    private final UserNameValidator userNameValidator;
 
-    @Inject
-    UserNameValidator passwordValidator;
-
-    private SignUpView mView;
+    private final PasswordValidator passwordValidator;
 
     private boolean mIsEmailValid = false;
     private boolean mIsUserNameValid = false;
     private boolean mIsPasswordValid = false;
     private boolean mIsPasswordConfirmationSame = false;
+    private CompositeSubscription compositeSubscription;
+    private String mEmail = "";
+    private String mUserName = "";
+    private String mPassword = "";
 
-    public void setView(SignUpView view) {
-        this.mView = view;
+    @Inject
+    public SignUpPresenter(
+            SignUpInteractor signUpInteractor,
+            EmailValidator emailValidator,
+            UserNameValidator userNameValidator,
+            PasswordValidator passwordValidator) {
+        this.signUpInteractor = signUpInteractor;
+        this.emailValidator = emailValidator;
+        this.userNameValidator = userNameValidator;
+        this.passwordValidator = passwordValidator;
     }
 
-    public void onStart() {
-        mView.setSignUpEnabled(mIsEmailValid && mIsUserNameValid && mIsPasswordValid && mIsPasswordConfirmationSame);
-        mView.signUp.setOnClickListener(this);
-        RxTextView.textChanges(mView.emailInput)
-                .subscribe(new Action1<CharSequence>() {
+    @Override
+    public void onCreate(Bundle savedInstanceStates) {
+        super.onCreate(savedInstanceStates);
+        compositeSubscription = new CompositeSubscription();
+    }
+
+    @Override
+    public void onViewCreated(SignUpView view) {
+        super.onViewCreated(view);
+
+        compositeSubscription.add(mView.getEmailValueChannel()
+                .filter(new Func1<String, Boolean>() {
                     @Override
-                    public void call(CharSequence charSequence) {
-                        if (charSequence.length() > 0) {
-                            mIsEmailValid = emailValidator.validate(charSequence.toString());
-                            if (mIsEmailValid) {
-                                mView.hideEmailValidationError();
-                            } else {
-                                mView.showEmailValidationError(R.string.error_auth_email_invalid);
-                            }
-                            updateSignUpEnable();
+                    public Boolean call(String email) {
+                        mIsEmailValid = emailValidator.validate(email);
+                        if (mIsEmailValid || email.isEmpty()) {
+                            mView.hideEmailValidationError();
+                        } else {
+                            mView.showEmailValidationError(R.string.error_auth_email_invalid);
                         }
+                        handleFieldsValidation();
+                        return mIsEmailValid;
                     }
-                });
-        RxTextView.textChanges(mView.usernameInput)
-                .subscribe(new Action1<CharSequence>() {
+                })
+                .subscribe(new Action1<String>() {
                     @Override
-                    public void call(CharSequence charSequence) {
-                        if (charSequence.length() > 0) {
-                            mIsUserNameValid = userNameValidator.validate(charSequence.toString());
-                            if (mIsUserNameValid) {
-                                mView.hideUserNamelValidationError();
-                            } else {
-                                mView.showUserNamelValidationError(R.string.error_auth_username_invalid);
-                            }
-                            updateSignUpEnable();
+                    public void call(String validEmail) {
+                        mEmail = validEmail;
+                    }
+                }));
+
+        compositeSubscription.add(mView.getUserNameValueChannel()
+                .filter(new Func1<String, Boolean>() {
+                    @Override
+                    public Boolean call(String userName) {
+                        mIsUserNameValid = userNameValidator.validate(userName);
+                        if (mIsUserNameValid || userName.isEmpty()) {
+                            mView.hideUserNamelValidationError();
+                        } else {
+                            mView.showUserNamelValidationError(R.string.error_auth_username_invalid);
                         }
+                        handleFieldsValidation();
+                        return mIsUserNameValid;
                     }
-                });
-        RxTextView.textChanges(mView.passwordInput)
-                .subscribe(new Action1<CharSequence>() {
+                })
+                .subscribe(new Action1<String>() {
                     @Override
-                    public void call(CharSequence charSequence) {
-                        if (charSequence.length() > 0) {
-                            mIsPasswordValid = passwordValidator.validate(charSequence.toString());
-                            if (mIsPasswordValid) {
-                                mView.hidePasswordValidationError();
-                            } else {
-                                mView.showPasswordValidationError(R.string.error_auth_password_invalid);
-                            }
-                            updateSignUpEnable();
+                    public void call(String validUserName) {
+                        mUserName = validUserName;
+                    }
+                }));
+
+        compositeSubscription.add(mView.getPasswordValueChannel()
+                .filter(new Func1<String, Boolean>() {
+                    @Override
+                    public Boolean call(String password) {
+                        mIsPasswordValid = passwordValidator.validate(password);
+                        if (mIsPasswordValid || password.isEmpty()) {
+                            mView.hidePasswordValidationError();
+                        } else {
+                            mView.showPasswordValidationError(R.string.error_auth_password_invalid);
                         }
+                        handleFieldsValidation();
+                        return mIsPasswordValid;
                     }
-                });
-        RxTextView.textChanges(mView.passwordConfirmInput)
-                .subscribe(new Action1<CharSequence>() {
+                })
+                .subscribe(new Action1<String>() {
                     @Override
-                    public void call(CharSequence charSequence) {
-                        if (charSequence.length() > 0) {
-                            mIsPasswordConfirmationSame = Objects.equals(
-                                    mView.passwordInput.getText().toString(),
-                                    mView.passwordConfirmInput.getText().toString());
-                            if (mIsPasswordConfirmationSame) {
+                    public void call(String validPassword) {
+                        mPassword = validPassword;
+                    }
+                }));
+
+        compositeSubscription.add(mView.getPasswordConfirmValueChannel()
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String passwordConfirmation) {
+                        if (!passwordConfirmation.isEmpty()) {
+                            mIsPasswordConfirmationSame = !passwordConfirmation.isEmpty()
+                                    && Objects.equals(mPassword, passwordConfirmation);
+                            if (mIsPasswordConfirmationSame || passwordConfirmation.isEmpty()) {
                                 mView.hidePasswordConfirmationError();
                             } else {
                                 mView.showPasswordConfirmationError(
                                         R.string.error_auth_password_confirmation_is_not_equal);
                             }
-                            updateSignUpEnable();
+                            handleFieldsValidation();
                         }
                     }
-                });
-    }
+                }));
 
-    public void onStop() {
-        mView.signUp.setOnClickListener(null);
+        compositeSubscription.add(mView.getSignUpClicksChannel()
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        if (mEmail.isEmpty() || mUserName.isEmpty() || mPassword.isEmpty()) {
+                            mView.showSignUpError(R.string.error_auth_sign_up_some_fields_empty);
+                            return;
+                        }
+                        mView.hideSignUpError();
+                        signUpInteractor.execute(
+                                new SignUpData(mEmail, mUserName, mPassword),
+                                new SignUpSubscriber());
+                    }
+                }));
     }
 
     @Override
-    public void onClick(View view) {
-        int viewId = view.getId();
-        switch (viewId) {
-            case R.id.sign_up:
-                String email = mView.emailInput.getText().toString();
-                String userName = mView.usernameInput.getText().toString();
-                String password = mView.passwordInput.getText().toString();
-
-                if (email.isEmpty() || userName.isEmpty() || password.isEmpty()) {
-                    mView.showSignUpError(R.string.error_auth_sign_up_some_fields_empty);
-                    return;
-                }
-
-                mView.hideSignUpError();
-                signUpInteractor.execute(
-                        new SignUpData(email, userName, password),
-                        new SignUpSubscriber());
-                break;
-        }
+    public void onViewDestroyed() {
+        compositeSubscription.unsubscribe();
+        compositeSubscription.clear();
+        super.onViewDestroyed();
     }
 
-    private void updateSignUpEnable() {
+    @Override
+    public void onDestroy() {
+        signUpInteractor.unsubscribe();
+        super.onDestroy();
+    }
+
+    private void handleFieldsValidation() {
         mView.setSignUpEnabled(mIsEmailValid && mIsUserNameValid && mIsPasswordValid && mIsPasswordConfirmationSame);
     }
 
@@ -159,8 +193,7 @@ public class SignUpPresenter extends RoutedPresenter implements View.OnClickList
         public void onNext(Boolean isSucceed) {
             if (isSucceed) {
                 mView.hideSignUpError();
-                router.showScreen(Screens.SIGN_IN_SCREEN);
-
+                mRouter.showScreen(Screens.SIGN_IN_SCREEN);
             } else {
                 mView.showSignUpError(R.string.error_auth_sign_up);
             }

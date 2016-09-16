@@ -32,6 +32,12 @@ public class SignInFragment extends ComponentLifecycleFragment {
     @Inject
     SignInView signInView;
 
+    AuthComponent mAuthComponent;
+
+    public SignInFragment() {
+        // Required empty public constructor
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -42,18 +48,12 @@ public class SignInFragment extends ComponentLifecycleFragment {
         return new SignInFragment();
     }
 
-    AuthComponent mAuthComponent;
-
-    public SignInFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuthComponent.inject(this);
-        mPresenter.onCreate(savedInstanceState);
         mPresenter.takeRouter((Router) getActivity());
+        mPresenter.onCreate(savedInstanceState);
     }
 
     @Override
@@ -108,7 +108,8 @@ public class SignInFragment extends ComponentLifecycleFragment {
     }
 
     @Override
-    public void onAddComponent() {
+    public void onSetUpComponent() {
         mAuthComponent = ((App) getActivity().getApplication()).plusAuthComponent();
+        mAuthComponent.inject(this);
     }
 }
