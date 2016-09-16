@@ -90,12 +90,14 @@ public class SignInPresenter extends BasePresenter<SignInView> {
 
         @Override
         public void onNext(Boolean isSucceed) {
-            mView.unblockControls();
-            mView.hideProgress();
-            if (isSucceed) {
-                mView.hideSignInError();
-            } else {
-                mView.showSignInError(R.string.error_auth_sign_in);
+            if (mView != null) {
+                mView.unblockControls();
+                mView.hideProgress();
+                if (isSucceed) {
+                    mView.hideSignInError();
+                } else {
+                    mView.showSignInError(R.string.error_auth_sign_in);
+                }
             }
         }
     }
