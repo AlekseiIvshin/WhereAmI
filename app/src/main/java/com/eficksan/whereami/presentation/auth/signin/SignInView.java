@@ -1,21 +1,29 @@
 package com.eficksan.whereami.presentation.auth.signin;
 
+import android.content.Context;
 import android.support.annotation.StringRes;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.eficksan.whereami.R;
+import com.eficksan.whereami.presentation.IView;
+import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding.widget.RxTextView;
+import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * Created by Aleksei_Ivshin on 9/6/16.
  */
-public class SignInView {
+public class SignInView implements IView{
 
     @Bind(R.id.sign_in_input_email)
     EditText emailInput;
@@ -35,9 +43,15 @@ public class SignInView {
     @Bind(R.id.progress_bar)
     ProgressBar progressBar;
 
+    @Override
     public void takeView(View view) {
         ButterKnife.bind(this, view);
         progressBar.setIndeterminate(true);
+    }
+
+    @Override
+    public void releaseView() {
+
     }
 
     /**
@@ -66,7 +80,6 @@ public class SignInView {
      * Shows sign in progress.
      */
     public void showProgress() {
-        blockControls();
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -75,17 +88,53 @@ public class SignInView {
      */
     public void hideProgress() {
         progressBar.setVisibility(View.GONE);
-        unblockControls();
     }
 
-    private void blockControls() {
+    /**
+     * Gets email value.
+     * @return email
+     */
+    public String getEmailValue() {
+        return emailInput.getText().toString();
+    }
+
+    /**
+     * Gets password value.
+     * @return password
+     */
+    public String getPasswordValue() {
+        return passwordInput.getText().toString();
+    }
+
+    /**
+     * Gets channel of click on sign in.
+     * @return clicks channel
+     */
+    public Observable<Void> getSignInChannel() {
+        return RxView.clicks(signIn);
+    }
+
+    /**
+     * Gets channel of click on sign up.
+     * @return clicks channel
+     */
+    public Observable<Void> getSignUpChannel() {
+        return RxView.clicks(signUp);
+    }
+
+    public void blockControls() {
         signUp.setClickable(false);
         signIn.setClickable(false);
     }
 
-    private void unblockControls() {
+    public void unblockControls() {
         signUp.setClickable(true);
         signIn.setClickable(true);
     }
 
+    public void hideKeyboard(Context context) {
+        InputMethodManager keyboard = (InputMethodManager)
+                context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        keyboard.hideSoftInputFromWindow(emailInput.getWindowToken(), 0);
+    }
 }

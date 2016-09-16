@@ -1,28 +1,29 @@
 package com.eficksan.whereami.presentation.auth.signin;
 
 import android.content.Context;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.os.Bundle;
 
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.auth.SignInData;
 import com.eficksan.whereami.domain.auth.SignInInteractor;
-import com.eficksan.whereami.presentation.BasePresenter;
+import com.eficksan.whereami.presentation.common.BasePresenter;
+import com.eficksan.whereami.presentation.BaseSubscriber;
 import com.eficksan.whereami.presentation.routing.Screens;
 
 import javax.inject.Inject;
 
-import rx.Subscriber;
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Controls sign in flow.
  */
-public class SignInPresenter extends BasePresenter implements View.OnClickListener {
+public class SignInPresenter extends BasePresenter<SignInView> {
 
     private final Context context;
     private final SignInInteractor signInInteractor;
 
-    private SignInView mSignInView;
+    private CompositeSubscription compositeSubscription;
 
     @Inject
     public SignInPresenter(Context context, SignInInteractor signInInteractor) {
@@ -30,67 +31,71 @@ public class SignInPresenter extends BasePresenter implements View.OnClickListen
         this.signInInteractor = signInInteractor;
     }
 
-    public void setView(SignInView signInView) {
-        this.mSignInView = signInView;
-    }
-
-    public void onStart() {
-        mSignInView.signIn.setOnClickListener(this);
-        mSignInView.signUp.setOnClickListener(this);
-    }
-
-    public void onStop() {
-        mSignInView.signIn.setOnClickListener(null);
-        mSignInView.signUp.setOnClickListener(null);
-        signInInteractor.unsubscribe();
+    @Override
+    public void onCreate(Bundle savedInstanceStates) {
+        super.onCreate(savedInstanceStates);
+        compositeSubscription = new CompositeSubscription();
     }
 
     @Override
-    public void onClick(View view) {
-        int viewId = view.getId();
-        switch (viewId) {
-            case R.id.sign_in:
-                String email = mSignInView.emailInput.getText().toString();
-                String password = mSignInView.passwordInput.getText().toString();
+    public void onViewCreated(SignInView view) {
+        super.onViewCreated(view);
+
+        compositeSubscription.add(mView.getSignInChannel().subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                String email = mView.getEmailValue();
+                String password = mView.getPasswordValue();
 
                 if (email.isEmpty() || password.isEmpty()) {
-                    mSignInView.showSignInError(R.string.error_auth_empty_email_or_password);
+                    mView.showSignInError(R.string.error_auth_empty_email_or_password);
                 } else {
-                    mSignInView.showProgress();
-                    mSignInView.hideSignInError();
-                    InputMethodManager keyboard = (InputMethodManager)
-                            context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    keyboard.hideSoftInputFromWindow(mSignInView.emailInput.getWindowToken(), 0);
+                    mView.blockControls();
+                    mView.showProgress();
+                    mView.hideSignInError();
+                    mView.hideKeyboard(context);
 
                     signInInteractor.execute(
                             new SignInData(email, password),
-                            new SignInSubscriber());
+                            new SignInSubscriber(signInInteractor));
                 }
-                break;
-            case R.id.sign_up:
-                router.showScreen(Screens.SIGN_UP_SCREEN);
-                break;
-        }
+            }
+        }));
+        compositeSubscription.add(mView.getSignUpChannel().subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                mRouter.showScreen(Screens.SIGN_UP_SCREEN);
+            }
+        }));
     }
 
-    private class SignInSubscriber extends Subscriber<Boolean> {
-        @Override
-        public void onCompleted() {
-            signInInteractor.unsubscribe();
-        }
+    @Override
+    public void onViewDestroyed() {
+        compositeSubscription.unsubscribe();
+        compositeSubscription.clear();
+        super.onViewDestroyed();
+    }
 
-        @Override
-        public void onError(Throwable e) {
-            signInInteractor.unsubscribe();
+    @Override
+    public void onDestroy() {
+        signInInteractor.unsubscribe();
+        super.onDestroy();
+    }
+
+    protected class SignInSubscriber extends BaseSubscriber<SignInInteractor, Boolean> {
+
+        public SignInSubscriber(SignInInteractor interactor) {
+            super(interactor);
         }
 
         @Override
         public void onNext(Boolean isSucceed) {
-            mSignInView.hideProgress();
+            mView.unblockControls();
+            mView.hideProgress();
             if (isSucceed) {
-                mSignInView.hideSignInError();
+                mView.hideSignInError();
             } else {
-                mSignInView.showSignInError(R.string.error_auth_sign_in);
+                mView.showSignInError(R.string.error_auth_sign_in);
             }
         }
     }

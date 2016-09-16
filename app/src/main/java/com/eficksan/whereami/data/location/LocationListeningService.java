@@ -38,6 +38,7 @@ public class LocationListeningService
                 case Constants.ACTION_SETTINGS_REQUEST_RESULT:
                     mLocationRequestDelegate.startLocationRequest();
                     break;
+                default: Log.v(TAG, "There is an unhandled broadcast action: " + action);
             }
         }
     };
@@ -205,6 +206,7 @@ public class LocationListeningService
                 case ACTION_STOP_FOREGROUND:
                     stopForegroundWAI();
                     break;
+                default: Log.v(TAG, "There is an unhandled command action: " + action);
             }
         }
     }

@@ -12,14 +12,17 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.auth.AuthComponent;
+import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
+import com.eficksan.whereami.presentation.common.IPresenter;
 import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Sign in fragment provides methods for signing in, singing up and resetting password(in case failed sign in).
  */
-public class SignInFragment extends Fragment {
+public class SignInFragment extends ComponentLifecycleFragment {
 
     public static final String TAG = SignInFragment.class.getSimpleName();
 
@@ -46,15 +49,11 @@ public class SignInFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mAuthComponent = ((App) getActivity().getApplication()).plusAuthComponent();
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuthComponent.inject(this);
+        mPresenter.onCreate(savedInstanceState);
+        mPresenter.takeRouter((Router) getActivity());
     }
 
     @Override
@@ -69,8 +68,7 @@ public class SignInFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         signInView.takeView(view);
-        mPresenter.setView(signInView);
-        mPresenter.takeRouter((Router) getActivity());
+        mPresenter.onViewCreated(signInView);
     }
 
     @Override
@@ -80,15 +78,37 @@ public class SignInFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mPresenter.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onStop() {
         mPresenter.onStop();
         super.onStop();
     }
 
     @Override
-    public void onDetach() {
+    public void onDestroyView() {
+        mPresenter.onViewDestroyed();
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
         mPresenter.releaseRouter();
+        mPresenter.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onKillComponent() {
         ((App) getActivity().getApplication()).removeAuthComponent();
-        super.onDetach();
+    }
+
+    @Override
+    public void onAddComponent() {
+        mAuthComponent = ((App) getActivity().getApplication()).plusAuthComponent();
     }
 }

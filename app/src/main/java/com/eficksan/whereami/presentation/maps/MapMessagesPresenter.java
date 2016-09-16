@@ -9,7 +9,7 @@ import com.eficksan.whereami.data.messages.PlacingMessage;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
 import com.eficksan.whereami.domain.messages.MessagesFetchingInteractor;
-import com.eficksan.whereami.presentation.BasePresenter;
+import com.eficksan.whereami.presentation.RoutedPresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -22,7 +22,7 @@ import rx.Subscriber;
 /**
  * Presenter for maps.
  */
-public class MapMessagesPresenter extends BasePresenter implements MapMessagesView.MapMessageClickListener {
+public class MapMessagesPresenter extends RoutedPresenter implements MapMessagesView.MapMessageClickListener {
 
     private static final String TAG = MapMessagesPresenter.class.getSimpleName();
     @Inject

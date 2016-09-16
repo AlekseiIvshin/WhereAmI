@@ -10,7 +10,7 @@ import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.AddressFetchingInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
-import com.eficksan.whereami.presentation.BasePresenter;
+import com.eficksan.whereami.presentation.RoutedPresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
 
@@ -22,7 +22,7 @@ import rx.functions.Action1;
  * Created by Aleksei Ivshin
  * on 20.08.2016.
  */
-public class WhereAmIPresenter extends BasePresenter {
+public class WhereAmIPresenter extends RoutedPresenter {
 
     private WhereAmIView mView;
 
