@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
  */
 public class MessageDetailsPresenterTest {
 
-    public static String messageId = "messageId";
+    public static final String messageId = "messageId";
 
     FindUserInteractor mockFindUserInteractor;
 

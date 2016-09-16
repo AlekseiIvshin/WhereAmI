@@ -174,8 +174,10 @@ public class MainActivity extends AppCompatActivity implements Router {
             }
             showScreen(nextScreenKey);
         } else {
-            mCurrentScreenArgs = savedInstanceState.getBundle(KEY_CURRENT_SCREEN_ARGS);
-            mCurrentScreenKey = savedInstanceState.getInt(KEY_CURRENT_SCREEN_KEY);
+            if (savedInstanceState != null) {
+                mCurrentScreenArgs = savedInstanceState.getBundle(KEY_CURRENT_SCREEN_ARGS);
+                mCurrentScreenKey = savedInstanceState.getInt(KEY_CURRENT_SCREEN_KEY);
+            }
         }
 
 
