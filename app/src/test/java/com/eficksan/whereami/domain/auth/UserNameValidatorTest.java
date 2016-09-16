@@ -19,22 +19,22 @@ public class UserNameValidatorTest {
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { "UseraANmsd2", false },
-                { "username", true },
-                { "USERNAME", true },
-                { "USER_NAME", true },
-                { "usEr.Name", true },
-                { "user", false }, // too short
-                { "username@", false }, // special symbol “@” is not allow her
-                { "111111111", false }, // required at least one char
-                { "_username", false }, // should not start from _
-                { ".username", false }, // should not start from .
-                { ".username", false }, // should not start from .
-                { "user__name", false },
-                { "user..name", false },
-                { "user._name", false },
-                { "user_.name", false },
+        return Arrays.asList(new Object[][]{
+                {"UseraANmsd2", false},
+                {"username", true},
+                {"USERNAME", true},
+                {"USER_NAME", true},
+                {"usEr.Name", true},
+                {"user", false}, // too short
+                {"username@", false}, // special symbol “@” is not allow her
+                {"111111111", false}, // required at least one char
+                {"_username", false}, // should not start from _
+                {".username", false}, // should not start from .
+                {".username", false}, // should not start from .
+                {"user__name", false},
+                {"user..name", false},
+                {"user._name", false},
+                {"user_.name", false},
         });
     }
 

@@ -2,8 +2,6 @@ package com.eficksan.whereami.data.location;
 
 import android.location.Location;
 
-import com.google.android.gms.location.LocationRequest;
-
 import rx.Subscriber;
 
 /**

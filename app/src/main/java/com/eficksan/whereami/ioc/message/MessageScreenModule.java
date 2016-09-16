@@ -1,7 +1,5 @@
 package com.eficksan.whereami.ioc.message;
 
-import com.eficksan.whereami.data.auth.UsersDataSource;
-import com.eficksan.whereami.data.messages.MessagesDataSource;
 import com.eficksan.whereami.domain.messages.FindMessageInteractor;
 import com.eficksan.whereami.domain.users.FindUserInteractor;
 import com.eficksan.whereami.domain.votes.DidUserVoteInteractor;
@@ -10,11 +8,8 @@ import com.eficksan.whereami.domain.votes.VotingInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 import com.eficksan.whereami.presentation.message.MessageDetailsPresenter;
 
-import javax.inject.Named;
-
 import dagger.Module;
 import dagger.Provides;
-import rx.Scheduler;
 
 /**
  * Created by Aleksei Ivshin
@@ -25,7 +20,17 @@ public class MessageScreenModule {
 
     @Provides
     @FragmentScope
-    public MessageDetailsPresenter provideMessageDetailsPresenter(FindUserInteractor findUserInteractor, FindMessageInteractor findMessageInteractor, DidUserVoteInteractor didUserVoteInteractor, VotingInteractor votingInteractor, FetchingVotesCountInteractor votesCountInteractor) {
-        return new MessageDetailsPresenter(findUserInteractor, findMessageInteractor, didUserVoteInteractor, votingInteractor, votesCountInteractor);
+    public MessageDetailsPresenter provideMessageDetailsPresenter(
+            FindUserInteractor findUserInteractor,
+            FindMessageInteractor findMessageInteractor,
+            DidUserVoteInteractor didUserVoteInteractor,
+            VotingInteractor votingInteractor,
+            FetchingVotesCountInteractor votesCountInteractor) {
+        return new MessageDetailsPresenter(
+                findUserInteractor,
+                findMessageInteractor,
+                didUserVoteInteractor,
+                votingInteractor,
+                votesCountInteractor);
     }
 }

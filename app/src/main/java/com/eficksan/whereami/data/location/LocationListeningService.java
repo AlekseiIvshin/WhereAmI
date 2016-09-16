@@ -18,17 +18,15 @@ import android.widget.Toast;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.presentation.MainActivity;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationSettingsResult;
 
-import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 
-public class LocationListeningService extends Service implements LocationDataSource, LocationRequestingDelegate.DelegateCallback, LocationListener {
+public class LocationListeningService
+        extends Service
+        implements LocationDataSource, LocationRequestingDelegate.DelegateCallback {
     private static final String TAG = LocationListeningService.class.getSimpleName();
 
     private BroadcastReceiver mRequirementsReceiver = new BroadcastReceiver() {
@@ -105,7 +103,10 @@ public class LocationListeningService extends Service implements LocationDataSou
     public void onCreate() {
         super.onCreate();
 
-        mLocationRequestDelegate = new LocationRequestingDelegate(getApplicationContext(), LocationRequestingDelegate.createIntervalLocationRequest(), this, this);
+        mLocationRequestDelegate = new LocationRequestingDelegate(
+                getApplicationContext(),
+                LocationRequestingDelegate.createIntervalLocationRequest(),
+                this);
 
         locationPublishSubject = PublishSubject.create();
         locationChannel = locationPublishSubject.publish();
@@ -137,7 +138,10 @@ public class LocationListeningService extends Service implements LocationDataSou
     @Override
     public void onPermissionsRequired(String[] permissions) {
         try {
-            MainActivity.requestPermissions(this, permissions, Constants.ACTION_PERMISSIONS_REQUEST_RESULT).send();
+            MainActivity.requestPermissions(
+                    this,
+                    permissions,
+                    Constants.ACTION_PERMISSIONS_REQUEST_RESULT).send();
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -147,7 +151,10 @@ public class LocationListeningService extends Service implements LocationDataSou
     public void onSettingsResolutionRequired(LocationSettingsResult result) {
         Toast.makeText(this, R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();
         try {
-            MainActivity.requestSettings(this, result.getStatus(), Constants.ACTION_SETTINGS_REQUEST_RESULT).send();
+            MainActivity.requestSettings(
+                    this,
+                    result.getStatus(),
+                    Constants.ACTION_SETTINGS_REQUEST_RESULT).send();
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, e.getMessage(), e);
         }

@@ -52,9 +52,10 @@ public class SignUpView {
 
     /**
      * Shows validation error of input field.
+     *
      * @param inputLayout error container
-     * @param resId error string resource id
-     * @param context context
+     * @param resId       error string resource id
+     * @param context     context
      */
     public static void showValidationError(TextInputLayout inputLayout, @StringRes int resId, Context context) {
         inputLayout.setError(context.getString(resId));
@@ -62,6 +63,7 @@ public class SignUpView {
 
     /**
      * Hides validation error of input field.
+     *
      * @param inputLayout error container
      */
     public static void hideValidationError(TextInputLayout inputLayout) {
@@ -95,26 +97,26 @@ public class SignUpView {
     }
 
     public void showEmailValidationError(@StringRes int errorResId) {
-        showValidationError(emailInputLayout,errorResId,context);
+        showValidationError(emailInputLayout, errorResId, context);
     }
 
-    public void hideEmailValidationError(){
+    public void hideEmailValidationError() {
         hideValidationError(emailInputLayout);
     }
 
     public void showUserNamelValidationError(@StringRes int errorResId) {
-        showValidationError(usernameInputLayout,errorResId,context);
+        showValidationError(usernameInputLayout, errorResId, context);
     }
 
-    public void hideUserNamelValidationError(){
+    public void hideUserNamelValidationError() {
         hideValidationError(usernameInputLayout);
     }
 
     public void showPasswordValidationError(@StringRes int errorResId) {
-        showValidationError(passwordInputLayout,errorResId,context);
+        showValidationError(passwordInputLayout, errorResId, context);
     }
 
-    public void hidePasswordValidationError(){
+    public void hidePasswordValidationError() {
         hideValidationError(passwordInputLayout);
     }
 

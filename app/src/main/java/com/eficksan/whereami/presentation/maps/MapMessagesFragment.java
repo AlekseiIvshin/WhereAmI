@@ -45,7 +45,7 @@ public class MapMessagesFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         MapsComponent mapsComponent = ((App) getActivity().getApplication()).plusMapsComponent();
-        mMapMessagesView =new MapMessagesView();
+        mMapMessagesView = new MapMessagesView();
         mapsComponent.inject(mMapMessagesView);
         mMapMessagesView.takeView(view);
         mMapMessagesView.messagesMap.onCreate(savedInstanceState);
@@ -89,7 +89,7 @@ public class MapMessagesFragment extends Fragment {
     public void onDestroyView() {
         mMapMessagesPresenter.releaseRouter();
         mMapMessagesView.onDestroy();
-        ((App)getActivity().getApplication()).removeMapsComponent();
+        ((App) getActivity().getApplication()).removeMapsComponent();
         super.onDestroyView();
     }
 }

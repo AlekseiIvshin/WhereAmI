@@ -1,13 +1,10 @@
 package com.eficksan.whereami.data.location;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -22,15 +19,18 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
-import rx.Subscriber;
-import rx.Subscription;
-import rx.subjects.PublishSubject;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 /**
  * Created by Aleksei Ivshin
  * on 04.09.2016.
  */
-public class LocationRequestingDelegate implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
+public class LocationRequestingDelegate
+        implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        ResultCallback<LocationSettingsResult> {
 
     private static final String TAG = LocationRequestingDelegate.class.getSimpleName();
 
@@ -38,13 +38,11 @@ public class LocationRequestingDelegate implements GoogleApiClient.ConnectionCal
     public static final int LOCATION_REQUEST_FASTEST_INTERVAL = 5000;
     public static final float LOCATION_REQUEST_SMALLEST_DISPLACEMENT = 10f;
 
-    private final Context context;
+    private final Context mContext;
     private GoogleApiClient mGoogleApiClient;
     private final LocationRequest mLocationRequest;
-    private final DelegateCallback delegateCallback;
+    private final DelegateCallback mDelegateCallback;
     private boolean mIsRequestLocationOnStart = false;
-
-    private final LocationListener mLocationListener;
     private boolean mIsRequesting = false;
 
     public static LocationRequest createIntervalLocationRequest() {
@@ -57,15 +55,14 @@ public class LocationRequestingDelegate implements GoogleApiClient.ConnectionCal
         return request;
     }
 
-    public LocationRequestingDelegate(Context context, LocationRequest mLocationRequest, DelegateCallback delegateCallback, LocationListener locationListener) {
-        this.context = context;
-        this.mLocationRequest = mLocationRequest;
-        this.delegateCallback = delegateCallback;
-        this.mLocationListener = locationListener;
+    public LocationRequestingDelegate(Context context, LocationRequest locationRequest, DelegateCallback callback) {
+        this.mContext = context;
+        this.mLocationRequest = locationRequest;
+        this.mDelegateCallback = callback;
     }
 
     public void connect() {
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
+        mGoogleApiClient = new GoogleApiClient.Builder(mContext)
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)
                 .addOnConnectionFailedListener(this).build();
@@ -101,7 +98,7 @@ public class LocationRequestingDelegate implements GoogleApiClient.ConnectionCal
         Log.v(TAG, "Stop location request");
         if (mGoogleApiClient.isConnected()) {
             Log.v(TAG, "Location request stopped");
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mLocationListener);
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mDelegateCallback);
         }
     }
 
@@ -122,21 +119,20 @@ public class LocationRequestingDelegate implements GoogleApiClient.ConnectionCal
             case LocationSettingsStatusCodes.SUCCESS:
                 Log.v(TAG, "Location settings are satisfied");
                 Log.v(TAG, "Location requested: " + mLocationRequest.toString());
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    delegateCallback.onPermissionsRequired(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+                if (checkSelfPermission(mContext, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+                    mDelegateCallback.onPermissionsRequired(new String[]{ACCESS_FINE_LOCATION});
                     return;
                 }
                 LocationServices.FusedLocationApi
-                        .requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener);
+                        .requestLocationUpdates(mGoogleApiClient, mLocationRequest, mDelegateCallback);
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 Log.v(TAG, "Location settings require resolution");
-                delegateCallback.onSettingsResolutionRequired(result);
+                mDelegateCallback.onSettingsResolutionRequired(result);
                 break;
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.v(TAG, "Location settings change unavailable");
-                delegateCallback.onSettingsChangeUnavailable(result);
+                mDelegateCallback.onSettingsChangeUnavailable(result);
                 break;
         }
     }
@@ -164,19 +160,19 @@ public class LocationRequestingDelegate implements GoogleApiClient.ConnectionCal
 
     private void getLastLocationRequest() {
         Log.v(TAG, "Get last location");
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            delegateCallback.onPermissionsRequired(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+        if (checkSelfPermission(mContext, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+            mDelegateCallback.onPermissionsRequired(
+                    new String[]{ACCESS_FINE_LOCATION});
             return;
         }
-        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        Location lastLocation = LocationServices.FusedLocationApi
+                .getLastLocation(mGoogleApiClient);
 
         Log.v(TAG, "Last location is " + lastLocation);
-        mLocationListener.onLocationChanged(lastLocation);
+        mDelegateCallback.onLocationChanged(lastLocation);
     }
 
-    public interface DelegateCallback {
+    public interface DelegateCallback extends LocationListener {
 
         void onPermissionsRequired(String[] permissions);
 

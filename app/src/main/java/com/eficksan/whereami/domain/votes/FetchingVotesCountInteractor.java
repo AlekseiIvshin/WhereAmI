@@ -14,7 +14,9 @@ public class FetchingVotesCountInteractor extends BaseInteractor<String, Message
 
     private final VotesDataSource votesDataSource;
 
-    public FetchingVotesCountInteractor(VotesDataSource votesDataSource, Scheduler jobScheduler, Scheduler uiScheduler) {
+    public FetchingVotesCountInteractor(
+            VotesDataSource votesDataSource,
+            Scheduler jobScheduler, Scheduler uiScheduler) {
         super(jobScheduler, uiScheduler);
         this.votesDataSource = votesDataSource;
     }

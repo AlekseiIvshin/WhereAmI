@@ -37,7 +37,7 @@ public class PlacingMessageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       mMessagingComponent = ((App) getActivity().getApplication()).plusMessagingComponent();
+        mMessagingComponent = ((App) getActivity().getApplication()).plusMessagingComponent();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PlacingMessageFragment extends Fragment {
     public void onDestroy() {
         mPresenter.releaseRouter();
         mMessagingComponent = null;
-        ((App)getActivity().getApplication()).removeMessagingComponent();
+        ((App) getActivity().getApplication()).removeMessagingComponent();
         super.onDestroy();
     }
 }

@@ -21,7 +21,7 @@ public class ValidatingInteractorTest {
 
     @After
     public void tearDown() {
-        if (validatingInteractor!=null) {
+        if (validatingInteractor != null) {
             validatingInteractor.unsubscribe();
         }
     }

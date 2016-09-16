@@ -17,7 +17,10 @@ public class PlacingMessageInteractor extends BaseInteractor<PlacingMessage, Boo
     private final MessagesDataSource messagesDataSource;
     private final FirebaseAuth firebaseAuth;
 
-    public PlacingMessageInteractor(MessagesDataSource messagesDataSource, FirebaseAuth firebaseAuth, Scheduler uiScheduler, Scheduler jobScheduler) {
+    public PlacingMessageInteractor(
+            MessagesDataSource messagesDataSource,
+            FirebaseAuth firebaseAuth,
+            Scheduler uiScheduler, Scheduler jobScheduler) {
         super(jobScheduler, uiScheduler);
         this.messagesDataSource = messagesDataSource;
         this.firebaseAuth = firebaseAuth;
@@ -26,7 +29,7 @@ public class PlacingMessageInteractor extends BaseInteractor<PlacingMessage, Boo
     @Override
     protected Observable<Boolean> buildObservable(final PlacingMessage message) {
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        if (currentUser==null) {
+        if (currentUser == null) {
             return Observable.error(new IllegalArgumentException("There is not authenticated user"));
         }
         return messagesDataSource.addMessage(message, currentUser.getUid());

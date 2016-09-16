@@ -3,7 +3,7 @@ package com.eficksan.whereami.data.messages;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
- * POJO for creating message
+ * POJO for creating message.
  */
 @IgnoreExtraProperties
 public class PlacingMessage {
@@ -14,7 +14,8 @@ public class PlacingMessage {
     public String message;
     public String userId;
 
-    public PlacingMessage() {}
+    public PlacingMessage() {
+    }
 
     public PlacingMessage(double latitude, double longitude, String message) {
         this.latitude = latitude;

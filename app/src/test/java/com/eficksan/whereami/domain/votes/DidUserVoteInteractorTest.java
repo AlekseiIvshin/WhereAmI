@@ -74,13 +74,14 @@ public class DidUserVoteInteractorTest {
         final Boolean userVote = false;
 
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
-        when(mockVotesDataSource.fetchUserMessageVote(anyString(), anyString())).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
-                subscriber.onNext(userVote);
-                subscriber.onCompleted();
-            }
-        }));
+        when(mockVotesDataSource.fetchUserMessageVote(anyString(), anyString()))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
+                    @Override
+                    public void call(Subscriber<? super Boolean> subscriber) {
+                        subscriber.onNext(userVote);
+                        subscriber.onCompleted();
+                    }
+                }));
 
         // When
         interactor.execute(messageId, testSubscriber);
@@ -98,13 +99,14 @@ public class DidUserVoteInteractorTest {
         final Boolean userVote = null;
 
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
-        when(mockVotesDataSource.fetchUserMessageVote(anyString(), anyString())).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
-                subscriber.onNext(userVote);
-                subscriber.onCompleted();
-            }
-        }));
+        when(mockVotesDataSource.fetchUserMessageVote(anyString(), anyString()))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
+                    @Override
+                    public void call(Subscriber<? super Boolean> subscriber) {
+                        subscriber.onNext(userVote);
+                        subscriber.onCompleted();
+                    }
+                }));
 
         // When
         interactor.execute(messageId, testSubscriber);

@@ -45,7 +45,7 @@ public class SignUpFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mAuthComponent = ((App)getActivity().getApplication()).plusAuthComponent();
+        mAuthComponent = ((App) getActivity().getApplication()).plusAuthComponent();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class SignUpFragment extends Fragment {
         mAuthComponent.inject(signUpView);
 
         mPresenter = new SignUpPresenter();
-        mPresenter.takeRouter((Router)getActivity());
+        mPresenter.takeRouter((Router) getActivity());
         mPresenter.setView(signUpView);
         mAuthComponent.inject(mPresenter);
     }
@@ -83,7 +83,7 @@ public class SignUpFragment extends Fragment {
     @Override
     public void onDetach() {
         mPresenter.releaseRouter();
-        ((App)getActivity().getApplication()).removeAuthComponent();
+        ((App) getActivity().getApplication()).removeAuthComponent();
         super.onDetach();
     }
 }

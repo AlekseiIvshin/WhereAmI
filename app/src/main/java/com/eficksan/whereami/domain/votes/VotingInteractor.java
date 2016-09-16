@@ -15,7 +15,10 @@ public class VotingInteractor extends BaseInteractor<Vote, Boolean> {
     private final VotesDataSource votesRepository;
     private final String userId;
 
-    public VotingInteractor(VotesDataSource votesRepository, String userId, Scheduler jobScheduler, Scheduler uiScheduler) {
+    public VotingInteractor(
+            VotesDataSource votesRepository,
+            String userId,
+            Scheduler jobScheduler, Scheduler uiScheduler) {
         super(jobScheduler, uiScheduler);
         this.votesRepository = votesRepository;
         this.userId = userId;

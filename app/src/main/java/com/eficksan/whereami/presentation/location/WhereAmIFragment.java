@@ -43,7 +43,7 @@ public class WhereAmIFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLocationComponent = ((App)getActivity().getApplication()).plusLocationComponent();
+        mLocationComponent = ((App) getActivity().getApplication()).plusLocationComponent();
         mLocationComponent.inject(this);
     }
 

@@ -26,7 +26,7 @@ public class LocationListeningInteractor {
     private final Context mContext;
 
     private boolean mIsServiceConnected = false;
-    private boolean mIsNeedRequestLocation =true;
+    private boolean mIsNeedRequestLocation = true;
 
     private LocationDataSource locationDataSource;
     private Subscriber<Location> mLocationSubscriber;
@@ -73,7 +73,10 @@ public class LocationListeningInteractor {
     private void bindLocationRequestingService() {
         Log.v(TAG, "bindLocationRequestingService");
         mIsNeedRequestLocation = true;
-        mContext.bindService(LocationListeningService.startTrackLocation(mContext), mLocationServiceConnection, Context.BIND_AUTO_CREATE);
+        mContext.bindService(
+                LocationListeningService.startTrackLocation(mContext),
+                mLocationServiceConnection,
+                Context.BIND_AUTO_CREATE);
     }
 
     /**

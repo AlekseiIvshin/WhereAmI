@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
  */
 public class MessageDetailsPresenterTest {
 
-    static String MESSAGE_ID = "messageId";
+    public static String messageId = "messageId";
 
     FindUserInteractor mockFindUserInteractor;
 
@@ -54,7 +54,12 @@ public class MessageDetailsPresenterTest {
         mockDidUserVoteInteractor = mock(DidUserVoteInteractor.class);
         mockVotingInteractor = mock(VotingInteractor.class);
         mockVotesCountInteractor = mock(FetchingVotesCountInteractor.class);
-        presenter = new MessageDetailsPresenter(mockFindUserInteractor, mockFindMessageInteractor, mockDidUserVoteInteractor, mockVotingInteractor, mockVotesCountInteractor);
+        presenter = new MessageDetailsPresenter(
+                mockFindUserInteractor,
+                mockFindMessageInteractor,
+                mockDidUserVoteInteractor,
+                mockVotingInteractor,
+                mockVotesCountInteractor);
 
         mockView = mock(MessageDetailsView.class);
         when(mockView.getVotingForClickEvents()).thenReturn(Observable.<Void>empty());
@@ -71,7 +76,7 @@ public class MessageDetailsPresenterTest {
     @Test
     public void shouldSubscribeOnClickEvents() {
         // When
-        presenter.onCreate(MESSAGE_ID);
+        presenter.onCreate(messageId);
 
         // Then
         verify(mockView, times(1)).getVotingForClickEvents();
@@ -84,7 +89,7 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockFindMessageInteractor).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
 
         // When
-        presenter.onCreate(MESSAGE_ID);
+        presenter.onCreate(messageId);
 
         // Then
         verify(mockFindMessageInteractor, times(1)).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
@@ -106,7 +111,7 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockView).showMessage(any(PlacingMessage.class));
 
         // When
-        presenter.onCreate(MESSAGE_ID);
+        presenter.onCreate(messageId);
 
         // Then
         verify(mockFindMessageInteractor, times(1)).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
@@ -128,7 +133,7 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockView).showMessage(any(PlacingMessage.class));
 
         // When
-        presenter.onCreate(MESSAGE_ID);
+        presenter.onCreate(messageId);
 
         // Then
         verify(mockFindMessageInteractor, times(1)).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
@@ -142,7 +147,7 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockFindMessageInteractor).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
 
         // When
-        presenter.onCreate(MESSAGE_ID);
+        presenter.onCreate(messageId);
         presenter.onDestroy();
 
         // Then

@@ -84,7 +84,8 @@ public class PlacingMessagePresenter extends BasePresenter implements View.OnCli
                             placingMessageView.hideMessageValidationError();
                             placingMessageView.setEnableSendMessage(true);
                         } else {
-                            placingMessageView.showMessageValidationError(R.string.error_placing_message_message_invalid);
+                            placingMessageView.showMessageValidationError(
+                                    R.string.error_placing_message_message_invalid);
                             placingMessageView.setEnableSendMessage(false);
                         }
                     }
@@ -103,7 +104,10 @@ public class PlacingMessagePresenter extends BasePresenter implements View.OnCli
             }
             placingMessageView.setEnableSendMessage(false);
             final String message = PlacingMessagePresenter.this.placingMessageView.messageInput.getText().toString();
-            PlacingMessage placingMessage = new PlacingMessage(mMessageLocation.getLatitude(), mMessageLocation.getLongitude(), message);
+            PlacingMessage placingMessage = new PlacingMessage(
+                    mMessageLocation.getLatitude(),
+                    mMessageLocation.getLongitude(),
+                    message);
             placingMessageInteractor.execute(placingMessage, new Subscriber<Boolean>() {
                 @Override
                 public void onCompleted() {

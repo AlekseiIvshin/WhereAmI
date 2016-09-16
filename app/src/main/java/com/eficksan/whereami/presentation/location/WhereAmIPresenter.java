@@ -35,7 +35,10 @@ public class WhereAmIPresenter extends BasePresenter {
     private Location mLastLocation = null;
     private Subscription mCreateMessageListener;
 
-    public WhereAmIPresenter(ForegroundServiceInteractor foregroundServiceInteractor, LocationListeningInteractor locationListeningInteractor, AddressFetchingInteractor addressFetchingInteractor) {
+    public WhereAmIPresenter(
+            ForegroundServiceInteractor foregroundServiceInteractor,
+            LocationListeningInteractor locationListeningInteractor,
+            AddressFetchingInteractor addressFetchingInteractor) {
         this.mForegroundServiceInteractor = foregroundServiceInteractor;
         this.mLocationListeningInteractor = locationListeningInteractor;
         this.mAddressFetchingInteractor = addressFetchingInteractor;
@@ -146,7 +149,7 @@ public class WhereAmIPresenter extends BasePresenter {
     /**
      * Listens address changes.
      */
-    private class AddressSubscriber extends Subscriber<Address>{
+    private class AddressSubscriber extends Subscriber<Address> {
         @Override
         public void onCompleted() {
             mAddressFetchingInteractor.unsubscribe();

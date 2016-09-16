@@ -23,7 +23,9 @@ public class MessageValidatorTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {"Simple message", true},
-                {"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer eget nisi aliquam, pretium erat non, gravida lorem. Maecenas vestibulum dignissim.", false}, // too long
+                {"Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                        + "Integer eget nisi aliquam, pretium erat non, "
+                        + "gravida lorem. Maecenas vestibulum dignissim.", false}, // too long
                 {"", false}, // empty
         });
     }

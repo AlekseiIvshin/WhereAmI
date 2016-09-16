@@ -17,7 +17,10 @@ public class DidUserVoteInteractor extends BaseInteractor<String, Boolean> {
     private final VotesDataSource dataSource;
     private final String userId;
 
-    public DidUserVoteInteractor(VotesDataSource dataSource, @NonNull String userId, Scheduler jobScheduler, Scheduler uiScheduler) {
+    public DidUserVoteInteractor(
+            VotesDataSource dataSource,
+            @NonNull String userId,
+            Scheduler jobScheduler, Scheduler uiScheduler) {
         super(jobScheduler, uiScheduler);
         this.dataSource = dataSource;
         this.userId = userId;

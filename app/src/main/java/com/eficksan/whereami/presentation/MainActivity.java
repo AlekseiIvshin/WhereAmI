@@ -50,9 +50,11 @@ public class MainActivity extends AppCompatActivity implements Router {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String ACTION_SHOW_SCREEN = MainActivity.class.getPackage().getName() + "/ACTION_SHOW_SCREEN";
-    private static final String ACTION_REQUEST_PERMISSIONS = MainActivity.class.getPackage().getName() + "/ACTION_PERMISSIONS_REQUEST_RESULT";
+    private static final String ACTION_REQUEST_PERMISSIONS =
+            MainActivity.class.getPackage().getName() + "/ACTION_PERMISSIONS_REQUEST_RESULT";
 
-    private static final String ACTION_REQUEST_SETTINGS = MainActivity.class.getPackage().getName() + "/ACTION_SETTINGS_REQUEST_RESULT";
+    private static final String ACTION_REQUEST_SETTINGS =
+            MainActivity.class.getPackage().getName() + "/ACTION_SETTINGS_REQUEST_RESULT";
 
     private static final String EXTRA_REQUESTED_PERMISSIONS = "EXTRA_REQUESTED_PERMISSIONS";
     private static final String EXTRA_SCREEN_KEY = "EXTRA_SCREEN_KEY";
@@ -270,7 +272,9 @@ public class MainActivity extends AppCompatActivity implements Router {
 
     @Override
     public void showScreen(int nextScreenKey, Bundle args) {
-        Log.v(TAG, String.format("Show screen: current screen key = %d, next screen key = %d", mCurrentScreenKey, nextScreenKey));
+        Log.v(TAG,
+                String.format("Show screen: current screen key = %d, next screen key = %d",
+                        mCurrentScreenKey, nextScreenKey));
         if (mCurrentScreenKey == nextScreenKey) {
             return;
         }
@@ -279,19 +283,17 @@ public class MainActivity extends AppCompatActivity implements Router {
             mCurrentScreenArgs = args;
         }
         switch (nextScreenKey) {
-            case Screens.MESSAGING_SCREEN: {
+            case Screens.MESSAGING_SCREEN:
                 mFirebaseAnalytics.logEvent("show_screen_messaging", Bundle.EMPTY);
                 Location location = args.getParcelable(Constants.EXTRA_LOCATION_DATA);
                 replaceFragment(PlacingMessageFragment.newInstance(location), PlacingMessageFragment.TAG, true);
                 break;
-            }
-            case Screens.MAPS_SCREEN: {
+            case Screens.MAPS_SCREEN:
                 mFirebaseAnalytics.logEvent("show_screen_maps", Bundle.EMPTY);
                 if (!getSupportFragmentManager().popBackStackImmediate(MapMessagesFragment.TAG, 0)) {
                     replaceFragment(MapMessagesFragment.newInstance(), MapMessagesFragment.TAG, true);
                 }
                 break;
-            }
             case Screens.LOCATION_SCREEN:
                 mFirebaseAnalytics.logEvent("show_screen_where_am_i", Bundle.EMPTY);
                 if (!getSupportFragmentManager().popBackStackImmediate(WhereAmIFragment.TAG, 0)) {
@@ -306,14 +308,12 @@ public class MainActivity extends AppCompatActivity implements Router {
                 mFirebaseAnalytics.logEvent("show_screen_sign_up", Bundle.EMPTY);
                 replaceFragment(SignUpFragment.newInstance(), SignUpFragment.TAG, false);
                 break;
-            case Screens.MESSAGE_DETAILS: {
+            case Screens.MESSAGE_DETAILS:
                 mFirebaseAnalytics.logEvent("show_screen_message_details", Bundle.EMPTY);
                 String messageId = args.getString(Constants.EXTRA_MESSAGE_ID);
                 MessageDetailsFragment fragment = MessageDetailsFragment.newInstance(messageId);
                 fragment.show(getSupportFragmentManager(), MessageDetailsFragment.TAG);
                 break;
-            }
-
         }
     }
 
@@ -335,17 +335,20 @@ public class MainActivity extends AppCompatActivity implements Router {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_LOCATION_PERMISSION: {
+            case REQUEST_LOCATION_PERMISSION:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getIntent().getStringExtra(EXTRA_NOTIFICATION_ACTION)));
+                    LocalBroadcastManager.getInstance(this)
+                            .sendBroadcast(new Intent(getIntent().getStringExtra(EXTRA_NOTIFICATION_ACTION)));
                 } else {
                     Toast.makeText(this, R.string.permission_was_not_granted, Toast.LENGTH_SHORT).show();
                 }
-            }
         }
     }
 
@@ -357,7 +360,8 @@ public class MainActivity extends AppCompatActivity implements Router {
             switch (resultCode) {
                 case RESULT_OK:
                     Toast.makeText(this, R.string.settings_satisfied, Toast.LENGTH_SHORT).show();
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getIntent().getStringExtra(EXTRA_NOTIFICATION_ACTION)));
+                    LocalBroadcastManager.getInstance(this)
+                            .sendBroadcast(new Intent(getIntent().getStringExtra(EXTRA_NOTIFICATION_ACTION)));
                     break;
                 case RESULT_CANCELED:
                     Toast.makeText(this, R.string.settings_not_satisfied, Toast.LENGTH_SHORT).show();
@@ -415,7 +419,10 @@ public class MainActivity extends AppCompatActivity implements Router {
                 return true;
             }
         });
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout, toolbar,
+                R.string.openDrawer, R.string.closeDrawer);
         mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -3,7 +3,6 @@ package com.eficksan.whereami.ioc.maps;
 import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.ioc.common.LocationModule;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
-import com.eficksan.whereami.ioc.message.MessageScreenModule;
 import com.eficksan.whereami.presentation.maps.MapMessagesPresenter;
 import com.eficksan.whereami.presentation.maps.MapMessagesView;
 

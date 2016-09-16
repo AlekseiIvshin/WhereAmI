@@ -17,8 +17,10 @@ public class MessagesFetchingInteractor extends BaseInteractor<LatLng, List<Plac
 
     private final MessagesDataSource messagesDataSource;
 
-    public MessagesFetchingInteractor(MessagesDataSource messagesDataSource, Scheduler jobScheduler, Scheduler uiScheduler) {
-        super(jobScheduler,uiScheduler);
+    public MessagesFetchingInteractor(
+            MessagesDataSource messagesDataSource,
+            Scheduler jobScheduler, Scheduler uiScheduler) {
+        super(jobScheduler, uiScheduler);
         this.messagesDataSource = messagesDataSource;
     }
 

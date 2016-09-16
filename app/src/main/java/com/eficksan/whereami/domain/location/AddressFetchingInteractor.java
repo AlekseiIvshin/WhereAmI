@@ -17,7 +17,7 @@ import rx.schedulers.Schedulers;
 
 /**
  * Interactor for listening current location.
- * <p>
+ * <p/>
  * Created by Aleksei Ivshin
  * on 22.08.2016.
  */
@@ -39,7 +39,7 @@ public class AddressFetchingInteractor extends BaseInteractor<Location, Address>
                 .map(new Func1<Location, Address>() {
                     @Override
                     public Address call(Location location) {
-                        if(location == null) {
+                        if (location == null) {
                             return null;
                         }
                         List<Address> addressList = null;

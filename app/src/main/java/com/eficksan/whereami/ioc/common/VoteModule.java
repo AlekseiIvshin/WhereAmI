@@ -4,7 +4,6 @@ import com.eficksan.whereami.data.votes.VotesDataSource;
 import com.eficksan.whereami.domain.votes.DidUserVoteInteractor;
 import com.eficksan.whereami.domain.votes.FetchingVotesCountInteractor;
 import com.eficksan.whereami.domain.votes.VotingInteractor;
-import com.eficksan.whereami.ioc.fragments.FragmentScope;
 
 import javax.inject.Named;
 
@@ -20,17 +19,25 @@ import rx.Scheduler;
 public class VoteModule {
 
     @Provides
-    public DidUserVoteInteractor provideDidUserVoteInteractor(VotesDataSource votesDataSource, @Named("currentUserId") String userId, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+    public DidUserVoteInteractor provideDidUserVoteInteractor(
+            VotesDataSource votesDataSource,
+            @Named("currentUserId") String userId,
+            @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new DidUserVoteInteractor(votesDataSource, userId, jobScheduler, uiScheduler);
     }
 
     @Provides
-    public VotingInteractor provideVotingInteractor(VotesDataSource votesRepository, @Named("currentUserId") String userId, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+    public VotingInteractor provideVotingInteractor(
+            VotesDataSource votesRepository,
+            @Named("currentUserId") String userId,
+            @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new VotingInteractor(votesRepository, userId, jobScheduler, uiScheduler);
     }
 
     @Provides
-    public FetchingVotesCountInteractor provideFetchingVotesCountInteractor(VotesDataSource votesDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+    public FetchingVotesCountInteractor provideFetchingVotesCountInteractor(
+            VotesDataSource votesDataSource,
+            @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new FetchingVotesCountInteractor(votesDataSource, jobScheduler, uiScheduler);
     }
 }

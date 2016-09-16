@@ -24,12 +24,15 @@ import rx.functions.Func1;
 public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
 
     private final FirebaseAuth mFirebaseAuth;
-    private final UsersDataSource usersDataSource;
+    private final UsersDataSource mUsersDataSource;
 
-    public SignUpInteractor(FirebaseAuth mFirebaseAuth, UsersDataSource usersDataSource, Scheduler jobScheduler, Scheduler uiScheduler) {
-        super(jobScheduler,uiScheduler);
-        this.mFirebaseAuth = mFirebaseAuth;
-        this.usersDataSource = usersDataSource;
+    public SignUpInteractor(
+            FirebaseAuth firebaseAuth,
+            UsersDataSource usersDataSource,
+            Scheduler jobScheduler, Scheduler uiScheduler) {
+        super(jobScheduler, uiScheduler);
+        this.mFirebaseAuth = firebaseAuth;
+        this.mUsersDataSource = usersDataSource;
     }
 
     @Override
@@ -39,7 +42,9 @@ public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
                 .map(new Func1<SignUpData, Task<AuthResult>>() {
                     @Override
                     public Task<AuthResult> call(SignUpData signUpData) {
-                        return mFirebaseAuth.createUserWithEmailAndPassword(signUpData.email, signUpData.password);
+                        return mFirebaseAuth.createUserWithEmailAndPassword(
+                                signUpData.email,
+                                signUpData.password);
                     }
                 })
                 .map(new Func1<Task<AuthResult>, Boolean>() {
@@ -64,7 +69,7 @@ public class SignUpInteractor extends BaseInteractor<SignUpData, Boolean> {
                                     .build();
                             assert user != null;
                             user.updateProfile(profileUpdates);
-                            return usersDataSource.setCurrentUserName(user.getUid(), parameter.userName);
+                            return mUsersDataSource.setCurrentUserName(user.getUid(), parameter.userName);
                         }
                         return Observable.just(false);
                     }

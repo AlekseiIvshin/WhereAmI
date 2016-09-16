@@ -71,7 +71,9 @@ public class MapMessagesPresenter extends BasePresenter implements MapMessagesVi
         public void onNext(Location location) {
             if (location != null) {
                 mMapMessagesView.moveMapTo(location);
-                messagesFetchingInteractor.execute(new LatLng(location.getLatitude(), location.getLongitude()), new MessagesSubscriber());
+                messagesFetchingInteractor.execute(
+                        new LatLng(location.getLatitude(), location.getLongitude()),
+                        new MessagesSubscriber());
             }
         }
     }

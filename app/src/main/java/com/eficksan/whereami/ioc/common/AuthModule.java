@@ -7,9 +7,6 @@ import com.eficksan.whereami.domain.auth.SignInInteractor;
 import com.eficksan.whereami.domain.auth.SignUpInteractor;
 import com.eficksan.whereami.domain.auth.UserNameValidator;
 import com.eficksan.whereami.domain.auth.ValidatingInteractor;
-import com.eficksan.whereami.ioc.fragments.FragmentScope;
-import com.eficksan.whereami.presentation.auth.signin.SignInPresenter;
-import com.eficksan.whereami.presentation.auth.signin.SignInView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import javax.inject.Named;
@@ -46,7 +43,10 @@ public class AuthModule {
     }
 
     @Provides
-    public SignUpInteractor provideSignUpInteractor(FirebaseAuth firebaseAuth, UsersDataSource usersDataSource, @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
+    public SignUpInteractor provideSignUpInteractor(
+            FirebaseAuth firebaseAuth,
+            UsersDataSource usersDataSource,
+            @Named("job") Scheduler jobScheduler, @Named("ui") Scheduler uiScheduler) {
         return new SignUpInteractor(firebaseAuth, usersDataSource, jobScheduler, uiScheduler);
     }
 

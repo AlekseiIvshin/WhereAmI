@@ -54,7 +54,7 @@ public class SignUpPresenter extends BasePresenter implements View.OnClickListen
                     @Override
                     public void call(CharSequence charSequence) {
                         if (charSequence.length() > 0) {
-                            mIsEmailValid  =emailValidator.validate(charSequence.toString());
+                            mIsEmailValid = emailValidator.validate(charSequence.toString());
                             if (mIsEmailValid) {
                                 mView.hideEmailValidationError();
                             } else {
@@ -99,11 +99,14 @@ public class SignUpPresenter extends BasePresenter implements View.OnClickListen
                     @Override
                     public void call(CharSequence charSequence) {
                         if (charSequence.length() > 0) {
-                            mIsPasswordConfirmationSame = Objects.equals(mView.passwordInput.getText().toString(), mView.passwordConfirmInput.getText().toString());
+                            mIsPasswordConfirmationSame = Objects.equals(
+                                    mView.passwordInput.getText().toString(),
+                                    mView.passwordConfirmInput.getText().toString());
                             if (mIsPasswordConfirmationSame) {
                                 mView.hidePasswordConfirmationError();
                             } else {
-                                mView.showPasswordConfirmationError(R.string.error_auth_password_confirmation_is_not_equal);
+                                mView.showPasswordConfirmationError(
+                                        R.string.error_auth_password_confirmation_is_not_equal);
                             }
                             updateSignUpEnable();
                         }

@@ -57,6 +57,11 @@ public class EmailValidatorTest {
         boolean actualResult = mEmailValidator.validate(testEmail);
 
         // When
-        assertEquals(String.format("Email '%s' expected is valid = %b, but it is valid = %b", testEmail, testExpectedResult, actualResult), testExpectedResult, actualResult);
+        assertEquals(
+                String.format(
+                        "Email '%s' expected is valid = %b, but it is valid = %b",
+                        testEmail, testExpectedResult, actualResult),
+                testExpectedResult,
+                actualResult);
     }
 }

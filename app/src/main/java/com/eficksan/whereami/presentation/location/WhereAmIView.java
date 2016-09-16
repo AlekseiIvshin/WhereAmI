@@ -85,7 +85,8 @@ public class WhereAmIView {
      */
     public void onLocationChanged(Location location) {
         if (location != null) {
-            locationCoordinates.setText(context.getString(R.string.label_coordinates, location.getLatitude(), location.getLongitude()));
+            locationCoordinates.setText(
+                    context.getString(R.string.label_coordinates, location.getLatitude(), location.getLongitude()));
         } else {
             locationCoordinates.setText(R.string.location_not_available);
         }

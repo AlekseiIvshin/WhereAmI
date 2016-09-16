@@ -15,7 +15,9 @@ import dagger.Component;
  * on 28.08.2016.
  */
 @FragmentScope
-@Component(dependencies = AppComponent.class, modules = {MessageScreenModule.class, VoteModule.class, MessagesModule.class, UsersModule.class})
+@Component(
+        dependencies = AppComponent.class,
+        modules = {MessageScreenModule.class, VoteModule.class, MessagesModule.class, UsersModule.class})
 public interface MessageComponent {
 
     void inject(MessageDetailsPresenter mPresenter);

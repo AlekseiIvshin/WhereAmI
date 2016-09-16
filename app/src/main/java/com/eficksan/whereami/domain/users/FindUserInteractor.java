@@ -15,7 +15,7 @@ public class FindUserInteractor extends BaseInteractor<String, User> {
     private final UsersDataSource usersDataSource;
 
     public FindUserInteractor(UsersDataSource usersDataSource, Scheduler jobScheduler, Scheduler uiScheduler) {
-        super(jobScheduler,uiScheduler);
+        super(jobScheduler, uiScheduler);
         this.usersDataSource = usersDataSource;
     }
 

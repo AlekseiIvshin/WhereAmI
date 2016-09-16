@@ -134,7 +134,12 @@ public class MessageDetailsPresenter {
     };
 
     @Inject
-    public MessageDetailsPresenter(FindUserInteractor findUserInteractor, FindMessageInteractor findMessageInteractor, DidUserVoteInteractor didUserVoteInteractor, VotingInteractor votingInteractor, FetchingVotesCountInteractor votesCountInteractor) {
+    public MessageDetailsPresenter(
+            FindUserInteractor findUserInteractor,
+            FindMessageInteractor findMessageInteractor,
+            DidUserVoteInteractor didUserVoteInteractor,
+            VotingInteractor votingInteractor,
+            FetchingVotesCountInteractor votesCountInteractor) {
         this.findUserInteractor = findUserInteractor;
         this.findMessageInteractor = findMessageInteractor;
         this.didUserVoteInteractor = didUserVoteInteractor;

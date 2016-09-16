@@ -15,7 +15,7 @@ public class FindMessageInteractor extends BaseInteractor<String, PlacingMessage
     private final MessagesDataSource messagesDataSource;
 
     public FindMessageInteractor(MessagesDataSource messagesDataSource, Scheduler jobScheduler, Scheduler uiScheduler) {
-        super(jobScheduler,uiScheduler);
+        super(jobScheduler, uiScheduler);
         this.messagesDataSource = messagesDataSource;
     }
 

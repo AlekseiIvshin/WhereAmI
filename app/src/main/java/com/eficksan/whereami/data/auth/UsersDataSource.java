@@ -25,7 +25,7 @@ public class UsersDataSource {
     }
 
     /**
-     * Search user by id
+     * Search user by id.
      *
      * @param userId user id
      */
@@ -34,19 +34,22 @@ public class UsersDataSource {
             @Override
             public void call(final Subscriber<? super User> subscriber) {
                 if (!subscriber.isUnsubscribed()) {
-                    mDatabase.getReference().child(DB_USERS).child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.v(TAG, "Found user with id = " + userId);
-                            subscriber.onNext(dataSnapshot.getValue(User.class));
-                            subscriber.onCompleted();
-                        }
+                    mDatabase.getReference()
+                            .child(DB_USERS)
+                            .child(userId)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Log.v(TAG, "Found user with id = " + userId);
+                                    subscriber.onNext(dataSnapshot.getValue(User.class));
+                                    subscriber.onCompleted();
+                                }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            subscriber.onError(databaseError.toException());
-                        }
-                    });
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    subscriber.onError(databaseError.toException());
+                                }
+                            });
                 }
             }
         });

@@ -51,13 +51,14 @@ public class VotingInteractorTest {
         vote.isVotedFor = true;
         vote.messageId = "messageId";
 
-        when(mockVotesRepository.voteMessage(anyString(), anyString(), anyBoolean())).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
-                subscriber.onNext(true);
-                subscriber.onCompleted();
-            }
-        }));
+        when(mockVotesRepository.voteMessage(anyString(), anyString(), anyBoolean()))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
+                    @Override
+                    public void call(Subscriber<? super Boolean> subscriber) {
+                        subscriber.onNext(true);
+                        subscriber.onCompleted();
+                    }
+                }));
 
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
 
@@ -78,13 +79,14 @@ public class VotingInteractorTest {
         vote.isVotedFor = false;
         vote.messageId = "messageId";
 
-        when(mockVotesRepository.voteMessage(anyString(), anyString(), anyBoolean())).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
-                subscriber.onNext(false);
-                subscriber.onCompleted();
-            }
-        }));
+        when(mockVotesRepository.voteMessage(anyString(), anyString(), anyBoolean()))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
+                    @Override
+                    public void call(Subscriber<? super Boolean> subscriber) {
+                        subscriber.onNext(false);
+                        subscriber.onCompleted();
+                    }
+                }));
 
         TestSubscriber<Boolean> testSubscriber = new TestSubscriber<>();
 

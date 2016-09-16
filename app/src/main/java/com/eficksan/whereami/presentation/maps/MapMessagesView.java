@@ -98,7 +98,7 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
     public boolean onMarkerClick(Marker marker) {
         Log.v(TAG, "On marker click");
         Object markerTag = marker.getTag();
-        if (markerTag!=null && markerTag instanceof String) {
+        if (markerTag != null && markerTag instanceof String) {
             String messageId = String.valueOf(marker.getTag());
             Log.v(TAG, "Marker has message id = " + messageId);
             if (messageId != null && mMessageClickListener != null) {

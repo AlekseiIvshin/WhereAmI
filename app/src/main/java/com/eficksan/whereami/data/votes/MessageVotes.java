@@ -15,13 +15,16 @@ public class MessageVotes {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MessageVotes that = (MessageVotes) o;
 
-        if (votesFor != that.votesFor) return false;
-        return votesAgainst == that.votesAgainst;
+        return votesFor == that.votesFor && votesAgainst == that.votesAgainst;
 
     }
 

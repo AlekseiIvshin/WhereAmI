@@ -47,9 +47,9 @@ public class MessageDetailsView {
     }
 
 
-    public void showMessage(PlacingMessage placingMessage) {
-        location.setText(String.format(Locale.getDefault(), "%fx%f", placingMessage.latitude, placingMessage.longitude));
-        text.setText(placingMessage.message);
+    public void showMessage(PlacingMessage message) {
+        location.setText(String.format(Locale.getDefault(), "%fx%f", message.latitude, message.longitude));
+        text.setText(message.message);
     }
 
     /**
