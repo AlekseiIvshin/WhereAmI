@@ -22,13 +22,12 @@ public class PlaceMessagingScreenModule {
     @FragmentScope
     public PlacingMessagePresenter providePlacingMessagePresenter(
             PlacingMessageInteractor placingMessageInteractor,
-            PlaceMessageValidator placeMessageValidator,
-            Context context) {
-        return new PlacingMessagePresenter(placingMessageInteractor, placeMessageValidator, context);
+            PlaceMessageValidator placeMessageValidator) {
+        return new PlacingMessagePresenter(placingMessageInteractor, placeMessageValidator);
     }
 
     @Provides
-    public PlacingMessageView providePlacingMessageView() {
-        return new PlacingMessageView();
+    public PlacingMessageView providePlacingMessageView(Context context) {
+        return new PlacingMessageView(context);
     }
 }

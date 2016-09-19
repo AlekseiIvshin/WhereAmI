@@ -58,15 +58,11 @@ public class PlacingMessageFragment extends ComponentLifecycleFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Location mMessageLocation = getArguments().getParcelable(Constants.EXTRA_LOCATION_DATA);
+        mPresenter.setLocation(mMessageLocation);
+
         placingMessageView.takeView(view);
         mPresenter.onViewCreated(placingMessageView);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Location mMessageLocation = getArguments().getParcelable(Constants.EXTRA_LOCATION_DATA);
-        mPresenter.onStart(mMessageLocation);
     }
 
     @Override

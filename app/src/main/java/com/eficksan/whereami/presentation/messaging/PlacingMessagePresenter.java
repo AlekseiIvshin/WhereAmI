@@ -1,9 +1,6 @@
 package com.eficksan.whereami.presentation.messaging;
 
-import android.content.Context;
 import android.location.Location;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.messages.PlacingMessage;
@@ -11,10 +8,10 @@ import com.eficksan.whereami.domain.messages.PlaceMessageValidator;
 import com.eficksan.whereami.domain.messages.PlacingMessageInteractor;
 import com.eficksan.whereami.presentation.common.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
-import com.jakewharton.rxbinding.widget.RxTextView;
 
 import rx.Subscriber;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Messaging presenter component.
@@ -23,45 +20,36 @@ import rx.functions.Action1;
  * Created by Aleksei Ivshin
  * on 24.08.2016.
  */
-public class PlacingMessagePresenter extends BasePresenter<PlacingMessageView> implements View.OnClickListener {
+public class PlacingMessagePresenter extends BasePresenter<PlacingMessageView> {
 
     private final PlacingMessageInteractor placingMessageInteractor;
     private final PlaceMessageValidator placeMessageValidator;
-    private final Context context;
+
+    private boolean mIsMessageValid;
+    private String mMessage = "";
 
     private Location mMessageLocation;
 
     public PlacingMessagePresenter(
             PlacingMessageInteractor placingMessageInteractor,
-            PlaceMessageValidator placeMessageValidator,
-            Context context) {
+            PlaceMessageValidator placeMessageValidator) {
         this.placingMessageInteractor = placingMessageInteractor;
         this.placeMessageValidator = placeMessageValidator;
-        this.context = context;
     }
 
-    /**
-     * On start presentation.
-     *
-     * @param messageLocation current location, message will be created using this location
-     */
-    public void onStart(Location messageLocation) {
-        this.mMessageLocation = messageLocation;
+    @Override
+    public void onViewCreated(PlacingMessageView view) {
+        super.onViewCreated(view);
         setListeners();
-        mView.messageInput.requestFocus();
-
-        InputMethodManager keyboard = (InputMethodManager)
-                context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        keyboard.showSoftInput(mView.messageInput, 0);
     }
 
     /**
      * On stop presentation.
      */
     public void onStop() {
-        super.onStop();
         mView.sendMessage.setOnClickListener(null);
         placingMessageInteractor.unsubscribe();
+        super.onStop();
     }
 
     /**
@@ -69,64 +57,74 @@ public class PlacingMessagePresenter extends BasePresenter<PlacingMessageView> i
      */
     private void setListeners() {
         // Subscribe to message text changes
-        RxTextView.textChanges(mView.messageInput)
-                .subscribe(new Action1<CharSequence>() {
+        mView.getMessageValuesChannel()
+                .filter(new Func1<String, Boolean>() {
                     @Override
-                    public void call(CharSequence messageText) {
-                        boolean isMessageValid = placeMessageValidator.validate(messageText.toString());
-                        if (isMessageValid) {
+                    public Boolean call(String s) {
+                        mIsMessageValid = placeMessageValidator.validate(s);
+                        if (mIsMessageValid || mMessage.isEmpty()) {
                             mView.hideMessageValidationError();
-                            mView.setEnableSendMessage(true);
                         } else {
                             mView.showMessageValidationError(
                                     R.string.error_placing_message_message_invalid);
-                            mView.setEnableSendMessage(false);
                         }
+
+                        mView.setEnableSendMessage(mIsMessageValid && !mMessage.isEmpty());
+                        return mIsMessageValid;
+                    }
+                })
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String messageText) {
+                        mMessage = messageText;
                     }
                 });
 
-        mView.sendMessage.setOnClickListener(this);
+        mView.getCreateMessageChannel()
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        // For creating message need location
+                        if (mMessageLocation == null) {
+                            mView.showError(R.string.error_placing_message_location_required);
+                            return;
+                        }
+                        mView.setEnableSendMessage(false);
+                        PlacingMessage placingMessage = new PlacingMessage(
+                                mMessageLocation.getLatitude(),
+                                mMessageLocation.getLongitude(),
+                                mMessage);
+                        placingMessageInteractor.execute(placingMessage, new PlacingSubscriber());
+                    }
+                });
     }
 
-    @Override
-    public void onClick(View v) {
-        if (R.id.create_message == v.getId()) {
-            // For creating message need location
-            if (mMessageLocation == null) {
-                mView.showError(R.string.error_placing_message_location_required);
-                return;
+    public void setLocation(Location location) {
+        this.mMessageLocation = location;
+    }
+
+    private class PlacingSubscriber extends Subscriber<Boolean> {
+        @Override
+        public void onCompleted() {
+            placingMessageInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            placingMessageInteractor.unsubscribe();
+        }
+
+        @Override
+        public void onNext(Boolean isMessageAdded) {
+            if (isMessageAdded) {
+                // Message was sent. Return to previous screen.
+                mView.showSuccess(R.string.success_placing_message_message_delivered);
+
+                mRouter.closeScreen(Screens.MESSAGING_SCREEN);
+            } else {
+                mView.setEnableSendMessage(true);
+                mView.showError(R.string.error_placing_message_message_deliver);
             }
-            mView.setEnableSendMessage(false);
-            final String message = PlacingMessagePresenter.this.mView.messageInput.getText().toString();
-            PlacingMessage placingMessage = new PlacingMessage(
-                    mMessageLocation.getLatitude(),
-                    mMessageLocation.getLongitude(),
-                    message);
-            placingMessageInteractor.execute(placingMessage, new Subscriber<Boolean>() {
-                @Override
-                public void onCompleted() {
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                }
-
-                @Override
-                public void onNext(Boolean isMessageAdded) {
-                    if (isMessageAdded) {
-                        // Message was sent. Return to previous screen.
-                        mView.showSuccess(R.string.success_placing_message_message_delivered);
-
-                        InputMethodManager keyboard = (InputMethodManager)
-                                context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        keyboard.hideSoftInputFromWindow(mView.messageInput.getWindowToken(), 0);
-                        mRouter.closeScreen(Screens.MESSAGING_SCREEN);
-                    } else {
-                        mView.setEnableSendMessage(true);
-                        mView.showError(R.string.error_placing_message_message_deliver);
-                    }
-                }
-            });
         }
     }
 }
