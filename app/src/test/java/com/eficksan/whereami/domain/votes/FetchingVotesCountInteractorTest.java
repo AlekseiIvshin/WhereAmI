@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnit4.class)
 public class FetchingVotesCountInteractorTest {
 
-    static String messageId = "messageId";
+    static String messageId = "MESSAGE_ID";
 
     VotesDataSource mockVotesDataSource;
 

@@ -2,7 +2,6 @@ package com.eficksan.whereami.presentation.common;
 
 import android.os.Bundle;
 
-import com.eficksan.whereami.App;
 import com.eficksan.whereami.presentation.IView;
 import com.eficksan.whereami.presentation.routing.Router;
 

@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
  */
 public class MessageDetailsPresenterTest {
 
-    public static final String messageId = "messageId";
+    public static final String MESSAGE_ID = "MESSAGE_ID";
 
     FindUserInteractor mockFindUserInteractor;
 
@@ -78,7 +78,7 @@ public class MessageDetailsPresenterTest {
     @Test
     public void shouldSubscribeOnClickEvents() {
         // When
-        presenter.setMessageId(messageId);
+        presenter.setMessageId(MESSAGE_ID);
         presenter.onCreate(Bundle.EMPTY);
 
         // Then
@@ -92,7 +92,7 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockFindMessageInteractor).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
 
         // When
-        presenter.setMessageId(messageId);
+        presenter.setMessageId(MESSAGE_ID);
         presenter.onCreate(Bundle.EMPTY);
 
         // Then
@@ -115,7 +115,7 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockView).showMessage(any(PlacingMessage.class));
 
         // When
-        presenter.setMessageId(messageId);
+        presenter.setMessageId(MESSAGE_ID);
         presenter.onCreate(Bundle.EMPTY);
 
         // Then
@@ -138,7 +138,7 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockView).showMessage(any(PlacingMessage.class));
 
         // When
-        presenter.setMessageId(messageId);
+        presenter.setMessageId(MESSAGE_ID);
         presenter.onCreate(Bundle.EMPTY);
 
         // Then
@@ -153,7 +153,7 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockFindMessageInteractor).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
 
         // When
-        presenter.setMessageId(messageId);
+        presenter.setMessageId(MESSAGE_ID);
         presenter.onCreate(Bundle.EMPTY);
         presenter.onDestroy();
 

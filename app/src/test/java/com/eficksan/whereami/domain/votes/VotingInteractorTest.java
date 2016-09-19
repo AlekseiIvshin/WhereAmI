@@ -49,7 +49,7 @@ public class VotingInteractorTest {
         // Given
         final Vote vote = new Vote();
         vote.isVotedFor = true;
-        vote.messageId = "messageId";
+        vote.messageId = "MESSAGE_ID";
 
         when(mockVotesRepository.voteMessage(anyString(), anyString(), anyBoolean()))
                 .thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
@@ -77,7 +77,7 @@ public class VotingInteractorTest {
         // Given
         final Vote vote = new Vote();
         vote.isVotedFor = false;
-        vote.messageId = "messageId";
+        vote.messageId = "MESSAGE_ID";
 
         when(mockVotesRepository.voteMessage(anyString(), anyString(), anyBoolean()))
                 .thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {

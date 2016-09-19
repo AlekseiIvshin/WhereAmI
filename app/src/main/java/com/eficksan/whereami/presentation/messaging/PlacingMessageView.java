@@ -18,11 +18,11 @@ import butterknife.ButterKnife;
 /**
  * Messaging view component.
  * Provides methods for managing UI.
- *
+ * <p/>
  * Created by Aleksei Ivshin
  * on 24.08.2016.
  */
-public class PlacingMessageView implements IView{
+public class PlacingMessageView implements IView {
 
     @Inject
     Context context;
@@ -36,6 +36,7 @@ public class PlacingMessageView implements IView{
 
     /**
      * Inject inflated view.
+     *
      * @param view iew
      */
     public void takeView(View view) {
@@ -49,6 +50,7 @@ public class PlacingMessageView implements IView{
 
     /**
      * Disable or enable creating message.
+     *
      * @param isEnabled flag
      */
     public void setEnableSendMessage(boolean isEnabled) {
@@ -57,6 +59,7 @@ public class PlacingMessageView implements IView{
 
     /**
      * Shows error message.
+     *
      * @param errorResId error resource
      */
     public void showError(int errorResId) {
@@ -65,6 +68,7 @@ public class PlacingMessageView implements IView{
 
     /**
      * Shows success message.
+     *
      * @param successResId success resource
      */
     public void showSuccess(int successResId) {
@@ -73,6 +77,7 @@ public class PlacingMessageView implements IView{
 
     /**
      * Show error on wrong message text.
+     *
      * @param errorResId error resource id
      */
     public void showMessageValidationError(int errorResId) {
@@ -88,6 +93,7 @@ public class PlacingMessageView implements IView{
 
     /**
      * Shows message.
+     *
      * @param messageResId message resource
      */
     private void notifyUser(int messageResId) {

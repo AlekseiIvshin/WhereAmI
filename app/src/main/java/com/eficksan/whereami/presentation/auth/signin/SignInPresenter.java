@@ -6,8 +6,8 @@ import android.os.Bundle;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.auth.SignInData;
 import com.eficksan.whereami.domain.auth.SignInInteractor;
-import com.eficksan.whereami.presentation.common.BasePresenter;
 import com.eficksan.whereami.presentation.BaseSubscriber;
+import com.eficksan.whereami.presentation.common.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
 
 import javax.inject.Inject;

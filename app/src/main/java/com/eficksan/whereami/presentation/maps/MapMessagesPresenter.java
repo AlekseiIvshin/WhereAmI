@@ -22,7 +22,9 @@ import rx.Subscriber;
 /**
  * Presenter for maps.
  */
-public class MapMessagesPresenter extends BasePresenter<MapMessagesView> implements MapMessagesView.MapMessageClickListener {
+public class MapMessagesPresenter
+        extends BasePresenter<MapMessagesView>
+        implements MapMessagesView.MapMessageClickListener {
 
     private static final String TAG = MapMessagesPresenter.class.getSimpleName();
 

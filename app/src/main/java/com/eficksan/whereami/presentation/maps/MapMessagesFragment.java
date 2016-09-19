@@ -11,7 +11,6 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.maps.MapsComponent;
 import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
 import com.eficksan.whereami.presentation.common.IPresenter;
-import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
 

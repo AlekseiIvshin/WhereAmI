@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnit4.class)
 public class DidUserVoteInteractorTest {
 
-    static String messageId = "messageId";
+    static String messageId = "MESSAGE_ID";
 
     VotesDataSource mockVotesDataSource;
 

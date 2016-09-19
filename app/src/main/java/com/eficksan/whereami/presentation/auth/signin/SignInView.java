@@ -12,18 +12,15 @@ import android.widget.TextView;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.presentation.IView;
 import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxTextView;
-import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.functions.Func1;
 
 /**
- * Created by Aleksei_Ivshin on 9/6/16.
+ * Sign in view.
  */
-public class SignInView implements IView{
+public class SignInView implements IView {
 
     @Bind(R.id.sign_in_input_email)
     EditText emailInput;
@@ -92,6 +89,7 @@ public class SignInView implements IView{
 
     /**
      * Gets email value.
+     *
      * @return email
      */
     public String getEmailValue() {
@@ -100,6 +98,7 @@ public class SignInView implements IView{
 
     /**
      * Gets password value.
+     *
      * @return password
      */
     public String getPasswordValue() {
@@ -108,6 +107,7 @@ public class SignInView implements IView{
 
     /**
      * Gets channel of click on sign in.
+     *
      * @return clicks channel
      */
     public Observable<Void> getSignInChannel() {
@@ -116,6 +116,7 @@ public class SignInView implements IView{
 
     /**
      * Gets channel of click on sign up.
+     *
      * @return clicks channel
      */
     public Observable<Void> getSignUpChannel() {

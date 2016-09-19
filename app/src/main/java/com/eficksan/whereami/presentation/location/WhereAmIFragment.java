@@ -3,7 +3,6 @@ package com.eficksan.whereami.presentation.location;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.location.LocationComponent;
 import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
 import com.eficksan.whereami.presentation.common.IPresenter;
-import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
 

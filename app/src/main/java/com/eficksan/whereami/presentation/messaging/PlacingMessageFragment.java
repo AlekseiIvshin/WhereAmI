@@ -13,7 +13,6 @@ import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.ioc.messaging.MessagingComponent;
 import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
 import com.eficksan.whereami.presentation.common.IPresenter;
-import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
 

@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.eficksan.whereami.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -125,7 +123,7 @@ public class LocationRequestingDelegate
                     mDelegateCallback.onPermissionsRequired(new String[]{ACCESS_FINE_LOCATION});
                     return;
                 }
-                if (mGoogleApiClient !=null && mGoogleApiClient.isConnected()) {
+                if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
                     LocationServices.FusedLocationApi
                             .requestLocationUpdates(mGoogleApiClient, mLocationRequest, mDelegateCallback);
                 } else {

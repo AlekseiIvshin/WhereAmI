@@ -1,10 +1,8 @@
 package com.eficksan.whereami.presentation.auth.signin;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +12,8 @@ import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.auth.AuthComponent;
 import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
 import com.eficksan.whereami.presentation.common.IPresenter;
-import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Sign in fragment provides methods for signing in, singing up and resetting password(in case failed sign in).
