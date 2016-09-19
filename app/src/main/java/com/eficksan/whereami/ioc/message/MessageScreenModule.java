@@ -7,6 +7,7 @@ import com.eficksan.whereami.domain.votes.FetchingVotesCountInteractor;
 import com.eficksan.whereami.domain.votes.VotingInteractor;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
 import com.eficksan.whereami.presentation.message.MessageDetailsPresenter;
+import com.eficksan.whereami.presentation.message.MessageDetailsView;
 
 import dagger.Module;
 import dagger.Provides;
@@ -32,5 +33,10 @@ public class MessageScreenModule {
                 didUserVoteInteractor,
                 votingInteractor,
                 votesCountInteractor);
+    }
+
+    @Provides
+    public MessageDetailsView provideMessageDetailsView() {
+        return new MessageDetailsView();
     }
 }

@@ -1,5 +1,7 @@
 package com.eficksan.whereami.presentation.message;
 
+import android.os.Bundle;
+
 import com.eficksan.whereami.data.messages.PlacingMessage;
 import com.eficksan.whereami.domain.messages.FindMessageInteractor;
 import com.eficksan.whereami.domain.users.FindUserInteractor;
@@ -65,7 +67,7 @@ public class MessageDetailsPresenterTest {
         when(mockView.getVotingForClickEvents()).thenReturn(Observable.<Void>empty());
         when(mockView.getVotingAgainstClickEvents()).thenReturn(Observable.<Void>empty());
 
-        presenter.setView(mockView);
+        presenter.onViewCreated(mockView);
     }
 
     @After
@@ -76,7 +78,8 @@ public class MessageDetailsPresenterTest {
     @Test
     public void shouldSubscribeOnClickEvents() {
         // When
-        presenter.onCreate(messageId);
+        presenter.setMessageId(messageId);
+        presenter.onCreate(Bundle.EMPTY);
 
         // Then
         verify(mockView, times(1)).getVotingForClickEvents();
@@ -89,7 +92,8 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockFindMessageInteractor).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
 
         // When
-        presenter.onCreate(messageId);
+        presenter.setMessageId(messageId);
+        presenter.onCreate(Bundle.EMPTY);
 
         // Then
         verify(mockFindMessageInteractor, times(1)).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
@@ -111,7 +115,8 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockView).showMessage(any(PlacingMessage.class));
 
         // When
-        presenter.onCreate(messageId);
+        presenter.setMessageId(messageId);
+        presenter.onCreate(Bundle.EMPTY);
 
         // Then
         verify(mockFindMessageInteractor, times(1)).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
@@ -133,7 +138,8 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockView).showMessage(any(PlacingMessage.class));
 
         // When
-        presenter.onCreate(messageId);
+        presenter.setMessageId(messageId);
+        presenter.onCreate(Bundle.EMPTY);
 
         // Then
         verify(mockFindMessageInteractor, times(1)).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
@@ -147,7 +153,8 @@ public class MessageDetailsPresenterTest {
         doNothing().when(mockFindMessageInteractor).execute(anyString(), Matchers.<Subscriber<PlacingMessage>>any());
 
         // When
-        presenter.onCreate(messageId);
+        presenter.setMessageId(messageId);
+        presenter.onCreate(Bundle.EMPTY);
         presenter.onDestroy();
 
         // Then
