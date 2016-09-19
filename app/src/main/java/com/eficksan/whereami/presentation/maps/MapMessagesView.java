@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.messages.PlacingMessage;
+import com.eficksan.whereami.presentation.IView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -27,7 +28,7 @@ import butterknife.ButterKnife;
 /**
  * Provides messages map view.
  */
-public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, IView {
 
     private static final String TAG = MapMessagesView.class.getSimpleName();
     @Inject
@@ -42,6 +43,13 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
     public void takeView(View view) {
         ButterKnife.bind(this, view);
         messagesMap.getMapAsync(this);
+    }
+
+    @Override
+    public void releaseView() {
+        mGoogleMap.clear();
+        mGoogleMap = null;
+        messagesMap.onDestroy();
     }
 
     @Override
@@ -87,11 +95,6 @@ public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerCl
 
     public void showError(int errorResId) {
         Toast.makeText(context, errorResId, Toast.LENGTH_SHORT).show();
-    }
-
-    public void onDestroy() {
-        mGoogleMap = null;
-        messagesMap.onDestroy();
     }
 
     @Override

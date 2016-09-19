@@ -10,7 +10,7 @@ import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.AddressFetchingInteractor;
 import com.eficksan.whereami.domain.location.ForegroundServiceInteractor;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
-import com.eficksan.whereami.presentation.RoutedPresenter;
+import com.eficksan.whereami.presentation.common.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
 
@@ -22,9 +22,7 @@ import rx.functions.Action1;
  * Created by Aleksei Ivshin
  * on 20.08.2016.
  */
-public class WhereAmIPresenter extends RoutedPresenter {
-
-    private WhereAmIView mView;
+public class WhereAmIPresenter extends BasePresenter<WhereAmIView> {
 
     final ForegroundServiceInteractor mForegroundServiceInteractor;
 
@@ -45,6 +43,7 @@ public class WhereAmIPresenter extends RoutedPresenter {
     }
 
     public void onStart() {
+        super.onStart();
         mForegroundServiceInteractor.onStart();
 
         handleSwitchLocationListening(mView.switchRequestLocation.isChecked());
@@ -56,6 +55,7 @@ public class WhereAmIPresenter extends RoutedPresenter {
         removeListeners();
         mForegroundServiceInteractor.onStop();
         mLocationListeningInteractor.unsubscribe();
+        super.onStop();
     }
 
     /**
@@ -76,7 +76,7 @@ public class WhereAmIPresenter extends RoutedPresenter {
                         if (mLastLocation != null) {
                             Bundle args = new Bundle();
                             args.putParcelable(Constants.EXTRA_LOCATION_DATA, mLastLocation);
-                            router.showScreen(Screens.MESSAGING_SCREEN, args);
+                            mRouter.showScreen(Screens.MESSAGING_SCREEN, args);
                         } else {
                             mView.showError(R.string.location_not_available);
                         }

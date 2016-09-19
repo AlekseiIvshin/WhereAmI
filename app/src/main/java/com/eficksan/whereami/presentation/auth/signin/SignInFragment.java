@@ -48,14 +48,6 @@ public class SignInFragment extends ComponentLifecycleFragment {
         return new SignInFragment();
     }
 
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPresenter.takeRouter((Router) getActivity());
-        mPresenter.onCreate(savedInstanceState);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,39 +64,13 @@ public class SignInFragment extends ComponentLifecycleFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mPresenter.onStart();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mPresenter.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onStop() {
-        mPresenter.onStop();
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.onViewDestroyed();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        mPresenter.releaseRouter();
-        mPresenter.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
     public void onKillComponent() {
         ((App) getActivity().getApplication()).removeAuthComponent();
+    }
+
+    @Override
+    public IPresenter getPresenter() {
+        return mPresenter;
     }
 
     @Override

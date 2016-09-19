@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.eficksan.whereami.R;
+import com.eficksan.whereami.presentation.IView;
 
 import javax.inject.Inject;
 
@@ -21,7 +22,7 @@ import butterknife.ButterKnife;
  * Created by Aleksei Ivshin
  * on 24.08.2016.
  */
-public class PlacingMessageView {
+public class PlacingMessageView implements IView{
 
     @Inject
     Context context;
@@ -39,6 +40,11 @@ public class PlacingMessageView {
      */
     public void takeView(View view) {
         ButterKnife.bind(this, view);
+    }
+
+    @Override
+    public void releaseView() {
+
     }
 
     /**

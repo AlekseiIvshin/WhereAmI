@@ -1,5 +1,7 @@
 package com.eficksan.whereami.presentation.message;
 
+import android.os.Bundle;
+
 import com.eficksan.whereami.data.auth.User;
 import com.eficksan.whereami.data.messages.PlacingMessage;
 import com.eficksan.whereami.data.votes.MessageVotes;
@@ -9,6 +11,7 @@ import com.eficksan.whereami.domain.users.FindUserInteractor;
 import com.eficksan.whereami.domain.votes.DidUserVoteInteractor;
 import com.eficksan.whereami.domain.votes.FetchingVotesCountInteractor;
 import com.eficksan.whereami.domain.votes.VotingInteractor;
+import com.eficksan.whereami.presentation.common.BasePresenter;
 
 import javax.inject.Inject;
 
@@ -19,7 +22,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Message details presenter.
  */
-public class MessageDetailsPresenter {
+public class MessageDetailsPresenter extends BasePresenter<MessageDetailsView> {
 
     final FindUserInteractor findUserInteractor;
 
@@ -48,7 +51,7 @@ public class MessageDetailsPresenter {
 
         @Override
         public void onNext(User user) {
-            mDetailsView.showAuthor(user);
+            mView.showAuthor(user);
 
         }
     };
@@ -66,7 +69,7 @@ public class MessageDetailsPresenter {
 
         @Override
         public void onNext(PlacingMessage placingMessage) {
-            mDetailsView.showMessage(placingMessage);
+            mView.showMessage(placingMessage);
             findUserInteractor.execute(placingMessage.userId, userSubscriber);
         }
     };
@@ -85,9 +88,9 @@ public class MessageDetailsPresenter {
         @Override
         public void onNext(Boolean wasUserVotedAlready) {
             if (!wasUserVotedAlready) {
-                mDetailsView.showVoting();
+                mView.showVoting();
             } else {
-                mDetailsView.hideVoting();
+                mView.hideVoting();
                 votesCountInteractor.execute(mMessageId, votesCountSubscriber);
             }
         }
@@ -107,13 +110,12 @@ public class MessageDetailsPresenter {
         @Override
         public void onNext(Boolean aBoolean) {
             if (aBoolean) {
-                mDetailsView.hideVoting();
+                mView.hideVoting();
                 votesCountInteractor.execute(mMessageId, votesCountSubscriber);
             }
         }
     };
 
-    private MessageDetailsView mDetailsView;
     private Subscriber<MessageVotes> votesCountSubscriber = new Subscriber<MessageVotes>() {
         @Override
         public void onCompleted() {
@@ -128,7 +130,7 @@ public class MessageDetailsPresenter {
         @Override
         public void onNext(MessageVotes messageVotes) {
             if (messageVotes.votesFor > 0 || messageVotes.votesAgainst > 0) {
-                mDetailsView.showVotesCount(messageVotes.votesFor, messageVotes.votesAgainst);
+                mView.showVotesCount(messageVotes.votesFor, messageVotes.votesAgainst);
             }
         }
     };
@@ -148,36 +150,36 @@ public class MessageDetailsPresenter {
         eventsSubcription = new CompositeSubscription();
     }
 
-    public void setView(MessageDetailsView detailsView) {
-        this.mDetailsView = detailsView;
+    public void setMessageId(String messageId) {
+        this.mMessageId = messageId;
     }
 
-    public void onCreate(final String messageId) {
-        mMessageId = messageId;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        eventsSubcription.add(mDetailsView.getVotingForClickEvents().subscribe(new Action1<Void>() {
+        eventsSubcription.add(mView.getVotingForClickEvents().subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
                 Vote vote = new Vote();
-                vote.messageId = messageId;
+                vote.messageId = mMessageId;
                 vote.isVotedFor = true;
                 votingInteractor.execute(vote, voteResultSubscriber);
             }
         }));
 
-        eventsSubcription.add(mDetailsView.getVotingAgainstClickEvents().subscribe(new Action1<Void>() {
+        eventsSubcription.add(mView.getVotingAgainstClickEvents().subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
                 Vote vote = new Vote();
-                vote.messageId = messageId;
+                vote.messageId = mMessageId;
                 vote.isVotedFor = false;
                 votingInteractor.execute(vote, voteResultSubscriber);
             }
         }));
 
         // TODO: check on user authenticated before
-        findMessageInteractor.execute(messageId, placingMessageSubscriber);
-        didUserVoteInteractor.execute(messageId, voteAvailabilitySubscriber);
+        findMessageInteractor.execute(mMessageId, placingMessageSubscriber);
+        didUserVoteInteractor.execute(mMessageId, voteAvailabilitySubscriber);
     }
 
     public void onDestroy() {
@@ -189,5 +191,6 @@ public class MessageDetailsPresenter {
 
         eventsSubcription.unsubscribe();
         eventsSubcription.clear();
+        super.onDestroy();
     }
 }

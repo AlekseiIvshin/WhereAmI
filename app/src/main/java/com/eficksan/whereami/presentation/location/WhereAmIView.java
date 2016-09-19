@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eficksan.whereami.R;
+import com.eficksan.whereami.presentation.IView;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,7 @@ import butterknife.ButterKnife;
  * Created by Aleksei Ivshin
  * on 16.08.2016.
  */
-public class WhereAmIView {
+public class WhereAmIView implements IView {
 
     @Bind(R.id.label_location)
     public TextView locationAddresses;

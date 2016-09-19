@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.location.LocationComponent;
+import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
+import com.eficksan.whereami.presentation.common.IPresenter;
 import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
@@ -18,7 +20,7 @@ import javax.inject.Inject;
 /**
  * Fragment shows current user location.
  */
-public class WhereAmIFragment extends Fragment {
+public class WhereAmIFragment extends ComponentLifecycleFragment {
     public static final String TAG = WhereAmIFragment.class.getSimpleName();
 
     LocationComponent mLocationComponent;
@@ -28,8 +30,6 @@ public class WhereAmIFragment extends Fragment {
 
     @Inject
     WhereAmIView whereAmIView;
-
-    private boolean mIsDestroyBySystem;
 
     /**
      * New instance factory method.
@@ -41,10 +41,8 @@ public class WhereAmIFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mLocationComponent = ((App) getActivity().getApplication()).plusLocationComponent();
-        mLocationComponent.inject(this);
+    public IPresenter getPresenter() {
+        return mPresenter;
     }
 
     @Override
@@ -60,42 +58,16 @@ public class WhereAmIFragment extends Fragment {
 
         whereAmIView.takeView(view);
         mPresenter.setView(whereAmIView);
-        mPresenter.takeRouter((Router) getActivity());
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mPresenter.onStart();
+    public void onSetUpComponent() {
+        mLocationComponent = ((App) getActivity().getApplication()).plusLocationComponent();
+        mLocationComponent.inject(this);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mIsDestroyBySystem = false;
-    }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mIsDestroyBySystem = true;
-    }
-
-    @Override
-    public void onStop() {
-        mPresenter.onStop();
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        mPresenter.releaseRouter();
-        whereAmIView.releaseView();
-        mLocationComponent = null;
-        if (!mIsDestroyBySystem) {
-            ((App) getActivity().getApplication()).removeLocationComponent();
-        }
-        super.onDestroy();
+    public void onKillComponent() {
+        ((App) getActivity().getApplication()).removeLocationComponent();
     }
 }

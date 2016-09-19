@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.message.MessageComponent;
+import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
 
@@ -26,6 +27,11 @@ public class MessageDetailsFragment extends DialogFragment {
 
     @Inject
     MessageDetailsPresenter mPresenter;
+
+    @Inject
+    MessageDetailsView mView;
+
+    private boolean mIsDestroyBySystem;
 
     public MessageDetailsFragment() {
         // Required empty public constructor
@@ -51,6 +57,9 @@ public class MessageDetailsFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         messageComponent = ((App) getActivity().getApplication()).plusMessageDetailsComponent();
         messageComponent.inject(this);
+        mPresenter.takeRouter((Router) getActivity());
+        mPresenter.setMessageId(getArguments().getString(ARGS_MESSAGE_ID));
+        mPresenter.onCreate(savedInstanceState);
     }
 
     @Override
@@ -62,18 +71,50 @@ public class MessageDetailsFragment extends DialogFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MessageDetailsView detailsView = new MessageDetailsView();
-        detailsView.takeView(view);
 
-        mPresenter.setView(detailsView);
+        mView.takeView(view);
+        mPresenter.onViewCreated(mView);
+    }
 
-        mPresenter.onCreate(getArguments().getString(ARGS_MESSAGE_ID));
+    @Override
+    public void onStart() {
+        super.onStart();
+        mPresenter.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mIsDestroyBySystem = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mIsDestroyBySystem = true;
+        mPresenter.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onStop() {
+        mPresenter.onStop();
+        super.onStop();
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        mPresenter.onViewDestroyed();
+        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
+        mPresenter.releaseRouter();
         mPresenter.onDestroy();
-        ((App) getActivity().getApplication()).removeMessageDetailsComponent();
+        if (!mIsDestroyBySystem) {
+            ((App) getActivity().getApplication()).removeLocationComponent();
+        }
         super.onDestroy();
     }
 }

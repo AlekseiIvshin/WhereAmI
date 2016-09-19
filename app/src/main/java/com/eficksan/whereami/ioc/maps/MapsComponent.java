@@ -3,6 +3,7 @@ package com.eficksan.whereami.ioc.maps;
 import com.eficksan.whereami.ioc.app.AppComponent;
 import com.eficksan.whereami.ioc.common.LocationModule;
 import com.eficksan.whereami.ioc.fragments.FragmentScope;
+import com.eficksan.whereami.presentation.maps.MapMessagesFragment;
 import com.eficksan.whereami.presentation.maps.MapMessagesPresenter;
 import com.eficksan.whereami.presentation.maps.MapMessagesView;
 
@@ -19,4 +20,6 @@ public interface MapsComponent {
     void inject(MapMessagesView view);
 
     void inject(MapMessagesPresenter presenter);
+
+    void inject(MapMessagesFragment mapMessagesFragment);
 }

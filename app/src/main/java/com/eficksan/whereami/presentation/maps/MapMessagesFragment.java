@@ -2,7 +2,6 @@ package com.eficksan.whereami.presentation.maps;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,16 +9,25 @@ import android.view.ViewGroup;
 import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.maps.MapsComponent;
+import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
+import com.eficksan.whereami.presentation.common.IPresenter;
 import com.eficksan.whereami.presentation.routing.Router;
+
+import javax.inject.Inject;
 
 /**
  * Fragments provides map for showing near messages.
  */
-public class MapMessagesFragment extends Fragment {
+public class MapMessagesFragment extends ComponentLifecycleFragment {
 
     public static final String TAG = MapMessagesFragment.class.getSimpleName();
-    private MapMessagesView mMapMessagesView;
-    private MapMessagesPresenter mMapMessagesPresenter;
+    private MapsComponent mMapsComponent;
+
+    @Inject
+    MapMessagesView mMapMessagesView;
+
+    @Inject
+    MapMessagesPresenter mPresenter;
 
     public MapMessagesFragment() {
         // Required empty public constructor
@@ -44,21 +52,15 @@ public class MapMessagesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MapsComponent mapsComponent = ((App) getActivity().getApplication()).plusMapsComponent();
-        mMapMessagesView = new MapMessagesView();
-        mapsComponent.inject(mMapMessagesView);
+
         mMapMessagesView.takeView(view);
+        mPresenter.onViewCreated(mMapMessagesView);
         mMapMessagesView.messagesMap.onCreate(savedInstanceState);
-        mMapMessagesPresenter = new MapMessagesPresenter();
-        mapsComponent.inject(mMapMessagesPresenter);
-        mMapMessagesPresenter.setView(mMapMessagesView);
-        mMapMessagesPresenter.takeRouter((Router) getActivity());
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mMapMessagesPresenter.onStart();
+    public IPresenter getPresenter() {
+        return mPresenter;
     }
 
     @Override
@@ -80,16 +82,13 @@ public class MapMessagesFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        mMapMessagesPresenter.onStop();
+    public void onSetUpComponent() {
+        mMapsComponent = ((App) getActivity().getApplication()).plusMapsComponent();
+        mMapsComponent.inject(this);
     }
 
     @Override
-    public void onDestroyView() {
-        mMapMessagesPresenter.releaseRouter();
-        mMapMessagesView.onDestroy();
+    public void onKillComponent() {
         ((App) getActivity().getApplication()).removeMapsComponent();
-        super.onDestroyView();
     }
 }

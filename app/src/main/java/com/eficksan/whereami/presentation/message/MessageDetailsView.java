@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.data.auth.User;
 import com.eficksan.whereami.data.messages.PlacingMessage;
+import com.eficksan.whereami.presentation.IView;
 import com.jakewharton.rxbinding.view.RxView;
 
 import java.util.Locale;
@@ -18,7 +19,7 @@ import rx.Observable;
 /**
  * Message details view.
  */
-public class MessageDetailsView {
+public class MessageDetailsView implements IView {
 
     @Bind(R.id.message_author)
     TextView author;
@@ -44,6 +45,11 @@ public class MessageDetailsView {
 
     public void takeView(View view) {
         ButterKnife.bind(this, view);
+    }
+
+    @Override
+    public void releaseView() {
+
     }
 
 

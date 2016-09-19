@@ -3,7 +3,6 @@ package com.eficksan.whereami.presentation.messaging;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +11,24 @@ import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.ioc.messaging.MessagingComponent;
+import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
+import com.eficksan.whereami.presentation.common.IPresenter;
 import com.eficksan.whereami.presentation.routing.Router;
+
+import javax.inject.Inject;
 
 /**
  */
-public class PlacingMessageFragment extends Fragment {
+public class PlacingMessageFragment extends ComponentLifecycleFragment {
 
     public static final String TAG = PlacingMessageFragment.class.getSimpleName();
-    private PlacingMessagePresenter mPresenter;
+
+    @Inject
+    PlacingMessagePresenter mPresenter;
+
+    @Inject
+    PlacingMessageView placingMessageView;
+
     MessagingComponent mMessagingComponent;
 
     public PlacingMessageFragment() {
@@ -35,9 +44,8 @@ public class PlacingMessageFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mMessagingComponent = ((App) getActivity().getApplication()).plusMessagingComponent();
+    public IPresenter getPresenter() {
+        return mPresenter;
     }
 
     @Override
@@ -51,13 +59,8 @@ public class PlacingMessageFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        PlacingMessageView placingMessageView = new PlacingMessageView();
         placingMessageView.takeView(view);
-        mPresenter = new PlacingMessagePresenter();
-        mMessagingComponent.inject(placingMessageView);
-        mMessagingComponent.inject(mPresenter);
-        mPresenter.setView(placingMessageView);
-        mPresenter.takeRouter((Router) getActivity());
+        mPresenter.onViewCreated(placingMessageView);
     }
 
     @Override
@@ -68,16 +71,13 @@ public class PlacingMessageFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        mPresenter.onStop();
-        super.onStop();
+    public void onSetUpComponent() {
+        mMessagingComponent = ((App) getActivity().getApplication()).plusMessagingComponent();
+        mMessagingComponent.inject(this);
     }
 
     @Override
-    public void onDestroy() {
-        mPresenter.releaseRouter();
-        mMessagingComponent = null;
+    public void onKillComponent() {
         ((App) getActivity().getApplication()).removeMessagingComponent();
-        super.onDestroy();
     }
 }

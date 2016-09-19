@@ -12,6 +12,7 @@ import com.eficksan.whereami.App;
 import com.eficksan.whereami.R;
 import com.eficksan.whereami.ioc.auth.AuthComponent;
 import com.eficksan.whereami.presentation.common.ComponentLifecycleFragment;
+import com.eficksan.whereami.presentation.common.IPresenter;
 import com.eficksan.whereami.presentation.routing.Router;
 
 import javax.inject.Inject;
@@ -49,11 +50,8 @@ public class SignUpFragment extends ComponentLifecycleFragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mPresenter.takeRouter((Router) getActivity());
-        mPresenter.onCreate(savedInstanceState);
+    public IPresenter getPresenter() {
+        return mPresenter;
     }
 
     @Override
@@ -69,31 +67,6 @@ public class SignUpFragment extends ComponentLifecycleFragment {
 
         signUpView.takeView(view);
         mPresenter.onViewCreated(signUpView);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mPresenter.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        mPresenter.onStop();
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.onViewDestroyed();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        mPresenter.releaseRouter();
-        mPresenter.onDestroy();
-        super.onDestroy();
     }
 
     @Override

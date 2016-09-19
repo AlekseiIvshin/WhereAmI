@@ -9,7 +9,7 @@ import com.eficksan.whereami.data.messages.PlacingMessage;
 import com.eficksan.whereami.domain.Constants;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
 import com.eficksan.whereami.domain.messages.MessagesFetchingInteractor;
-import com.eficksan.whereami.presentation.RoutedPresenter;
+import com.eficksan.whereami.presentation.common.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -22,36 +22,44 @@ import rx.Subscriber;
 /**
  * Presenter for maps.
  */
-public class MapMessagesPresenter extends RoutedPresenter implements MapMessagesView.MapMessageClickListener {
+public class MapMessagesPresenter extends BasePresenter<MapMessagesView> implements MapMessagesView.MapMessageClickListener {
 
     private static final String TAG = MapMessagesPresenter.class.getSimpleName();
-    @Inject
-    LocationListeningInteractor locationListeningInteractor;
+
+    private final LocationListeningInteractor locationListeningInteractor;
+
+    private final MessagesFetchingInteractor messagesFetchingInteractor;
 
     @Inject
-    MessagesFetchingInteractor messagesFetchingInteractor;
+    public MapMessagesPresenter(
+            LocationListeningInteractor locationListeningInteractor,
+            MessagesFetchingInteractor messagesFetchingInteractor) {
+        this.locationListeningInteractor = locationListeningInteractor;
+        this.messagesFetchingInteractor = messagesFetchingInteractor;
+    }
 
-    private MapMessagesView mMapMessagesView;
-
-    public void setView(MapMessagesView mapMessagesView) {
-        this.mMapMessagesView = mapMessagesView;
-        mMapMessagesView.setMessageClickListener(this);
+    @Override
+    public void onViewCreated(MapMessagesView view) {
+        super.onViewCreated(view);
+        mView.setMessageClickListener(this);
     }
 
     public void onStart() {
+        super.onStart();
         locationListeningInteractor.execute(new LocationSubscriber());
     }
 
     public void onStop() {
         messagesFetchingInteractor.unsubscribe();
         locationListeningInteractor.unsubscribe();
+        super.onStop();
     }
 
     @Override
     public void onMessageClick(String messageId) {
         Bundle args = new Bundle();
         args.putString(Constants.EXTRA_MESSAGE_ID, messageId);
-        router.showScreen(Screens.MESSAGE_DETAILS, args);
+        mRouter.showScreen(Screens.MESSAGE_DETAILS, args);
     }
 
     private class LocationSubscriber extends Subscriber<Location> {
@@ -70,7 +78,7 @@ public class MapMessagesPresenter extends RoutedPresenter implements MapMessages
         @Override
         public void onNext(Location location) {
             if (location != null) {
-                mMapMessagesView.moveMapTo(location);
+                mView.moveMapTo(location);
                 messagesFetchingInteractor.execute(
                         new LatLng(location.getLatitude(), location.getLongitude()),
                         new MessagesSubscriber());
@@ -86,13 +94,13 @@ public class MapMessagesPresenter extends RoutedPresenter implements MapMessages
 
         @Override
         public void onError(Throwable e) {
-            mMapMessagesView.showError(R.string.error_maps_fetching_messages);
+            mView.showError(R.string.error_maps_fetching_messages);
             messagesFetchingInteractor.unsubscribe();
         }
 
         @Override
         public void onNext(List<PlacingMessage> messages) {
-            mMapMessagesView.showMessages(messages);
+            mView.showMessages(messages);
         }
     }
 }
