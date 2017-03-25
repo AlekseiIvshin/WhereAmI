@@ -15,11 +15,19 @@
       },
       "oauth_client": [
         {
+          "client_id": "582083205831-eojlk1lt7qaq9vu90cb1l92rhb6bvecu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eficksan.whereami",
+            "certificate_hash": "c0651415b91bb111d0a1fc7925c6d1e471460310"
+          }
+        },
+        {
           "client_id": "582083205831-bgf7bd2j0adqd9fmv95hc5b8lfhge41t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.eficksan.whereami",
-            "certificate_hash": "C1B64B1596714494FAEFD1616A801BE6C83C96EF"
+            "certificate_hash": "c1b64b1596714494faefd1616a801be6c83c96ef"
           }
         },
         {

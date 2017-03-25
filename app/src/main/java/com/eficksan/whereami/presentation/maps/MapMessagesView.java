@@ -31,14 +31,19 @@ import butterknife.ButterKnife;
 public class MapMessagesView implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, IView {
 
     private static final String TAG = MapMessagesView.class.getSimpleName();
-    @Inject
-    Context context;
+
+    private final Context context;
 
     @Bind(R.id.messages_map)
     public MapView messagesMap;
     private GoogleMap mGoogleMap;
     private Marker mUserPositionMarker;
     private MapMessageClickListener mMessageClickListener;
+
+    @Inject
+    public MapMessagesView(Context context) {
+        this.context = context;
+    }
 
     public void takeView(View view) {
         ButterKnife.bind(this, view);

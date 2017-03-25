@@ -1,5 +1,7 @@
 package com.eficksan.whereami.ioc.maps;
 
+import android.content.Context;
+
 import com.eficksan.whereami.data.messages.MessagesDataSource;
 import com.eficksan.whereami.domain.location.LocationListeningInteractor;
 import com.eficksan.whereami.domain.messages.MessagesFetchingInteractor;
@@ -36,7 +38,7 @@ public class MapsScreenModule {
     }
 
     @Provides
-    public MapMessagesView provideMapMessagesView() {
-        return new MapMessagesView();
+    public MapMessagesView provideMapMessagesView(Context context) {
+        return new MapMessagesView(context);
     }
 }
