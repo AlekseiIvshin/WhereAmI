@@ -339,6 +339,14 @@ public class MainActivity extends AppCompatActivity implements Router {
 
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (!hasFocus) {
+            throw new NullPointerException("It's a popup trap!");
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(
             int requestCode,
             @NonNull String[] permissions,
