@@ -72,6 +72,7 @@ public class MapMessagesFragment extends ComponentLifecycleFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mMapMessagesView.messagesMap.onSaveInstanceState(outState);
+        throw new NullPointerException("It's a trap!");
     }
 
     @Override
