@@ -3,6 +3,7 @@ package com.eficksan.whereami.presentation.location;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.eficksan.whereami.R;
@@ -14,6 +15,8 @@ import com.eficksan.whereami.presentation.common.BasePresenter;
 import com.eficksan.whereami.presentation.routing.Screens;
 import com.jakewharton.rxbinding.view.RxView;
 
+import java.util.ArrayList;
+
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -23,6 +26,8 @@ import rx.functions.Action1;
  * on 20.08.2016.
  */
 public class WhereAmIPresenter extends BasePresenter<WhereAmIView> {
+    private static final ArrayList<Location> locationHistory = new ArrayList<>();
+    private static String addressesHeap = "";
 
     final ForegroundServiceInteractor mForegroundServiceInteractor;
 
@@ -135,10 +140,14 @@ public class WhereAmIPresenter extends BasePresenter<WhereAmIView> {
         @Override
         public void onError(Throwable e) {
             mLocationListeningInteractor.unsubscribe();
+            Log.e(WhereAmIPresenter.class.getSimpleName(), e.getMessage(), e);
         }
 
         @Override
         public void onNext(Location location) {
+            if (location !=null) {
+                locationHistory.add(new Location(location));
+            }
             mLastLocation = location;
             mView.onLocationChanged(location);
             updateAvailabilityToCreateMessage(location);
@@ -158,10 +167,14 @@ public class WhereAmIPresenter extends BasePresenter<WhereAmIView> {
         @Override
         public void onError(Throwable e) {
             mAddressFetchingInteractor.unsubscribe();
+            Log.e(WhereAmIPresenter.class.getSimpleName(), e.getMessage(), e);
         }
 
         @Override
         public void onNext(Address address) {
+            if (address!=null) {
+                addressesHeap += (addressesHeap + address.toString());
+            }
             mView.onAddressChanged(address);
             mAddressFetchingInteractor.unsubscribe();
         }
