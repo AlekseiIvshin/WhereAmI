@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/default.spacing.vertical"
+        android:paddingLeft="@dimen/default.spacing.horizontal"
+        android:paddingRight="@dimen/default.spacing.horizontal"
+        android:paddingTop="@dimen/default.spacing.vertical"
+        tools:context=".presentation.messaging.PlacingMessageFragment">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/input_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint.placing_message.message"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:lines="1"
+                android:maxLines="1" />
+
+        </android.support.design.widget.TextInputLayout>
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/create_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/default.spacing.horizontal"
+        android:elevation="@dimen/fab.elevation"
+        android:src="@drawable/send"
+        app:backgroundTint="@color/colorAccent"
+        app:borderWidth="0dp"
+        app:fabSize="normal" />
+</android.support.design.widget.CoordinatorLayout>

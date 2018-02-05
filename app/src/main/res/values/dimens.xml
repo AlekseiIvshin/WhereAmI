@@ -4,5 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="default.spacing.horizontal">16dp</dimen>
     <dimen name="default.spacing.vertical">8dp</dimen>
-    <dimen name="fab.elevation">4dp</dimen>
+    <dimen name="fab.elevation">8dp</dimen>
+    <dimen name="elevation.card">4dp</dimen>
+    <dimen name="auth_space_top">100dp</dimen>
 </resources>

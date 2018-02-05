@@ -1,0 +1,80 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.eficksan.whereami.presentation.message.MessageDetailsFragment">
+
+    <TextView
+        android:id="@+id/message.author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Author" />
+
+    <TextView
+        android:id="@+id/label.message.location.at"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/message.author"
+        android:text="@string/label.message.location.at" />
+
+    <TextView
+        android:id="@+id/message.location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label.message.location.at"
+        tools:text="50x50" />
+
+    <TextView
+        android:id="@+id/label.message.author.said"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/message.location"
+        android:text="@string/label.message.author.said" />
+
+    <TextView
+        android:id="@+id/message.text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label.message.author.said"
+        tools:text="Yeah!" />
+
+    <Button
+        android:id="@+id/message.vote.against"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/message.text"
+        android:text="@string/label.message.vote.against"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/message.vote.for"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/message.text"
+        android:text="@string/label.message.vote.for"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/message.vote.for.count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/message.text"
+        android:visibility="gone"
+        tools:text="4" />
+
+    <TextView
+        android:id="@+id/message.vote.against.count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/message.text"
+        android:visibility="gone"
+        tools:text="10" />
+
+</RelativeLayout>

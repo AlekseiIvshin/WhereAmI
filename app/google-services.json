@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "582083205831",
+    "firebase_url": "https://placingmessages.firebaseio.com",
+    "project_id": "placingmessages",
+    "storage_bucket": "placingmessages.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582083205831:android:15bee1e088a4a2ec",
+        "android_client_info": {
+          "package_name": "com.eficksan.whereami"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582083205831-eojlk1lt7qaq9vu90cb1l92rhb6bvecu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eficksan.whereami",
+            "certificate_hash": "c0651415b91bb111d0a1fc7925c6d1e471460310"
+          }
+        },
+        {
+          "client_id": "582083205831-bgf7bd2j0adqd9fmv95hc5b8lfhge41t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eficksan.whereami",
+            "certificate_hash": "c1b64b1596714494faefd1616a801be6c83c96ef"
+          }
+        },
+        {
+          "client_id": "582083205831-p28pu8drp1jp1p7o8udrd8jbv10ictcc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuof6bcAL19GeokgoFe5AlkrX1pZxgMaw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582083205831-p28pu8drp1jp1p7o8udrd8jbv10ictcc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_where_am_i"
+            android:checked="false"
+            android:title="@string/menu.where_am_i"/>
+        <item
+            android:id="@+id/menu_maps"
+            android:checked="false"
+            android:title="@string/menu.maps"/>
+        <item
+            android:id="@+id/sign_out"
+            android:checked="false"
+            android:title="@string/menu.sign_out"/>
+    </group>
+</menu>

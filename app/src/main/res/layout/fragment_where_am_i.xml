@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/default.spacing.vertical"
+        android:paddingLeft="@dimen/default.spacing.horizontal"
+        android:paddingRight="@dimen/default.spacing.horizontal"
+        android:paddingTop="@dimen/default.spacing.vertical">
+
+        <TextView
+            android:id="@+id/label_location_requesting"
+            style="@style/AppTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/toggle_location_requesting" />
+
+        <Switch
+            android:id="@+id/switch_request_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/label_location_requesting"
+            android:layout_alignParentRight="true" />
+
+
+        <TextView
+            android:id="@+id/label_coordinates"
+            style="@style/AppTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/label_location_requesting"
+            android:freezesText="true"
+            android:paddingBottom="@dimen/default.spacing.vertical"
+            android:paddingLeft="@dimen/default.spacing.horizontal"
+            android:paddingRight="@dimen/default.spacing.horizontal"
+            android:paddingTop="@dimen/default.spacing.vertical"
+            tools:text="50 x 50" />
+
+        <TextView
+            android:id="@+id/label_location"
+            style="@style/AppTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/label_coordinates"
+            android:freezesText="true"
+            android:paddingBottom="@dimen/default.spacing.vertical"
+            android:paddingLeft="@dimen/default.spacing.horizontal"
+            android:paddingRight="@dimen/default.spacing.horizontal"
+            android:paddingTop="@dimen/default.spacing.vertical"
+            tools:text="Earth Hell" />
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/create_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/default.spacing.horizontal"
+        android:background="@drawable/message_fab"
+        android:elevation="@dimen/fab.elevation"
+        android:src="@drawable/message_text"
+        android:visibility="gone"
+        app:borderWidth="0dp"
+        app:fabSize="normal" />
+</android.support.design.widget.CoordinatorLayout>

@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+apply from: '../jacoco.gradle'
+
+ext {
+    supportLibraryVersion = '23.4.0';
+    playServicesVersion = '9.4.0';
+}
 
 android {
     compileSdkVersion 23
@@ -7,34 +16,109 @@ android {
 
     defaultConfig {
         applicationId "com.eficksan.whereami"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 23
-        versionCode 1
-        versionName "0.1"
+        versionCode 10
+        versionName '0.7.3'
+        multiDexEnabled true
     }
     buildTypes {
+        debug {
+            testCoverageEnabled = false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-annotations:23.0.1'
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    // Dagger 2 dependencies
+    testCompile 'org.hamcrest:hamcrest-core:1.3'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    testCompile "org.mockito:mockito-core:1.10.19"
+    testCompile "org.robolectric:robolectric:3.1.2"
+    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+    testCompile "org.robolectric:shadows-support-v4:3.0"
     apt 'com.google.dagger:dagger-compiler:2.0'
     provided 'org.glassfish:javax.annotation:10.0-b28'
-    // adds the @Generated annoation that Android lacks
-    // Butterknife dependency
-    // Google Services
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
+    compile "com.android.support:appcompat-v7:${supportLibraryVersion}"
+    compile "com.android.support:recyclerview-v7:${supportLibraryVersion}"
+    compile "com.android.support:cardview-v7:${supportLibraryVersion}"
+    compile "com.android.support:design:${supportLibraryVersion}"
+    compile "com.google.android.gms:play-services-identity:${playServicesVersion}"
+    compile "com.google.android.gms:play-services-location:${playServicesVersion}"
+    compile "com.google.android.gms:play-services-maps:${playServicesVersion}"
+    compile "com.android.support:support-v4:${supportLibraryVersion}"
+    compile "com.google.firebase:firebase-core:${playServicesVersion}"
+    compile "com.google.firebase:firebase-auth:${playServicesVersion}"
+    compile "com.google.firebase:firebase-database:${playServicesVersion}"
+    compile "com.google.firebase:firebase-core:${playServicesVersion}"
     compile 'com.google.dagger:dagger:2.0'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.google.android.gms:play-services-identity:8.4.0'
-    compile 'com.google.android.gms:play-services-location:8.4.0'
-    compile 'com.android.support:support-v4:23.2.1'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxjava-joins:0.22.0'
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+    androidTestCompile "org.mockito:mockito-core:1.10.19"
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
+
+task checkstyle(type: Checkstyle, dependsOn: check) {
+    group 'verification'
+    configFile file('../config/checkstyle/checkstyle.xml')
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    // empty classpath
+    classpath = files()
+    //Do not fail build
+    ignoreFailures = true
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+task findbugs(type: FindBugs, dependsOn: check) {
+    group 'verification'
+    ignoreFailures = true
+    excludeFilter = new File("${project.rootDir}/config/findbugs/exclude-filter.xml")
+    classes = files("${project.rootDir}/app/build/intermediates/classes")
+    source = fileTree('src/main/java/')
+    classpath = files()
+    effort = 'max'
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+task pmd(type: Pmd, dependsOn: check) {
+    ignoreFailures = true
+    description 'Run pmd'
+    group 'verification'
+
+    ruleSetFiles = files("${project.rootDir}/config/pmd/rule-sets.xml")
+//    ["basic", "braces", "strings", "design", "unusedcode"]
+    source = fileTree('src/main/java')
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
